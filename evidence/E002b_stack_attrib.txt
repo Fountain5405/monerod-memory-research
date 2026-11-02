@@ -1,0 +1,25 @@
+total peak cost: 4.99 GB
+
+== peak by owning (first non-glue) frame, >= 40 MB
+    4988 MB  100.0%  
+
+== inclusive peak per frame (fcmp/bulletproof/verify/cryptonote related), >= 40 MB
+    4331 MB   86.8%  rct::batchVerifyFcmpPpProofs
+    4331 MB   86.8%  fcmp_pp::verify(std::vector const&) 
+    4331 MB   86.8%  fcmp_pp_verify
+    4311 MB   86.4%  verify
+    2314 MB   46.4%  generalized_bulletproofs_ec_gadgets::dlog::divisor_challenge_eval
+     553 MB   11.1%  cryptonote::t_cryptonote_protocol_handler::handle_response_get_objects
+     512 MB   10.3%  cryptonote::t_cryptonote_protocol_handler::try_add_next_blocks
+     447 MB    9.0%  block const*, cryptonote::block_verification_context&, cryptonote::pool_supplement&, bool) 
+     447 MB    9.0%  hash const&, cryptonote::block_verification_context&, cryptonote::pool_supplement&) 
+     447 MB    9.0%  block const&, cryptonote::block_verification_context&, cryptonote::pool_supplement&) 
+     284 MB    5.7%  HardFork const*, cryptonote::pool_supplement&, std::unordered_map&) 
+     284 MB    5.7%  cryptonote::batch_ver_fcmp_pp_consensus
+      81 MB    1.6%  cryptonote::block_complete_entry* std::__do_uninit_copy
+      81 MB    1.6%  cryptonote::tx_blob_entry* std::__do_uninit_copy
+      41 MB    0.8%  _Rb_tree_node_base*, std::_Rb_tree::_Alloc_node&) 
+      41 MB    0.8%  cryptonote::block_queue::add_blocks
+      41 MB    0.8%  pair std::_Rb_tree::_M_insert_unique
+      41 MB    0.8%  cryptonote::block_queue::get_next_span
+      41 MB    0.8%  _Rb_tree_iterator std::_Rb_tree::_M_emplace_hint_unique
