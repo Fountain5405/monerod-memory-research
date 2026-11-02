@@ -1,12 +1,13 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-02 21:40
+Last updated: 2026-11-02 21:55
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
 
 ## Currently running
-- **E004a A/B** (c24 vs c12, 3 rounds; partial at 21:40: c24 5,660 MB/221 s; c12 3,393 and 3,611 MB/207 and 197 s; all hashes match). Marker: AB_COMPLETE in ~/work/research-artifacts/E004a/summary.txt; data in results.csv.
+- E004a DONE: -39.6% peak anon (median 5,614 → 3,393 MB), -10.9% wall time, all hashes match.
+- **Chained** (scripts/chain_e004c.sh): after the E005 chain, build ~/work/monero-fcmp-e004c (batch verify capped at physical cores), then A/B base vs e004c. Marker: CHAIN_E004C_COMPLETE at the end of ~/work/research-artifacts/E004c.chain.
 - **Chained** (scripts/chain_e005.sh): after E004a, build ~/work/monero-fcmp-e005 (LinComb shrink_to_fit), then A/B base vs e005 (3 rounds, default concurrency, same window). Marker: CHAIN_E005_COMPLETE at the end of ~/work/research-artifacts/E005.chain; data in ~/work/research-artifacts/E005/results.csv.
 - Snapshots: stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
@@ -14,7 +15,8 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 1. (DONE 20:20: E002a, 316 MB, RandomX 89%, no jump without tx verification.) Analyze E002b: `heaptrack_print -f <file>.zst` (peak consumers, allocated/leaked); compare heaptrack's peak heap with RssAnon from mem.csv (tests H3, allocator retention). Write the Results section in experiments/E002-attribute-heap/README.md.
 1b. (DONE 21:10, PASSED; issue text ready) **E001-fix**: patched tree ~/work/monero-fcmp-e001fix (branch e001-sync-size-cap, commit 7dacc3156; diff in evidence/E001/e001-fix.diff). Build daemon-only into build/beta31-e001fix (-j10, only when no heaptrack run is active, because of RAM). Then rewind ~/work/chains/stressnet to 3,105,401 (pop_to.sh) and run repro_e001.sh with the PATCHED binary. Pass = the default-settings run advances past 3,105,401 with 0 oversize errors, and the end-height hash matches .22. Also record blocks/min vs the --block-sync-size 5 control. Write the results into reports/E001-sync-wedge-ISSUE.md (add a "Tested fix" section with the diff), then tell the owner it is ready to paste.
 1c. (DONE 21:15: model B, per-thread working set ~170-270 MB) **E003 analysis**: model A (peak flat across C, so bound proofs per verify batch, i.e. sub-batch to K proofs) vs model B (peak ∝ C, so a shared circuit or a cap on concurrent verifications). Then design the first memory fix (E004), on a branch in a copy of the source like monero-fcmp-e001fix, and A/B it (>=3 alternating runs, same window, peak RssAnon + wall time + end hash).
-1d. **E004a analysis:** if c12 cuts peak >=30% with wall time within ~10% across 3 rounds, prototype a TARGETED change: FCMP++ batch verify uses min(threadpool size, physical cores, or a configurable cap) instead of the global --max-concurrency, and A/B that build against baseline.
+1d. (DONE 21:45, CONFIRMED -39.6%) **E004a analysis:** if c12 cuts peak >=30% with wall time within ~10% across 3 rounds, prototype a TARGETED change: FCMP++ batch verify uses min(threadpool size, physical cores, or a configurable cap) instead of the global --max-concurrency, and A/B that build against baseline.
+1f. After E004c and E005: a COMBINED build (E001 fix + E004c + E005 if it helps), then a final A/B vs baseline (>=3 rounds) and a min-cgroup-memory test (scripts/min_mem.sh, still to write). Also test a full-chain resync from the wedge snapshot to the tip with the combined build, checking hash and peak.
 1e. (E005 is the first E004b step; RUNNING via chain) **E004b:** read the Rust verifier code (scout results); find what makes ~200 MB per verifier (divisor_challenge_eval, LinComb Vec growth); prototype a reduction (exact capacity, reuse buffers across proofs, a compact representation, dropping per-proof state earlier); build; A/B.
 2. (DONE: E002b) If E002a did not reproduce the multi-GB jump: run **E002b**. Copy the synced snapshot to a working dir, pop back to < 3,102,800 (RPC `pop_blocks` on our own node), save that as snapshot `stressnet_preHF17_h<H>`, then replay the window under heaptrack (`--block-sync-size 5` because of E001).
 3. Build the A/B harness `scripts/run_window.sh`: restore a snapshot, sync to a fixed end height from .22, check our block hash at the end height against .22 (get_block_header_by_height), and record peak/steady anon, wall time, and disk I/O (/proc/PID/io). Add `scripts/min_mem.sh`: a binary search over a systemd-run scope MemoryMax for the smallest limit that completes within 1.1x the unconstrained wall time.

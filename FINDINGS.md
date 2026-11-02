@@ -1,6 +1,6 @@
 # Findings (living summary)
 
-Status: attribution phase (E002 done). No optimization result yet.
+Status: FIRST CONFIRMED WIN (E004a): -39.6% peak anon memory during FCMP++ sync, 11% faster. Targeted code version (E004c) and a constraint-storage change (E005) are being A/B tested.
 
 | # | Finding / candidate | Evidence | Est. saving | Status |
 |---|---|---|---|---|
@@ -11,3 +11,4 @@ Status: attribution phase (E002 done). No optimization result yet.
 | F5 | Sync wedge: a 100-block batch after an empty stretch exceeds the 100 MB levin limit; deterministic repro; fix prototyped (cap by block weight limit) | E001, reports/ | n/a (bug) | fix under test |
 | F6 | pop_blocks keep_txs=true default + tx_memory_pool::prune is super-linear on heavy blocks (85,841 txs re-pooled) | JOURNAL 20:20 | n/a | noted |
 | F7 | **Peak scales with concurrent FCMP++ verifier threads:** 1/4/12/24 threads give 1.23/2.03/3.30/5.40 GB peak over the same 40-block window. ~1.0 GB base + ~170-270 MB per verifier thread. 12 threads were faster than 24 (199 vs 220 s). | E003 | -39% peak on this box by using physical cores only (to be A/B-confirmed in E004a); more if the per-thread working set shrinks (E004b) | A/B running |
+| F8 | **CONFIRMED (E004a, 3 alternating rounds):** limiting verification to physical cores (12 vs 24 on a 3900X) gives median peak RssAnon 5,614 → 3,393 MB (**-39.6%**), RSS -30.4%, wall time 221 → 197 s (**-10.9%**), same end hash, same disk writes | experiments/E004-verify-concurrency, evidence/E004a/ | -39.6% peak on SMT machines | targeted code change E004c queued |

@@ -97,3 +97,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 ## 2026-11-02 21:35 verifier code reading; E005 prepared
 - Rust sources (scout): monero-oxide @ 31c26d96 in ~/.cargo/git/checkouts/monero-oxide-3366610e7b6e517d/31c26d9/. Per-proof circuits are built in `Fcmp::verify` (crypto/fcmps/src/lib.rs:938); constraints are stored as `LinComb`s; `ArithmeticCircuitStatement::verify` only folds them by z powers into dense vectors. Streaming is blocked by transcript interleaving (see experiments/E005-lincomb-shrink/README.md; deferred to E007).
 - E005 (LinComb shrink_to_fit at constrain time) prepared: ~/work/monero-oxide-e005 + ~/work/monero-fcmp-e005 (cargo [patch]); cargo check passes. Two prep-script slips, both caught before building: the cargo checkout already has a .git (init/commit aborted), and the first lincomb insert landed outside the impl block. Build waits for E004a to finish (RAM).
+
+## 2026-11-02 21:45-21:55 E004a CONFIRMED; E004c prepared
+- E004a (3 alternating rounds, c24 vs c12): median peak RssAnon 5,614 → 3,393 MB (**-39.6%**), RSS 6,434 → 4,481 MB, wall 221 → 197 s (-10.9%), disk writes unchanged (~466 MB), every end hash = .22. Full table: experiments/E004-verify-concurrency/README.md, evidence/E004a/.
+- E004c: targeted patch in rct::batchVerifyFcmpPpProofs, min(pool, boost::thread::physical_concurrency()) batches (commit 2e80c0685 in ~/work/monero-fcmp-e004c; evidence/E004c.diff). rctSigs.cpp syntax-checked with the baseline compile command. Build + A/B chained after the E005 chain (so no build runs during the E005 timing runs).
+- The waiter task "failed" with exit 1 only because its final `grep SIGKILL|FAILED` matched nothing. Harmless.
