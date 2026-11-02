@@ -112,3 +112,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - E004c A/B: wall 220 → 201 s (-9%), but peak RssAnon 5,600 → 5,527 MB (-1.3%). Explanation: glibc arena retention; M_ARENA_MAX = pool size (24), and all 24 pool threads run FCMP++ batches over time, so each arena keeps its high-water working set. E004d = E004c + arenas capped at physical cores; built and A/B'd via the new generic scripts/chain_build_ab.sh.
 - E006 perf profile: ~52% of CPU in ArithmeticCircuitStatement::verify (folding + IPA), ~36% curve math, ~5% circuit construction. So E007 (streaming, 3-pass) costs ~+10% CPU. perf_classify.py misattributed the 50% symbol (regex 'Circuit' matched ArithmeticCircuitStatement); corrected manually. Fix the script before reuse.
 - Harness note: an ssh launching a nohup'd chain did not return (stdin probably not redirected); TaskStop'd the local ssh and the remote chain survived. Use `< /dev/null` for remote nohup launches.
+
+## 2026-11-02 22:47-22:55 check-in #2 (cron)
+- Box: load ~14 (E004d A/B only), no selfishmining lanes, 56 GB disk free, 12 GB RAM available.
+- E004d: build OK (sha256 61517c0a…); A/B running. Round 1 base = 5,108 MB / 222 s, hash match; e004d run in progress.
+- E007: a Plan agent is reviewing the 3-pass streaming design against the code (transcript cloneability, the order of transcript ops during circuit building, constraint validation, other consumers, risks).
+- Wrote scripts/min_mem.sh: binary search over a systemd-run scope MemoryMax (swap off) for the smallest limit that syncs the window within 1.1x the reference wall and ends on .22's hash; records the cgroup memory.peak and oom_kill count. Self-test of the scope mechanics passed. Not run yet (it needs a quiet box, after E004d).
