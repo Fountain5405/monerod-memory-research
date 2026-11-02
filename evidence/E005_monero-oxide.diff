@@ -1,0 +1,37 @@
+diff --git a/crypto/fcmps/circuit-abstraction/src/lib.rs b/crypto/fcmps/circuit-abstraction/src/lib.rs
+index 90c9a22..69f48ad 100644
+--- a/crypto/fcmps/circuit-abstraction/src/lib.rs
++++ b/crypto/fcmps/circuit-abstraction/src/lib.rs
+@@ -174,7 +174,9 @@ impl<C: Ciphersuite> Circuit<C> {
+   /// Constrain a linear combination to be equal to 0.
+   ///
+   /// May panic if the linear combination references non-existent terms.
+-  pub fn constrain_equal_to_zero(&mut self, lincomb: LinComb<C::F>) {
++  pub fn constrain_equal_to_zero(&mut self, mut lincomb: LinComb<C::F>) {
++    // E005: stored constraints live until verification; drop the Vec growth slack.
++    lincomb.shrink_to_fit();
+     self.constraints.push(lincomb);
+   }
+ }
+diff --git a/crypto/generalized-bulletproofs/src/lincomb.rs b/crypto/generalized-bulletproofs/src/lincomb.rs
+index 9fb6def..f8422ff 100644
+--- a/crypto/generalized-bulletproofs/src/lincomb.rs
++++ b/crypto/generalized-bulletproofs/src/lincomb.rs
+@@ -179,6 +179,17 @@ impl<F: PrimeField> Mul<F> for LinComb<F> {
+ }
+ 
+ impl<F: PrimeField> LinComb<F> {
++  /// Release the excess capacity of the sparse term vectors (E005 memory experiment).
++  pub fn shrink_to_fit(&mut self) {
++    self.WL.shrink_to_fit();
++    self.WR.shrink_to_fit();
++    self.WO.shrink_to_fit();
++    for weights in self.WCG.values_mut() {
++      weights.shrink_to_fit();
++    }
++    self.WV.shrink_to_fit();
++  }
++
+   /// Add a new instance of a term to this linear combination.
+   pub fn term(mut self, scalar: F, constrainable: Variable) -> Self {
+     match constrainable {

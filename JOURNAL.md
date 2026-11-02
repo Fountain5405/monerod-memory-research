@@ -93,3 +93,7 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 ## 2026-11-02 21:15 E003 concurrency sweep → model B
 - 1/4/12/24 threads: peak RssAnon 1,232 / 2,033 / 3,302 / 5,400 MB; window wall time 844 / 279 / 199 / 220 s (same 40 blocks, n=1 each). **Peak scales with concurrent verifier threads** (~170-270 MB each, on top of ~1 GB base). 12 threads (physical cores) were faster than 24. See experiments/E003-concurrency-sweep/README.md.
 - Started E004a: a 3-round alternating A/B of c24 vs c12 with the new scripts/ab_window.sh (rewind, fixed window, peak anon/private-dirty/RSS, /proc io, end-hash check from an offline restart).
+
+## 2026-11-02 21:35 verifier code reading; E005 prepared
+- Rust sources (scout): monero-oxide @ 31c26d96 in ~/.cargo/git/checkouts/monero-oxide-3366610e7b6e517d/31c26d9/. Per-proof circuits are built in `Fcmp::verify` (crypto/fcmps/src/lib.rs:938); constraints are stored as `LinComb`s; `ArithmeticCircuitStatement::verify` only folds them by z powers into dense vectors. Streaming is blocked by transcript interleaving (see experiments/E005-lincomb-shrink/README.md; deferred to E007).
+- E005 (LinComb shrink_to_fit at constrain time) prepared: ~/work/monero-oxide-e005 + ~/work/monero-fcmp-e005 (cargo [patch]); cargo check passes. Two prep-script slips, both caught before building: the cargo checkout already has a .git (init/commit aborted), and the first lincomb insert landed outside the impl block. Build waits for E004a to finish (RAM).
