@@ -1,0 +1,60 @@
+e006 queued 2026-11-02T22:14:35+00:00
+start 2026-11-02T22:35:35+00:00
+no shadow processes
+RESULT OK height 3105401
+window done h=3105441 after 221s
+perf self-time by category (sum of symbols >= 0.05%; total listed = 96.6%)
+   3.8%  alloc/free/memcpy
+            1.81%  __memmove_avx_unaligned_erms                                                              
+            0.49%  __memset_avx2_unaligned_erms                                                              
+            0.38%  _int_malloc                                                                               
+            0.29%  _int_free                                                                                 
+  54.5%  circuit building (LinComb / BTreeMap / gadgets)
+           50.37%  _RINvMs3_NtCsliIeayJMtsC_24generalized_bulletproofs24arithmetic_circuit_proofINtB6_26Arith
+            1.33%  _RINvMs3_NtCsliIeayJMtsC_24generalized_bulletproofs24arithmetic_circuit_proofINtB6_26Arith
+            0.65%  _RNvMs5_NtCsliIeayJMtsC_24generalized_bulletproofs7lincombINtB5_7LinCombNtNtCs4l1FnSPSMGy_
+            0.63%  _RINvNtCsliIeayJMtsC_24generalized_bulletproofs7lincomb17accumulate_vectorNtNtCseHA243GNi9
+   1.8%  verify statement (weights / yz / IPA)
+            1.45%  _RNvXs3_NtCsliIeayJMtsC_24generalized_bulletproofs13scalar_vectorINtB5_12ScalarVectorNtNtC
+            0.31%  _RNvXs4_NtCsliIeayJMtsC_24generalized_bulletproofs13scalar_vectorINtB5_12ScalarVectorNtNtC
+   1.8%  multiexp / batch verifier
+            1.28%  _RINvNtCsd6zEgMpA00H_8multiexp10underlying9prep_bitsNtNtNtCseHA243GNi9x_11helioselene5poin
+            0.29%  _RINvNtCsd6zEgMpA00H_8multiexp10underlying9prep_bitsNtNtNtCseHA243GNi9x_11helioselene5poin
+            0.12%  _RINvNtCsd6zEgMpA00H_8multiexp10underlying16multiexp_vartimeNtNtNtCseHA243GNi9x_11heliosel
+            0.10%  _RINvNtCsd6zEgMpA00H_8multiexp10underlying9prep_bitsNtCs4l1FnSPSMGy_14dalek_ff_group12Edwa
+  34.6%  field / point arithmetic
+           12.31%  _RNvXs3_NtNtCseHA243GNi9x_11helioselene5point6seleneNtB5_11SelenePointNtNtNtCskADBYZwJmSU_
+            8.51%  _RINvNtNtNtCs4RSYzIYxxf8_13crypto_bigint4uint7modular9reduction20montgomery_reductionKj4_E
+            8.12%  _RINvMNtNtCs4RSYzIYxxf8_13crypto_bigint4uint3mulINtB5_4UintKj4_E8mul_wideKBV_ECs4l1FnSPSMG
+            1.23%  _RNvMs3_NtCs4l1FnSPSMGy_14dalek_ff_group5fieldNtB5_12FieldElement3pow                     
+   0.1%  kernel / other
+            0.07%  0xffffffffb1672460                                                                        
+            0.06%  unlink_chunk.isra.0                                                                       
+
+top 25 symbols:
+ 50.37% [.] _RINvMs3_NtCsliIeayJMtsC_24generalized_bulletproofs24arithmetic_circuit_proofINtB6_26ArithmeticCircuitStatemen
+ 12.31% [.] _RNvXs3_NtNtCseHA243GNi9x_11helioselene5point6seleneNtB5_11SelenePointNtNtNtCskADBYZwJmSU_4core3ops5arith3Add3
+  8.51% [.] _RINvNtNtNtCs4RSYzIYxxf8_13crypto_bigint4uint7modular9reduction20montgomery_reductionKj4_ECs4l1FnSPSMGy_14dale
+  8.12% [.] _RINvMNtNtCs4RSYzIYxxf8_13crypto_bigint4uint3mulINtB5_4UintKj4_E8mul_wideKBV_ECs4l1FnSPSMGy_14dalek_ff_group.l
+  1.81% [.] __memmove_avx_unaligned_erms                                                                                  
+  1.45% [.] _RNvXs3_NtCsliIeayJMtsC_24generalized_bulletproofs13scalar_vectorINtB5_12ScalarVectorNtNtCseHA243GNi9x_11helio
+  1.33% [.] _RINvMs3_NtCsliIeayJMtsC_24generalized_bulletproofs24arithmetic_circuit_proofINtB6_26ArithmeticCircuitStatemen
+  1.28% [.] _RINvNtCsd6zEgMpA00H_8multiexp10underlying9prep_bitsNtNtNtCseHA243GNi9x_11helioselene5point6selene11SelenePoin
+  1.23% [.] _RNvMs3_NtCs4l1FnSPSMGy_14dalek_ff_group5fieldNtB5_12FieldElement3pow                                         
+  1.13% [.] _RNvNvNtNtNtNtNtCsbEhr6qiazXB_16curve25519_dalek7backend6vector10scalar_mul13variable_base9spec_avx23mul9__imp
+  0.99% [.] _RNvXs3_NtNtCseHA243GNi9x_11helioselene5point6heliosNtB5_11HeliosPointNtNtNtCskADBYZwJmSU_4core3ops5arith3Add3
+  0.65% [.] _RNvMs5_NtCsliIeayJMtsC_24generalized_bulletproofs7lincombINtB5_7LinCombNtNtCs4l1FnSPSMGy_14dalek_ff_group5fie
+  0.63% [.] _RINvNtCsliIeayJMtsC_24generalized_bulletproofs7lincomb17accumulate_vectorNtNtCseHA243GNi9x_11helioselene5fiel
+  0.56% [.] _RNvMs8_NtNtNtNtCsbEhr6qiazXB_16curve25519_dalek7backend6serial3u645fieldNtB5_14FieldElement515pow2k          
+  0.50% [.] _RNvXs5_NtNtNtNtCsbEhr6qiazXB_16curve25519_dalek7backend6serial3u645fieldRNtB5_14FieldElement51NtNtNtCskADBYZw
+  0.49% [.] __memset_avx2_unaligned_erms                                                                                  
+  0.38% [.] _int_malloc                                                                                                   
+  0.32% [.] _RNvXNvXsf_NtNtNtNtCsbEhr6qiazXB_16curve25519_dalek7backend6vector4avx25fieldRNtB8_18FieldElement2625x4NtNtNtC
+  0.31% [.] _RNvXs4_NtCsliIeayJMtsC_24generalized_bulletproofs13scalar_vectorINtB5_12ScalarVectorNtNtCseHA243GNi9x_11helio
+  0.30% [.] fe_mul                                                                                                        
+  0.30% [.] _RNvXs4_NtCsliIeayJMtsC_24generalized_bulletproofs7lincombINtB5_7LinCombNtNtCseHA243GNi9x_11helioselene5field1
+  0.30% [.] _RNvMNtCs2QsIVNj8zgd_28full_chain_membership_proofs4tapeINtB2_20VectorCommitmentTapeNtNtCs4l1FnSPSMGy_14dalek_
+  0.29% [.] _int_free                                                                                                     
+  0.29% [.] _RINvNtCsd6zEgMpA00H_8multiexp10underlying9prep_bitsNtNtNtCseHA243GNi9x_11helioselene5point6helios11HeliosPoin
+  0.26% [.] _int_free_merge_chunk                                                                                         
+E006_COMPLETE

@@ -1,0 +1,42 @@
+diff --git a/src/ringct/rctSigs.cpp b/src/ringct/rctSigs.cpp
+index 02a8e2d65..65b2cb9e5 100644
+--- a/src/ringct/rctSigs.cpp
++++ b/src/ringct/rctSigs.cpp
+@@ -36,6 +36,7 @@
+ #include "misc_log_ex.h"
+ #include "common/perf_timer.h"
+ #include "common/threadpool.h"
++#include <boost/thread/thread.hpp>
+ #include "common/util.h"
+ #include "fcmp_pp/fcmp_pp_crypto.h"
+ #include "fcmp_pp/fcmp_pp_types.h"
+@@ -1675,7 +1676,13 @@ done:
+ 
+       tools::threadpool &tpool = tools::threadpool::getInstanceForCompute();
+       tools::threadpool::waiter waiter(tpool);
+-      const std::size_t n_threads = std::max<std::size_t>(1, tpool.get_max_concurrency());
++      // Each concurrently verifying batch holds a large transient working set (the per-proof
++      // FCMP++ circuit, ~200 MB on stressnet), so peak memory scales with the number of batches.
++      // Verification is compute-bound and gains nothing from SMT siblings, so use at most one batch
++      // per physical core (falls back to the pool size if the core count is unknown).
++      const std::size_t pool_threads = std::max<std::size_t>(1, tpool.get_max_concurrency());
++      const std::size_t physical_cores = boost::thread::physical_concurrency();
++      const std::size_t n_threads = physical_cores > 0 ? std::min(pool_threads, physical_cores) : pool_threads;
+       const bool multithreaded = n_threads > 1;
+ 
+       // 1 batch per thread
+@@ -1770,7 +1777,13 @@ done:
+     {
+ #ifdef M_ARENA_MAX
+       tools::threadpool &tpool = tools::threadpool::getInstanceForCompute();
+-      const std::size_t n_threads = std::max<std::size_t>(1, tpool.get_max_concurrency());
++      const std::size_t pool_threads = std::max<std::size_t>(1, tpool.get_max_concurrency());
++      // glibc keeps freed memory inside each arena. The large transient FCMP++ verification working
++      // sets move between pool threads over time, so with one arena per pool thread RSS grows to
++      // (pool threads) x (per-thread high-water mark) even though batchVerifyFcmpPpProofs only runs
++      // one batch per physical core at a time. Use one arena per physical core as well.
++      const std::size_t physical_cores = boost::thread::physical_concurrency();
++      const std::size_t n_threads = physical_cores > 0 ? std::min(pool_threads, physical_cores) : pool_threads;
+ 
+       // Use at least 2 arenas always to match glibc's default minimum
+       // https://github.com/bminor/glibc/blob/40a751b0044114488e841f0223e630596c527c53/malloc/arena.c#L824-L834

@@ -30,4 +30,21 @@
 - Expected on hydrogen: the same as E004a c12 for memory (12 batches), and the same or better wall time (other pool users keep 24 threads).
 - On machines without SMT: no change. On SMT machines: up to ~50% fewer concurrent verifier working sets.
 
-**Results E004c:** (pending)
+**Results E004c (2026-11-02 22:10-22:35, 3 alternating rounds, default settings, every end hash = .22):**
+
+| round | arm | peak RssAnon MB | peak RSS MB | wall s |
+|---|---|---|---|---|
+| 1 | base | 5,640 | 6,685 | 222 |
+| 1 | e004c | 5,237 | 6,240 | 201 |
+| 2 | e004c | 5,527 | 6,507 | 201 |
+| 2 | base | 5,363 | 6,352 | 220 |
+| 3 | base | 5,600 | 6,676 | 220 |
+| 3 | e004c | 5,630 | 6,504 | 203 |
+
+Median peak RssAnon: base 5,600 vs e004c 5,527 MB (-1.3%, ranges overlap). Wall: 220 vs 201 s (**-9%**, no overlap).
+
+**Interpretation:** the cap took effect (the wall time matches E004a's c12), but RSS did not drop. Most likely cause: **glibc arena retention.** The pool still has 24 threads and over time all of them run FCMP++ batch tasks. `limitMaxMemArenas()` sets M_ARENA_MAX = pool size = 24, and freed memory stays inside each thread's arena. So RSS ≈ 24 × the per-thread high-water mark even though only 12 batches are live at once. In E004a, `--max-concurrency 12` lowered both the pool and M_ARENA_MAX, which is why it showed the full -39.6%. This is exactly where live heap and RSS diverge; RSS is the metric we use.
+
+## E004d: E004c + arenas capped at physical cores (prepared 22:38; build + A/B chained after E006)
+- Tree ~/work/monero-fcmp-e004d, branch e004d-arenas-physical-cores (19e2a7db8 on top of 2e80c0685). `limitMaxMemArenas()` uses min(pool size, physical cores). Diff vs beta31: evidence/E004d.diff.
+- Prediction: peak RssAnon ≈ E004a c12 (~3.4 GB), wall ≈ 200 s.

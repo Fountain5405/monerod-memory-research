@@ -107,3 +107,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - E005 A/B: median peak 5,350 (base) vs 5,380 MB (e005); wall 220 vs 220 s. No effect.
 - Peak-stack reading: the biggest stack is growth of `constraints: Vec<LinComb>` in Circuit::mul (two constraints per gate). The working set is the constraint/term COUNT. Options: bound concurrency (E004c, in progress) or stop storing the circuit (E007, a multi-pass streaming verifier). E006 will first measure the CPU share of circuit building.
 - Process slip: another ssh-quoting failure (an apostrophe in a heredoc inside ssh '...'). Nothing executed. Re-done via a script file (scripts/record_e005.sh). Rule reaffirmed: prose goes into files, never into ssh one-liners.
+
+## 2026-11-02 22:35-22:50 E004c surprise; E006 profile; E004d chained
+- E004c A/B: wall 220 → 201 s (-9%), but peak RssAnon 5,600 → 5,527 MB (-1.3%). Explanation: glibc arena retention; M_ARENA_MAX = pool size (24), and all 24 pool threads run FCMP++ batches over time, so each arena keeps its high-water working set. E004d = E004c + arenas capped at physical cores; built and A/B'd via the new generic scripts/chain_build_ab.sh.
+- E006 perf profile: ~52% of CPU in ArithmeticCircuitStatement::verify (folding + IPA), ~36% curve math, ~5% circuit construction. So E007 (streaming, 3-pass) costs ~+10% CPU. perf_classify.py misattributed the 50% symbol (regex 'Circuit' matched ArithmeticCircuitStatement); corrected manually. Fix the script before reuse.
+- Harness note: an ssh launching a nohup'd chain did not return (stdin probably not redirected); TaskStop'd the local ssh and the remote chain survived. Use `< /dev/null` for remote nohup launches.
