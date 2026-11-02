@@ -15,18 +15,24 @@ $BIN --testnet --data-dir $DD --offline --non-interactive --no-igd --rpc-bind-ip
 MP=$!
 for i in $(seq 1 120); do h=$(height); [ -n "$h" ] && break; sleep 2; done
 [ -z "${h:-}" ] && { echo "RESULT FAIL rpc never came up" >> $LOG; kill $MP; exit 1; }
-echo "start height $h" >> $LOG
+pool() { rpc /get_info | grep -oE '"tx_pool_size": [0-9]+' | grep -oE '[0-9]+$'; }
+echo "start height $h, txpool size $(pool)" >> $LOG
+# v2 (2026-11-02): pop_blocks defaults to keep_txs=true, which returns every popped tx to the
+# txpool; tx_memory_pool::prune() then dominates (quadratic-ish with thousands of stress txs).
+# So flush any stale pool first and pop with keep_txs=false.
+rpc /json_rpc '{"jsonrpc":"2.0","id":0,"method":"flush_txpool"}' > /dev/null
+echo "after flush_txpool: txpool size $(pool)" >> $LOG
 while [ "$h" -gt "$T" ]; do
   n=$(( h - T )); [ $n -gt $CHUNK ] && n=$CHUNK
   t0=$(date +%s)
-  rpc /pop_blocks "{\"nblocks\":$n}" > /dev/null
+  rpc /pop_blocks "{\"nblocks\":$n,\"keep_txs\":false}" > /dev/null
   h=$(height)
   echo "$(date +%H:%M:%S) popped $n in $(( $(date +%s) - t0 ))s -> height $h" >> $LOG
   [ -z "$h" ] && { echo "RESULT FAIL lost rpc" >> $LOG; exit 1; }
 done
 ours=$(rpc /json_rpc "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"get_last_block_header\"}" | grep -oE '"hash": "[0-9a-f]+"' | head -1 | cut -d'"' -f4)
 theirs=$(curl -s -m 30 http://192.168.1.22:28081/json_rpc -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"get_block_header_by_height\",\"params\":{\"height\":$(( T - 1 ))}}" | grep -oE '"hash": "[0-9a-f]+"' | head -1 | cut -d'"' -f4)
-echo "top block (index $(( T - 1 ))): ours=$ours  .22=$theirs" >> $LOG
+echo "top block (index $(( T - 1 ))): ours=$ours  .22=$theirs ; final txpool size $(pool)" >> $LOG
 rpc /stop_daemon > /dev/null
 for i in $(seq 1 300); do kill -0 $MP 2>/dev/null || break; sleep 1; done
 kill -0 $MP 2>/dev/null && { echo "daemon did not stop; SIGTERM" >> $LOG; kill $MP; sleep 5; }

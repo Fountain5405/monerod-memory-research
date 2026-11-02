@@ -1,0 +1,53 @@
+reading file "heaptrack.E002a-restart-synced.zst" - please wait, this might take some time...
+Debuggee command was: /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod --testnet --data-dir /home/optimizer/work/chains/stressnet --add-exclusive-node 192.168.1.22:28080 --non-interactive --no-igd --rpc-bind-ip 127.0.0.1 --log-file /home/optimizer/work/research-artifacts/E002a-restart-synced/monerod.log --log-level 0 --block-sync-size 5
+finished reading file, now analyzing data:
+
+PEAK MEMORY CONSUMERS
+281.04M peak memory consumed over 25 calls from
+randomx::AlignedAllocator<>::allocMemory(unsigned long)
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 281.04M from 10 other places
+
+12.58M peak memory consumed over 131076 calls from
+_RNvYNCNvCs9kNG860oi1_21monero_fcmp_plus_plus22SELENE_FCMP_GENERATORS0INtNtNtCskADBYZwJmSU_4core3ops8function6FnOnceuE9call_onceB6_
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 12.58M from 6 other places
+
+10.40M peak memory consumed over 9325 calls from
+0x7695e644c9b5
+  in /lib/x86_64-linux-gnu/libunbound.so.8
+  and 10.40M from 1272 other places
+
+6.29M peak memory consumed over 65540 calls from
+_RNvYNCNvCs9kNG860oi1_21monero_fcmp_plus_plus22HELIOS_FCMP_GENERATORS0INtNtNtCskADBYZwJmSU_4core3ops8function6FnOnceuE9call_onceB6_
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 6.29M from 6 other places
+
+2.11M peak memory consumed over 7 calls from
+mdb_env_open
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 2.11M from 7 other places
+
+1.05M peak memory consumed over 13 calls from
+mdb_midl_alloc
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 1.05M from 5 other places
+
+587.21K peak memory consumed over 35542 calls from
+CRYPTO_zalloc
+  in /lib/x86_64-linux-gnu/libcrypto.so.3
+  and 587.21K from 3089 other places
+
+357.16K peak memory consumed over 5674 calls from
+0x7695e5e21681
+  in /lib/x86_64-linux-gnu/libcrypto.so.3
+  and 357.16K from 310 other places
+
+
+total runtime: 601.67s.
+calls to allocation functions: 438332 (728/s)
+temporary memory allocations: 93611 (155/s)
+peak heap memory consumption: 315.89M
+peak RSS (including heaptrack overhead): 397.43M
+total memory leaked: 300.05M
+suppressed leaks: 4.89K
