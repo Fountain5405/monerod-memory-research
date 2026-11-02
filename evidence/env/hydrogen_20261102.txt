@@ -1,0 +1,18 @@
+Mon Nov  2 12:19:35 PM UTC 2026
+Linux hydrogen 6.8.0-147-generic #147-Ubuntu SMP PREEMPT_DYNAMIC Thu Sep 24 11:33:16 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+Ubuntu 24.04.5 LTS
+CPU(s):                                  24
+Model name:                              AMD Ryzen 9 3900X 12-Core Processor
+Thread(s) per core:                      2
+CPU(s) scaling MHz:                      81%
+CPU max MHz:                             4673.2988
+CPU min MHz:                             2200.0000
+Mem:     16703983616  1949831168  8495382528     7323648  6620852224 14754152448
+ldd (Ubuntu GLIBC 2.39-0ubuntu8.9) 2.39
+gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+cmake version 3.28.3
+rustc 1.99.1 (58cf8f9c3 2026-10-13)
+overcommit_memory=0
+thp=always [madvise] never
+hugepages_total=0
+ptrace_scope=1
