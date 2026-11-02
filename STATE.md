@@ -18,6 +18,9 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 6. Draft the E001 sync-wedge write-up for the FCMP++ devs. **Do not post it**; the owner decides.
 7. Later: wallet (tree_cache), stagenet/master comparison, monerosim scenarios.
 
+## Watch (read-only)
+- 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
+
 ## Needs owner (do not act on these alone)
 - Whether and where to report E001 (sync wedge) upstream.
 
