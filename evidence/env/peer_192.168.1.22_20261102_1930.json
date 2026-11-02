@@ -1,0 +1,137 @@
+{
+ "get_info": {
+  "adjusted_time": 1793647598,
+  "alt_blocks_count": 0,
+  "block_size_limit": 20000000,
+  "block_size_median": 10000000,
+  "block_weight_limit": 20000000,
+  "block_weight_median": 10000000,
+  "busy_syncing": false,
+  "credits": 0,
+  "cumulative_difficulty": 1276344292193,
+  "cumulative_difficulty_top64": 0,
+  "database_size": 17861271552,
+  "difficulty": 795147,
+  "difficulty_top64": 0,
+  "free_space": 452271132672,
+  "grey_peerlist_size": 64,
+  "height": 3123260,
+  "incoming_connections_count": 16,
+  "mainnet": false,
+  "nettype": "testnet",
+  "offline": false,
+  "outgoing_connections_count": 2,
+  "restricted": false,
+  "rpc_connections_count": 1,
+  "stagenet": false,
+  "start_time": 1793647393,
+  "status": "OK",
+  "synchronized": true,
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "838ac15321b932563c2da3ee475b4bb03568d3a2fb516953cc957f708682929f",
+  "top_hash": "",
+  "tx_count": 2189622,
+  "tx_pool_size": 0,
+  "update_available": false,
+  "version": "0.19.0.0-beta.3.1-release",
+  "white_peerlist_size": 26,
+  "wide_cumulative_difficulty": "0x1292c0c5361",
+  "wide_difficulty": "0xc220b"
+ },
+ "get_version": {
+  "current_height": 3123260,
+  "hard_forks": [
+   {
+    "height": 1,
+    "hf_version": 1
+   },
+   {
+    "height": 624634,
+    "hf_version": 2
+   },
+   {
+    "height": 800500,
+    "hf_version": 3
+   },
+   {
+    "height": 801219,
+    "hf_version": 4
+   },
+   {
+    "height": 802660,
+    "hf_version": 5
+   },
+   {
+    "height": 971400,
+    "hf_version": 6
+   },
+   {
+    "height": 1057027,
+    "hf_version": 7
+   },
+   {
+    "height": 1057058,
+    "hf_version": 8
+   },
+   {
+    "height": 1057778,
+    "hf_version": 9
+   },
+   {
+    "height": 1154318,
+    "hf_version": 10
+   },
+   {
+    "height": 1155038,
+    "hf_version": 11
+   },
+   {
+    "height": 1308737,
+    "hf_version": 12
+   },
+   {
+    "height": 1543939,
+    "hf_version": 13
+   },
+   {
+    "height": 1544659,
+    "hf_version": 14
+   },
+   {
+    "height": 1982800,
+    "hf_version": 15
+   },
+   {
+    "height": 1983520,
+    "hf_version": 16
+   },
+   {
+    "height": 3102800,
+    "hf_version": 17
+   },
+   {
+    "height": 3103520,
+    "hf_version": 18
+   }
+  ],
+  "release": true,
+  "status": "OK",
+  "target_height": 0,
+  "version": 196626
+ },
+ "hard_fork_info": {
+  "credits": 0,
+  "earliest_height": 3103520,
+  "enabled": true,
+  "state": 0,
+  "status": "OK",
+  "threshold": 0,
+  "top_hash": "",
+  "version": 18,
+  "votes": 10080,
+  "voting": 18,
+  "window": 10080
+ }
+}
