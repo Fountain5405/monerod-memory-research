@@ -1,13 +1,14 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-02 22:20
+Last updated: 2026-11-02 22:25
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
 
 ## Currently running
 - E004a DONE: -39.6% peak anon (median 5,614 → 3,393 MB), -10.9% wall time, all hashes match.
-- **Chained** (scripts/chain_e004c.sh): after the E005 chain, build ~/work/monero-fcmp-e004c (batch verify capped at physical cores), then A/B base vs e004c. Marker: CHAIN_E004C_COMPLETE at the end of ~/work/research-artifacts/E004c.chain.
+- **E004c A/B RUNNING** (build OK, sha256 fbba9f8a…): base vs e004c, 3 rounds. Marker: CHAIN_E004C_COMPLETE at the end of ~/work/research-artifacts/E004c.chain; data in ~/work/research-artifacts/E004c/results.csv.
+- **E006 queued** (scripts/e006_profile.sh starts automatically after E004c): perf profile of the window. Marker: E006_COMPLETE at the end of ~/work/research-artifacts/E006/summary.txt.
 - E005 DONE (no effect; rejected).
 - Snapshots: stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
