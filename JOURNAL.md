@@ -26,3 +26,5 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Env: glibc 2.39, gcc 13.3, THP=madvise, nr_hugepages=0 (RandomX LARGE_PAGES attempt falls back), ptrace_scope=1 (heaptrack -p needs sudo), overcommit=0.
 - 12:20 stagenet_sync_baseline: height /, anon 994 MB, peak anon so far 1475 MB
 - 12:20 stressnet_sync_beta31: height 404461/3123061, anon 156 MB, peak anon so far 156 MB
+- Stagenet (master) anon: 217 MB @105k -> ~1.45 GB peak @139-146k -> 994 MB @183k. Transient spike, not a leak; it falls back after the heavy stretch. Peak is the metric that sets the RAM a node needs. FINDINGS F2 updated.
+- Harness bug: 30/192 stagenet samples have an empty height (get_info curl -m 5 times out while the node is busy). Memory columns are unaffected. Fix for the next sampler version: read the height from the "Synced N/M" log line as a fallback. The running sampler is left unchanged so the trace stays continuous.
