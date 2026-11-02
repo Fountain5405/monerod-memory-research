@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-02 21:55
+Last updated: 2026-11-02 22:20
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -8,7 +8,7 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 ## Currently running
 - E004a DONE: -39.6% peak anon (median 5,614 → 3,393 MB), -10.9% wall time, all hashes match.
 - **Chained** (scripts/chain_e004c.sh): after the E005 chain, build ~/work/monero-fcmp-e004c (batch verify capped at physical cores), then A/B base vs e004c. Marker: CHAIN_E004C_COMPLETE at the end of ~/work/research-artifacts/E004c.chain.
-- **Chained** (scripts/chain_e005.sh): after E004a, build ~/work/monero-fcmp-e005 (LinComb shrink_to_fit), then A/B base vs e005 (3 rounds, default concurrency, same window). Marker: CHAIN_E005_COMPLETE at the end of ~/work/research-artifacts/E005.chain; data in ~/work/research-artifacts/E005/results.csv.
+- E005 DONE (no effect; rejected).
 - Snapshots: stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
 ## Queue (do the first item that is unblocked)
@@ -17,7 +17,9 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 1c. (DONE 21:15: model B, per-thread working set ~170-270 MB) **E003 analysis**: model A (peak flat across C, so bound proofs per verify batch, i.e. sub-batch to K proofs) vs model B (peak ∝ C, so a shared circuit or a cap on concurrent verifications). Then design the first memory fix (E004), on a branch in a copy of the source like monero-fcmp-e001fix, and A/B it (>=3 alternating runs, same window, peak RssAnon + wall time + end hash).
 1d. (DONE 21:45, CONFIRMED -39.6%) **E004a analysis:** if c12 cuts peak >=30% with wall time within ~10% across 3 rounds, prototype a TARGETED change: FCMP++ batch verify uses min(threadpool size, physical cores, or a configurable cap) instead of the global --max-concurrency, and A/B that build against baseline.
 1f. After E004c and E005: a COMBINED build (E001 fix + E004c + E005 if it helps), then a final A/B vs baseline (>=3 rounds) and a min-cgroup-memory test (scripts/min_mem.sh, still to write). Also test a full-chain resync from the wedge snapshot to the tip with the combined build, checking hash and peak.
-1e. (E005 is the first E004b step; RUNNING via chain) **E004b:** read the Rust verifier code (scout results); find what makes ~200 MB per verifier (divisor_challenge_eval, LinComb Vec growth); prototype a reduction (exact capacity, reuse buffers across proofs, a compact representation, dropping per-proof state earlier); build; A/B.
+1g. **E006 CPU profile** (after E004c; quiet box): `perf record` (flat, -F 199) on the baseline node over the window. Classify self time into circuit construction (LinComb ops/term/add/sub/mul, divisor_challenge_eval, BTreeMap, malloc/free/memcpy) vs curve math/multiexp/IPA. This prices E007.
+1h. **E007 streaming verifier (design + prototype):** Circuit modes {Store, Discard, Accumulate(z)}. Fcmp::verify keeps a clone T0 of the transcript at the start of the build. Pass 1 discards both circuits on the real transcript. Split ArithmeticCircuitStatement::verify into (a) read AI/AO/S and derive y,z, then (b) verify with pre-accumulated weights (l/r/o/cg/V weights plus the constant). Pass 2 replays the build on a clone of T0, accumulating c1 with z1; pass 3 does the same for c2. Gadget code is unchanged. Expected: per-verifier memory ~200 MB -> a few MB, at +2x the circuit-building CPU share. Needs careful equivalence testing (same accept/reject on valid AND tampered proofs).
+1e. (DONE: E005 rejected) **E004b:** read the Rust verifier code (scout results); find what makes ~200 MB per verifier (divisor_challenge_eval, LinComb Vec growth); prototype a reduction (exact capacity, reuse buffers across proofs, a compact representation, dropping per-proof state earlier); build; A/B.
 2. (DONE: E002b) If E002a did not reproduce the multi-GB jump: run **E002b**. Copy the synced snapshot to a working dir, pop back to < 3,102,800 (RPC `pop_blocks` on our own node), save that as snapshot `stressnet_preHF17_h<H>`, then replay the window under heaptrack (`--block-sync-size 5` because of E001).
 3. Build the A/B harness `scripts/run_window.sh`: restore a snapshot, sync to a fixed end height from .22, check our block hash at the end height against .22 (get_block_header_by_height), and record peak/steady anon, wall time, and disk I/O (/proc/PID/io). Add `scripts/min_mem.sh`: a binary search over a systemd-run scope MemoryMax for the smallest limit that completes within 1.1x the unconstrained wall time.
 4. Baseline the window: 3 runs of beta31 (median and spread). This is the number the 40% is measured against.

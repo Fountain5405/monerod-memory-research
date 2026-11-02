@@ -18,4 +18,21 @@
 **Measurement plan:** scripts/ab_window.sh, arms `base` (beta31) vs `e005`, default concurrency (24), window 3,105,401→3,105,441, 3 alternating rounds. Metrics: peak RssAnon, Private_Dirty, wall time, io, end hash vs .22.
 **Prediction:** peak 5.4 GB → ~4.0-4.6 GB; wall time within ±5%.
 
-**Results:** (pending)
+**Results (2026-11-02 21:55-22:10, 3 alternating rounds, default concurrency, every end hash = .22):**
+
+| round | arm | peak RssAnon MB | peak RSS MB | wall s |
+|---|---|---|---|---|
+| 1 | base | 5,350 | 6,120 | 222 |
+| 1 | e005 | 5,235 | 5,948 | 220 |
+| 2 | e005 | 5,380 | 6,278 | 221 |
+| 2 | base | 5,564 | 6,407 | 220 |
+| 3 | base | 5,278 | 6,360 | 219 |
+| 3 | e005 | 5,499 | 6,493 | 218 |
+
+Median peak RssAnon: base 5,350 (5,278-5,564) vs e005 5,380 (5,235-5,499). Wall 220 vs 220 s.
+
+**Conclusion: no effect; hypothesis rejected.** The ranges overlap completely. Term-vector growth slack is not a meaningful part of the per-verifier working set.
+
+**Why (follow-up reading of the E002b peak stacks; folded order confirmed root to leaf):** the largest single stack (310 MB) is growth of the `constraints: Vec<LinComb>` itself in `Circuit::mul` (`member_of_list > mul > grow_one`). `mul` pushes two constraints per gate (a - l, b - r), each a ~200-byte LinComb struct with its own small term-vector allocations; the big WCG divisor-evaluation constraints come on top. Next: a second mul/grow_one stack (151 MB), LinComb add growth (6 x 89 MB), term/BTreeMap insert (82 MB). So the memory is in the NUMBER of stored constraints and terms, not in their slack.
+
+**Implication:** the per-verifier working set can only be cut structurally (not storing the circuit: E007 multi-pass streaming) or bounded by concurrency (E004c). E006 (CPU profile) prices the multi-pass design first.

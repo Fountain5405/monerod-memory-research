@@ -102,3 +102,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - E004a (3 alternating rounds, c24 vs c12): median peak RssAnon 5,614 → 3,393 MB (**-39.6%**), RSS 6,434 → 4,481 MB, wall 221 → 197 s (-10.9%), disk writes unchanged (~466 MB), every end hash = .22. Full table: experiments/E004-verify-concurrency/README.md, evidence/E004a/.
 - E004c: targeted patch in rct::batchVerifyFcmpPpProofs, min(pool, boost::thread::physical_concurrency()) batches (commit 2e80c0685 in ~/work/monero-fcmp-e004c; evidence/E004c.diff). rctSigs.cpp syntax-checked with the baseline compile command. Build + A/B chained after the E005 chain (so no build runs during the E005 timing runs).
 - The waiter task "failed" with exit 1 only because its final `grep SIGKILL|FAILED` matched nothing. Harmless.
+
+## 2026-11-02 22:20 E005 rejected; per-verifier working set analysed; next E006/E007
+- E005 A/B: median peak 5,350 (base) vs 5,380 MB (e005); wall 220 vs 220 s. No effect.
+- Peak-stack reading: the biggest stack is growth of `constraints: Vec<LinComb>` in Circuit::mul (two constraints per gate). The working set is the constraint/term COUNT. Options: bound concurrency (E004c, in progress) or stop storing the circuit (E007, a multi-pass streaming verifier). E006 will first measure the CPU share of circuit building.
+- Process slip: another ssh-quoting failure (an apostrophe in a heredoc inside ssh '...'). Nothing executed. Re-done via a script file (scripts/record_e005.sh). Rule reaffirmed: prose goes into files, never into ssh one-liners.
