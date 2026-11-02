@@ -1,0 +1,23 @@
+#!/bin/bash
+# E002b: heaptrack of the beta31 node syncing the window just after 3,105,401 (where anon jumps to ~5 GB).
+# 1) rewind ~/work/chains/stressnet to 3,105,401 (pop_to.sh v2); 2) run under heaptrack for DUR s with
+# --block-sync-size 5; 3) print the peak consumers. Last line of ~/work/research-artifacts/E002b.done is DONE.
+set -u
+DUR=${1:-420}
+BIN=/home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+DD=/home/optimizer/work/chains/stressnet
+OUT=~/work/research-artifacts/E002b.done
+A=~/work/research-artifacts/E002b-window
+echo "e002b start $(date -Is) dur=$DUR" > $OUT
+~/work/research/scripts/pop_to.sh $BIN $DD 3105401 ~/work/research-artifacts/E002b-pop.log
+tail -1 ~/work/research-artifacts/E002b-pop.log >> $OUT
+if ! tail -1 ~/work/research-artifacts/E002b-pop.log | grep -q "RESULT OK"; then echo "pop failed" >> $OUT; echo DONE >> $OUT; exit 1; fi
+~/work/research/scripts/run_heaptrack.sh E002b-window $DUR $BIN $DD --block-sync-size 5
+tail -3 $A/run.txt >> $OUT
+f=$(ls $A/heaptrack.*.zst | head -1)
+heaptrack_print -f $f --print-peaks 1 --print-allocators 0 --print-temporary 0 --print-leaks 0 --print-histogram 0 --peak-limit 15 -s 0 > $A/peaks.txt 2>/dev/null
+heaptrack_print -f $f --print-peaks 0 --print-allocators 0 --print-temporary 0 --print-leaks 1 --print-histogram 0 --peak-limit 10 -s 0 > $A/leaks.txt 2>/dev/null
+tail -8 $A/peaks.txt >> $OUT
+awk -F, 'NR>1 && $6>m {m=$6; h=$2} END {print "sampler peak RssAnon MB:", int(m/1024), "at height", h}' $A/mem.csv >> $OUT
+awk -F, 'NR>1 && $2!="" {last=$2} END {print "last height:", last}' $A/mem.csv >> $OUT
+echo DONE >> $OUT

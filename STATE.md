@@ -1,16 +1,16 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-02 20:00 (session start of autonomous mode)
+Last updated: 2026-11-02 20:30
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
 
 ## Currently running
-- **E002a**: heaptrack of the synced beta31 node after restart, 600 s from 19:52 UTC. Artifacts: ~/work/research-artifacts/E002a-restart-synced/ (run.txt ends with "DONE" when finished).
-  Check: `tail -3 ~/work/research-artifacts/E002a-restart-synced/run.txt; tail -2 .../mem.csv`
+- **E002b**: heaptrack of the beta31 node syncing from 3,105,401 (`--block-sync-size 5`, 420 s), started 20:27 by scripts/e002b.sh. Summary file ~/work/research-artifacts/E002b.done (last line DONE); artifacts in ~/work/research-artifacts/E002b-window/ (peaks.txt, leaks.txt, mem.csv).
+- Snapshots: stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401 (E001 repro / E002 start state). The working DB ~/work/chains/stressnet can be rewound with scripts/pop_to.sh (v2: keep_txs=false).
 
 ## Queue (do the first item that is unblocked)
-1. Analyze E002a: `heaptrack_print -f <file>.zst` (peak consumers, allocated/leaked); compare heaptrack's peak heap with RssAnon from mem.csv (tests H3, allocator retention). Write the Results section in experiments/E002-attribute-heap/README.md.
+1. (DONE 20:20: E002a, 316 MB, RandomX 89%, no jump without tx verification.) Analyze E002b: `heaptrack_print -f <file>.zst` (peak consumers, allocated/leaked); compare heaptrack's peak heap with RssAnon from mem.csv (tests H3, allocator retention). Write the Results section in experiments/E002-attribute-heap/README.md.
 2. If E002a did not reproduce the multi-GB jump: run **E002b**. Copy the synced snapshot to a working dir, pop back to < 3,102,800 (RPC `pop_blocks` on our own node), save that as snapshot `stressnet_preHF17_h<H>`, then replay the window under heaptrack (`--block-sync-size 5` because of E001).
 3. Build the A/B harness `scripts/run_window.sh`: restore a snapshot, sync to a fixed end height from .22, check our block hash at the end height against .22 (get_block_header_by_height), and record peak/steady anon, wall time, and disk I/O (/proc/PID/io). Add `scripts/min_mem.sh`: a binary search over a systemd-run scope MemoryMax for the smallest limit that completes within 1.1x the unconstrained wall time.
 4. Baseline the window: 3 runs of beta31 (median and spread). This is the number the 40% is measured against.
