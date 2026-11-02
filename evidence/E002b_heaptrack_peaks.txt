@@ -1,0 +1,88 @@
+reading file "/home/optimizer/work/research-artifacts/E002b-window/heaptrack.E002b-window.zst" - please wait, this might take some time...
+Debuggee command was: /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod --testnet --data-dir /home/optimizer/work/chains/stressnet --add-exclusive-node 192.168.1.22:28080 --non-interactive --no-igd --rpc-bind-ip 127.0.0.1 --log-file /home/optimizer/work/research-artifacts/E002b-window/monerod.log --log-level 0 --block-sync-size 5
+finished reading file, now analyzing data:
+
+PEAK MEMORY CONSUMERS
+3.45G peak memory consumed over 147743483 calls from
+_RNvMs5_NtCsgFX3jaOk65H_5alloc7raw_vecNtB5_11RawVecInner11finish_growCshRh1zVygSxd_12fcmp_pp_rust
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 3.45G from 1054 other places
+
+377.36M peak memory consumed over 57805614 calls from
+_RNvMs4_NtNtNtNtCsgFX3jaOk65H_5alloc11collections5btree3map5entryINtB5_11VacantEntryjINtNtBd_3vec3VecTjNtNtCs4l1FnSPSMGy_14dalek_ff_group5field12FieldElementEEE12insert_entryCshRh1zVygSxd_12fcmp_pp_rust
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 377.36M from 468 other places
+
+268.44M peak memory consumed over 121 calls from
+randomx::AlignedAllocator<>::allocMemory(unsigned long)
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 268.44M from 7 other places
+
+249.80M peak memory consumed over 6337936 calls from
+_RNvXs3_NtCsliIeayJMtsC_24generalized_bulletproofs7lincombINtB5_7LinCombNtNtCs4l1FnSPSMGy_14dalek_ff_group5field12FieldElementEINtNtNtCskADBYZwJmSU_4core3ops5arith3SubRBT_E3subCshRh1zVygSxd_12fcmp_pp_rust
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 249.80M from 62 other places
+
+146.69M peak memory consumed over 29222 calls from
+mdb_page_malloc
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 146.69M from 69 other places
+
+81.34M peak memory consumed over 3132 calls from
+cryptonote::tx_blob_entry* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, cryptonote::tx_blob_entry*)
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 81.34M from 3 other places
+
+63.41M peak memory consumed over 691772 calls from
+_RNvXs3_NtCsliIeayJMtsC_24generalized_bulletproofs7lincombINtB5_7LinCombNtNtCseHA243GNi9x_11helioselene5field16HelioseleneFieldEINtNtNtCskADBYZwJmSU_4core3ops5arith3SubRBT_E3subCshRh1zVygSxd_12fcmp_pp_rust
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 63.41M from 8 other places
+
+54.25M peak memory consumed over 59 calls from
+epee::net_utils::buffer::append(void const*, unsigned long)
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 54.25M from 1 other places
+
+51.43M peak memory consumed over 188392 calls from
+_RINvMs3_NtCsliIeayJMtsC_24generalized_bulletproofs24arithmetic_circuit_proofINtB6_26ArithmeticCircuitStatementNtNtCseHA243GNi9x_11helioselene11ciphersuite6SeleneE6verifyNtNtCseuWF74LwETe_9rand_core2os5OsRngECshRh1zVygSxd_12fcmp_pp_rust
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 51.43M from 12 other places
+
+48.81M peak memory consumed over 10223 calls from
+void std::__cxx11::basic_string<>::_M_construct<>(char*, char*, std::forward_iterator_tag) [clone .isra.0]
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 48.81M from 395 other places
+
+42.47M peak memory consumed over 820 calls from
+_RNvMs1_NtCsliIeayJMtsC_24generalized_bulletproofs24arithmetic_circuit_proofINtB5_26ArithmeticCircuitStatementNtNtCseHA243GNi9x_11helioselene11ciphersuite6SeleneE13yz_challengesCshRh1zVygSxd_12fcmp_pp_rust
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 42.47M from 2 other places
+
+26.00M peak memory consumed over 1640 calls from
+_RNvMs7_NtCsliIeayJMtsC_24generalized_bulletproofs13scalar_vectorINtB5_12ScalarVectorNtNtCs4l1FnSPSMGy_14dalek_ff_group5field12FieldElementE6powersCshRh1zVygSxd_12fcmp_pp_rust
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 26.00M from 4 other places
+
+23.60M peak memory consumed over 50900622 calls from
+_RNvMs5_NtCsliIeayJMtsC_24generalized_bulletproofs7lincombINtB5_7LinCombNtNtCs4l1FnSPSMGy_14dalek_ff_group5field12FieldElementE4termCshRh1zVygSxd_12fcmp_pp_rust
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 23.60M from 420 other places
+
+18.88M peak memory consumed over 6 calls from
+_RNCNvCs9kNG860oi1_21monero_fcmp_plus_plus11FCMP_PARAMS0B3_
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 18.88M from 6 other places
+
+12.58M peak memory consumed over 131076 calls from
+_RNvYNCNvCs9kNG860oi1_21monero_fcmp_plus_plus22SELENE_FCMP_GENERATORS0INtNtNtCskADBYZwJmSU_4core3ops8function6FnOnceuE9call_onceB6_
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+  and 12.58M from 6 other places
+
+
+total runtime: 450.78s.
+calls to allocation functions: 359316557 (797096/s)
+temporary memory allocations: 83737977 (185761/s)
+peak heap memory consumption: 4.99G
+peak RSS (including heaptrack overhead): 6.44G
+total memory leaked: 518.43M
+suppressed leaks: 4.89K

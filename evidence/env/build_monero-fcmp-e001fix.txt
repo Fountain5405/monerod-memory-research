@@ -1,0 +1,2 @@
+67c33a8b0e46d20207ca64eb052f825d427440a1d6c5725dfb1584263c1dd3b8  /home/optimizer/work/monero-fcmp-e001fix/build/beta31-e001fix/bin/monerod
+7dacc3156 cryptonote_core: cap adaptive block sync size by the block weight limit
