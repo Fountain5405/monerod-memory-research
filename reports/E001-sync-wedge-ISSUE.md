@@ -55,9 +55,66 @@ Nodes that were online while these blocks were mined received them one at a time
 ## Workaround
 Run with `--block-sync-size N` using a small N (5 worked) while syncing through such a stretch.
 
-## Possible fixes (for discussion)
+## Proposed fix (prototype, tested)
+Bound the adaptive batch by the consensus block weight limit, so that `N × block_weight_limit` stays within 90% of the levin packet limit. It is forward-looking (independent of the blocks we already have) and deterministic (it does not depend on why a connection dropped). An explicit `--block-sync-size` is left as is.
+
+```diff
+--- a/src/cryptonote_core/cryptonote_core.cpp
++++ b/src/cryptonote_core/cryptonote_core.cpp
+@@ -39,6 +39,7 @@ using namespace epee;
+ #include <unordered_set>
+ #include <thread>
+ #include "cryptonote_core.h"
++#include "net/levin_base.h"
+ #include "common/util.h"
+ #include "common/updates.h"
+ #include "common/download.h"
+@@ -958,6 +959,25 @@ namespace cryptonote
+         res = batch_max_weight / projected_blocksize;
+         MINFO("projected blocksize is " << projected_blocksize << " bytes, sync " << res << " blocks in next batch");
+       }
++
++      // The estimate above only looks backward, at blocks we already have. After a run of
++      // near-empty blocks it asks for BLOCKS_MAX_WINDOW blocks even if the next blocks are
++      // large, and the peer's NOTIFY_RESPONSE_GET_OBJECTS can then exceed the levin packet
++      // limit: the connection is dropped and the same request is retried forever.
++      // Bound the request by the consensus block weight limit instead: a block's serialized
++      // size does not exceed its weight, so N blocks at the limit fit in N * limit bytes
++      // (plus small per-block/per-tx overhead, covered by the 10% margin).
++      const uint64_t weight_limit = m_blockchain_storage.get_current_cumulative_block_weight_limit();
++      if (weight_limit > 0)
++      {
++        const uint64_t budget = LEVIN_DEFAULT_MAX_PACKET_SIZE / 10 * 9;
++        const size_t cap = std::max<uint64_t>(1, budget / weight_limit);
++        if (res > cap)
++        {
++          MINFO("capping block sync size from " << res << " to " << cap << " blocks (block weight limit " << weight_limit << " bytes)");
++          res = cap;
++        }
++      }
+     }
+ 
+     static size_t max_block_size = 0;
+```
+
+**Test** (same wedge state at 3,105,401, single peer at the tip, 90 s per run, both runs with the patched binary):
+
+| run | settings | height after 90 s | oversize errors | cap applied | end block hash matches peer |
+|---|---|---|---|---|---|
+| bug | defaults | 3,105,431 (+30) | 0 | `capping block sync size from 100 to 4 blocks (block weight limit 20000000 bytes)` (7x) | yes |
+| control | `--block-sync-size 5` | 3,105,431 (+30) | 0 | no (explicit size) | yes |
+
+With the unpatched binary the default-settings run stays at 3,105,401 indefinitely (table above). A longer default-settings run of the patched binary went from 3,105,401 to 3,106,475 (+1,074 blocks) in ~7 min with 0 oversize errors.
+
+**Trade-offs and assumptions:**
+- The cap applies only while the block weight limit is large. On stressnet (limit 20 MB) it allows 4 blocks per request. Through this heavy window throughput was unchanged (verification-bound: 30 blocks / 90 s in both runs). During long empty stretches it means more round trips per block than the 100-block batches; requests to several peers still run in parallel.
+- On mainnet, with a block weight limit around 600 kB, the cap works out to ~150 blocks, above `BLOCKS_MAX_WINDOW` (100), so behavior is unchanged.
+- The cap relies on a block's serialized size (block blob + tx blobs + small framing) not exceeding its weight by more than the 10% margin. Measured on FCMP++ blocks: 0.82-0.84 bytes per unit of weight. For other tx versions I believe weight ≥ size by construction (clawback); please confirm.
+- The limit is read at the current tip; it could rise within a 4-block batch. The 10% margin absorbs a small rise, and the backoff below would make this airtight.
+
+## Other possible fixes (complementary)
 1. **Back off on failure:** if a span request fails (the connection is dropped while waiting on it, or the packet is oversize), halve the block count for that retry, down to 1.
-2. **Forward-looking bound:** also cap the count by the consensus maximum allowed block weight at that height, `N <= floor(budget / max_block_weight_limit)`, with the budget below the packet limit. This bounds the response size as long as a block's serialized size never exceeds its weight. It costs smaller batches during empty stretches when the limit is high.
+2. **Forward-looking bound:** this is the proposed fix above.
 3. **Byte cap on the responder:** stop adding blocks once the response would exceed a budget, and send fewer. This requires the requester to accept partial responses (not checked).
 4. **Visibility:** log oversize-packet disconnects at a level that is visible by default, ideally with the command name.
 

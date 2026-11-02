@@ -1,0 +1,7 @@
+repro_e001 v3 start 2026-11-02T20:48:59+00:00 bin=/home/optimizer/work/monero-fcmp-e001fix/build/beta31-e001fix/bin/monerod datadir=/home/optimizer/work/chains/stressnet secs=90
+67c33a8b0e46d20207ca64eb052f825d427440a1d6c5725dfb1584263c1dd3b8  /home/optimizer/work/monero-fcmp-e001fix/build/beta31-e001fix/bin/monerod
+[bug] args='' start_height=3105401 end_height(log)=3105431 blocks=30 in 90s | tip_after_stop(height match hash)=3105432 yes 1e7f34915ba1e807a739ae292342d5dce99fbf480c50a47a32c7317f9c147a01 | oversize_errors=0 request_objects=11 cap_lines=7 first_cap='capping block sync size from 100 to 4 blocks (block weight limit 20000000 bytes)' | peak_RssAnon_MB=5341 | oversize_sizes(count size)=
+  [bug] rewind: RESULT OK height 3105401
+[control] args='--block-sync-size 5' start_height=3105401 end_height(log)=3105431 blocks=30 in 90s | tip_after_stop(height match hash)=3105431 yes e40adc2536c01a285b558ef78a5beec46ed76b738c5c394eea13c8b30589537a | oversize_errors=0 request_objects=7 cap_lines=0 first_cap='' | peak_RssAnon_MB=4938 | oversize_sizes(count size)=
+  [control] rewind: RESULT OK height 3105401
+REPRO_COMPLETE
