@@ -20,3 +20,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 
 ## Backlog (later phases)
 - WALLET (owner: "eventually do the wallet as well", daemon first): fcmp_pp/tree_cache.h LeafCache / TreeElemCache / locked-output maps have no explicit bound found (tree_cache.h:120-129). Profile wallet2 refresh memory after daemon work.
+
+## 2026-11-02 12:2x research repo
+- Owner asked to treat this as a full research project with notes and evidence. Created git repo ~/work/research (README: metrics/guardrails; FINDINGS; experiments/E000; scripts; evidence/env). Mirror on the control box: ~/research-mirror.
+- Env: glibc 2.39, gcc 13.3, THP=madvise, nr_hugepages=0 (RandomX LARGE_PAGES attempt falls back), ptrace_scope=1 (heaptrack -p needs sudo), overcommit=0.
+- 12:20 stagenet_sync_baseline: height /, anon 994 MB, peak anon so far 1475 MB
+- 12:20 stressnet_sync_beta31: height 404461/3123061, anon 156 MB, peak anon so far 156 MB
