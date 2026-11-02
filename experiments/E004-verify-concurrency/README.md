@@ -48,3 +48,24 @@ Median peak RssAnon: base 5,600 vs e004c 5,527 MB (-1.3%, ranges overlap). Wall:
 ## E004d: E004c + arenas capped at physical cores (prepared 22:38; build + A/B chained after E006)
 - Tree ~/work/monero-fcmp-e004d, branch e004d-arenas-physical-cores (19e2a7db8 on top of 2e80c0685). `limitMaxMemArenas()` uses min(pool size, physical cores). Diff vs beta31: evidence/E004d.diff.
 - Prediction: peak RssAnon ≈ E004a c12 (~3.4 GB), wall ≈ 200 s.
+
+**Results E004d (2026-11-02 22:45-23:05, 3 alternating rounds, default settings, every end hash = .22):**
+
+| round | arm | peak RssAnon MB | peak RSS MB | wall s |
+|---|---|---|---|---|
+| 1 | base | 5,108 | 6,021 | 222 |
+| 1 | e004d | 5,146 | 6,085 | 197 |
+| 2 | e004d | 4,991 | 5,831 | 197 |
+| 2 | base | 5,601 | 6,634 | 220 |
+| 3 | base | 5,622 | 6,611 | 220 |
+| 3 | e004d | 5,360 | 6,311 | 199 |
+
+Median peak RssAnon: base 5,601 vs e004d 5,146 MB (-8%; ranges partly overlap: base min 5,108 < e004d max 5,360). Wall 220 → 197 s (-10%).
+
+**Prediction failed.** Capping the arena count does not stop retention. With 24 pool threads sharing 12 arenas, two concurrently verifying threads can land in the same arena, whose high-water mark then becomes two working sets; total retention stays near 24 working sets. The variable that matters is how many distinct threads ever run FCMP++ work (E004a's --max-concurrency 12 made that 12), not the arena count. Evidence for retention as the mechanism: E000's idle node held 3.9 GB anon after sync, and a restart (E002a) brought it to 0.32 GB.
+
+## E004e: E004c + malloc_trim(0) after each FCMP++ batch verification (prepared 23:15)
+- Tree ~/work/monero-fcmp-e004e, branch e004e-malloc-trim (3ffb58c77 on top of 2e80c0685). `malloc_trim(0)` (glibc only) right after all batches of a batchVerifyFcmpPpProofs call finish (once per block). Diff vs beta31: evidence/E004e.diff.
+- Harness v2 (scripts/ab_window.sh) adds post_idle_anon_MB: at END the peer is temporarily banned on OUR node (local RPC; the ban is lifted before stopping), and RssAnon is sampled after 45 s idle.
+- Predictions: (1) peak ≈ 12 concurrent working sets + base ≈ 3.4-3.8 GB; (2) post-idle anon ≈ restart level (~0.3-0.6 GB) instead of multi-GB; (3) wall time within a few % of e004c (the trim costs madvise + re-faulting).
+- The A/B runs once the box is quiet (after the E007 agent's cargo builds/tests).

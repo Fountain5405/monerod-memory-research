@@ -17,7 +17,7 @@ S=$OUT/summary.txt; R=$OUT/results.csv
 echo "ab_window start $(date -Is) end=$END timeout=$TO rounds=$ROUNDS arms=${#ARMS[@]}" > $S
 for a in "${ARMS[@]}"; do IFS='|' read -r l b x <<< "$a"; echo "arm $l: $b $x | $(sha256sum $b | cut -c1-16)" >> $S; done
 uptime >> $S; pgrep -fa shadow | grep -v pgrep >> $S || echo "no shadow processes" >> $S
-echo "round,arm,start_h,end_h,blocks,wall_s,peak_anon_MB,peak_privdirty_MB,peak_rss_MB,read_MB,write_MB,tip_height,hash_match" > $R
+echo "round,arm,start_h,end_h,blocks,wall_s,peak_anon_MB,peak_privdirty_MB,peak_rss_MB,read_MB,write_MB,tip_height,hash_match,post_idle_anon_MB" > $R
 
 wait_rpc() { for i in $(seq 1 120); do curl -s -m 3 http://127.0.0.1:$PORT/get_height | grep -q '"height"' && return 0; sleep 1; done; return 1; }
 log_height() { grep -oE "Synced [0-9]+/[0-9]+" "$1" | tail -1 | cut -d' ' -f2 | cut -d/ -f1; }
@@ -65,14 +65,20 @@ for r in $(seq 1 $ROUNDS); do
     done
     t1=$(date +%s)
     io_r=$(awk '/^read_bytes/{print int($2/1048576)}' /proc/$MP/io 2>/dev/null); io_w=$(awk '/^write_bytes/{print int($2/1048576)}' /proc/$MP/io 2>/dev/null)
+    # v2: post-window idle memory. Temporarily ban the peer on OUR node (local RPC only) so it stops
+    # receiving blocks, let in-flight blocks finish, sample RssAnon, then lift the ban before stopping.
+    curl -s -m 30 http://127.0.0.1:$PORT/json_rpc -d '{"jsonrpc":"2.0","id":0,"method":"set_bans","params":{"bans":[{"host":"192.168.1.22","ban":true,"seconds":900}]}}' > /dev/null
+    sleep 45
+    post=$(awk '/^RssAnon:/{print int($2/1024)}' /proc/$MP/status 2>/dev/null)
+    curl -s -m 30 http://127.0.0.1:$PORT/json_rpc -d '{"jsonrpc":"2.0","id":0,"method":"set_bans","params":{"bans":[{"host":"192.168.1.22","ban":false}]}}' > /dev/null
     stop_node $MP
     sleep 3
     pa=$(awk -F, 'NR>1 && $6>m {m=$6} END {print int(m/1024)}' $OUT/$tag.mem.csv)
     pd=$(awk -F, 'NR>1 && $11>m {m=$11} END {print int(m/1024)}' $OUT/$tag.mem.csv)
     pr=$(awk -F, 'NR>1 && $5>m {m=$5} END {print int(m/1024)}' $OUT/$tag.mem.csv)
     tip=$(check_tip $BIN)
-    echo "$r,$L,$h0,$h,$(( h - ${h0:-0} )),$(( t1 - t0 )),$pa,$pd,$pr,${io_r:-},${io_w:-},${tip% *},${tip#* }" >> $R
-    echo "[$tag] $EXTRA -> h=$h wall=$((t1 - t0))s peak_anon=${pa}MB tip=$tip" >> $S
+    echo "$r,$L,$h0,$h,$(( h - ${h0:-0} )),$(( t1 - t0 )),$pa,$pd,$pr,${io_r:-},${io_w:-},${tip% *},${tip#* },${post:-}" >> $R
+    echo "[$tag] $EXTRA -> h=$h wall=$((t1 - t0))s peak_anon=${pa}MB post_idle_anon=${post:-?}MB tip=$tip" >> $S
   done
 done
 echo AB_COMPLETE >> $S

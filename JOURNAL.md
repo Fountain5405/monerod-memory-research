@@ -122,3 +122,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 ## 2026-11-02 23:00-23:10 E007 feasibility: FEASIBLE WITH CHANGES; implementation started
 - Plan-agent review (details in experiments/E007-streaming-verifier/README.md): the transcript is trivially cloneable; circuit building only derives challenges (no proof reads); constraints are deterministic; validation can be done per constraint; and no transcript op after (y, z) depends on the folded weights. That allows a 2-build plan (Discard build on the real transcript; both statements' transcript phases; one replay build on a clone folding c1 and c2; apply). Expected: per-verifier ~200 MB → O(n) dense vectors; ~+5% CPU.
 - Implementation delegated to an agent with a strict spec (soundness guards, determinism checks, bounds checks, equivalence/rejection tests). It must not compile until the E004d timing runs finish. My diff review is mandatory before any monerod build.
+
+## 2026-11-02 23:05-23:20 E004d: arena cap not enough; E004e (malloc_trim) prepared
+- E004d A/B: median peak 5,601 (base) → 5,146 MB (-8%), wall 220 → 197 s. The prediction (≈3.4 GB) failed: with 24 threads on 12 arenas, co-located working sets keep total retention near 24 working sets.
+- The retention hypothesis is still consistent with everything (E000: 3.9 GB idle after sync; E002a: 0.32 GB after a restart). Direct test: E004e = E004c + malloc_trim(0) once per block after FCMP++ batch verification. Harness v2 adds a post-window idle RssAnon measurement (local temporary ban of the peer on our own node, lifted afterwards).
+- Owner pinged with the E004d result (terminal notification; Remote Control inactive).
+- Process slip (23:10): nested heredocs with the same `EOF` delimiter truncated a script; its tail ran harmlessly on the control box. Fixed by committing the partial edits. Rule: unique heredoc delimiters, or write files with the editor tool.

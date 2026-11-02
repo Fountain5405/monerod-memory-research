@@ -1,0 +1,9 @@
+chain e004d start 2026-11-02T22:39:19+00:00 tree=/home/optimizer/work/monero-fcmp-e004d wait=/home/optimizer/work/research-artifacts/E006/summary.txt:E006_COMPLETE rounds=3 extra='--block-sync-size 5'
+wait satisfied 2026-11-02T22:39:49+00:00
+BUILD_OK
+61517c0a572303fa48829e6e315e27b492c9b0155d50b8379ff105583f1b72d1  /home/optimizer/work/monero-fcmp-e004d/build/beta31-e004d/bin/monerod
+19e2a7db8 rctSigs: cap malloc arenas at physical cores too (on top of the FCMP++ batch cap)
+2e80c0685 rctSigs: cap FCMP++ batch verification at physical cores
+d80596ad1 Merge pull request #506 from xmrack/fix-tx-request-queue-cap-stressnet-v3
+A/B done 2026-11-02T23:05:10+00:00
+CHAIN_E004D_COMPLETE

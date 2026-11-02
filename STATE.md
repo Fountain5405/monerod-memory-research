@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-02 23:10
+Last updated: 2026-11-02 23:20
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -8,7 +8,8 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 ## Currently running
 - E004a DONE: -39.6% peak anon (median 5,614 → 3,393 MB), -10.9% wall time, all hashes match.
 - E004c DONE (wall -9%, RSS -1.3%: arena retention). E006 DONE (construction ~5% of CPU).
-- **E004d chain RUNNING** (scripts/chain_build_ab.sh e004d ...): build, then A/B base vs e004d, 3 rounds. Marker: CHAIN_E004D_COMPLETE at the end of ~/work/research-artifacts/e004d.chain; data in ~/work/research-artifacts/e004d/results.csv.
+- E004d DONE (-8% peak, -10% wall; arena cap is not enough).
+- **E004e build** running at nice -j4 (~/work/research-artifacts/e004e.build.log ends with BUILD_OK/BUILD_FAILED). Its A/B (base vs e004e, 3 rounds, harness v2 with post_idle_anon) must run on a QUIET box, i.e. after the E007 agent's cargo work: `scripts/ab_window.sh ~/work/research-artifacts/e004e 3105441 900 3 "base|<beta31 monerod>|--block-sync-size 5" "e004e|<e004e monerod>|--block-sync-size 5"`.
 - E005 DONE (no effect; rejected).
 - Snapshots: stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
