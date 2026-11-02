@@ -1,0 +1,7 @@
+e003 start 2026-11-02T20:52:55+00:00 end=3105440 timeout=900 concurrencies=0 4 1 12 nproc=24
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+[cdefault] args='--block-sync-size 5' reached=3105441 in 220s peak_RssAnon_MB=5400 threads=
+[c4] args='--block-sync-size 5 --max-concurrency 4' reached=3105441 in 279s peak_RssAnon_MB=2033 threads=
+[c1] args='--block-sync-size 5 --max-concurrency 1' reached=3105441 in 844s peak_RssAnon_MB=1232 threads=
+[c12] args='--block-sync-size 5 --max-concurrency 12' reached=3105441 in 199s peak_RssAnon_MB=3302 threads=
+E003_COMPLETE

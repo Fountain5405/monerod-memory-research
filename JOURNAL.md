@@ -89,3 +89,7 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Patched binary (sha256 67c33a8b…), rewind to 3,105,401 before each run, 90 s each. **bug (defaults):** 3,105,401→3,105,431 (+30), tip at stop 3,105,432 with **hash = .22**, **0 oversize errors**, 7 cap lines "capping block sync size from 100 to 4 blocks (block weight limit 20000000 bytes)". **control (--block-sync-size 5):** +30, hash = .22, 0 errors, no cap lines (explicit size respected). Peak RssAnon 5.3 / 4.9 GB (FCMP++ verification, E002).
 - Same throughput in this window (verification-bound). The issue text (reports/E001-sync-wedge-ISSUE.md) now has a "Proposed fix (prototype, tested)" section with the diff, results, trade-offs and assumptions. **Ready for the owner to paste upstream.**
 - Note: the evidence/E001/*.mem.csv files from repro v3 (bug.mem.csv, control.mem.csv) overwrote the v1 repro CSVs of the same names. The v1 copies are still in ~/work/research-artifacts/E001/repro/.
+
+## 2026-11-02 21:15 E003 concurrency sweep → model B
+- 1/4/12/24 threads: peak RssAnon 1,232 / 2,033 / 3,302 / 5,400 MB; window wall time 844 / 279 / 199 / 220 s (same 40 blocks, n=1 each). **Peak scales with concurrent verifier threads** (~170-270 MB each, on top of ~1 GB base). 12 threads (physical cores) were faster than 24. See experiments/E003-concurrency-sweep/README.md.
+- Started E004a: a 3-round alternating A/B of c24 vs c12 with the new scripts/ab_window.sh (rewind, fixed window, peak anon/private-dirty/RSS, /proc io, end-hash check from an offline restart).
