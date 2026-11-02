@@ -1,0 +1,5 @@
+repro_e001 start 2026-11-02T20:22:46+00:00 bin=/home/optimizer/work/monero-fcmp/build/beta31/bin/monerod datadir=/home/optimizer/work/chains/stressnet secs=60
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+[bug] args='' start_height=3105401 end_height=3105401 oversize_errors=59 request_objects=59 oversize_sizes(count size)=     59 134253303;
+[control] args='--block-sync-size 5' start_height=3105401 end_height= oversize_errors=0 request_objects=7 oversize_sizes(count size)=
+DONE

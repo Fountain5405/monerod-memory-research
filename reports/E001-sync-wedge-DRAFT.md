@@ -49,7 +49,16 @@ Needs a synced stressnet DB (beta.3.1) and a peer at the tip.
 4. Expected (bug): height stays at 3,105,401, and `Maximum packet size exceed! ... packet header received ~134 MB, command 2004` repeats about once a second.
 5. Control: the same start with `--block-sync-size 5` syncs through.
 
-Reproduction result: **(pending; run scheduled 2026-11-02)**
+Reproduction result (2026-11-02 20:22 UTC, `scripts/repro_e001.sh`, 60 s per run, exclusive peer at the tip):
+
+| run | settings | height start → end | oversize errors / object requests | response size |
+|---|---|---|---|---|
+| bug | defaults | 3,105,401 → 3,105,401 | 59 / 59 | 134,253,303 B every time |
+| control | `--block-sync-size 5` | 3,105,401 → 3,105,431 | 0 / 7 | none |
+
+The response size is byte-identical to the original wedge, so the failure is deterministic for this chain state. The starting DB was produced with `pop_blocks` (`keep_txs: false` after `flush_txpool`; see the note below) and verified against the peer's block hash at index 3,105,400 (`b70c9d6f…3b770`).
+
+Note for reproducers: `pop_blocks` defaults to `keep_txs: true`, which returns every popped tx to the pool. With heavy stress blocks this becomes very slow (tx_memory_pool::prune dominates; 85,841 txs had piled up after ~14k blocks) and leaves a large stale pool. Use `flush_txpool`, then `pop_blocks` with `"keep_txs": false`.
 
 ## Workaround
 `--block-sync-size N` with a small N (5 worked here) for a node syncing through such a stretch.

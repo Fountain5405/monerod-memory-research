@@ -64,3 +64,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
   - Fix in scripts/pop_to.sh v2: flush_txpool first (took ~65 s for 85,841 txs), then pop with keep_txs=false. That gives 3-6 s per 1000 blocks again.
   - Relevance: (a) this is how to rewind for experiments without a stale pool distorting memory; (b) candidate issue: pop_blocks/reorg with keep_txs on heavy blocks degrades super-linearly in tx_memory_pool::prune. Note for later; not pursued now.
 - The first E001 builder agent was stopped (it was polling the stalled pop). A new builder agent handles: wait for RESULT, then snapshot stressnet_wedge_h3105401, then repro_e001.sh (60 s bug run plus 60 s control).
+
+## 2026-11-02 20:25 E001 reproduced
+- Snapshot stressnet_wedge_h3105401 (18 GB; sha256 in evidence/ARTIFACTS.sha256), made by pop_to.sh v2 with a hash match against .22 at index 3,105,400.
+- repro_e001.sh, 60 s each: **bug** (defaults) stayed at 3,105,401 with 59/59 requests failing on 134,253,303-byte responses (byte-identical to the original wedge). **control** (--block-sync-size 5) went to 3,105,431 with 0 errors. Evidence: evidence/E001/. The report draft has been updated.
+- **Memory side result (feeds E002):** the control run went from ~0.3 GB to **4.98 GB RssAnon within 60 s / 30 blocks** (3,105,402..3,105,431, mostly near-empty plus a few ~10 MB blocks). The bug run, which processed no blocks, stayed at 306 MB. E002a (synced restart, no tx verification) stayed at 316 MB. Revised hypothesis: a one-time allocation of ~4.5 GB triggered by the first FCMP++ tx verification (per-thread or global precomputation?), not proportional to block data. E002b: heaptrack the same 30-block window from the wedge snapshot.
