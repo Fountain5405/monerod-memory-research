@@ -437,3 +437,6 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - W003 (23:10-23:21, --max-concurrency 24/12/4/1 x 3): VmHWM 1,100 / 909 / 510 / 357 MB, wall 16 / 23 / 55 / 105 s, CPU 184 / 109 / 107 / 104 s; 12/12 full refreshes. Linear in threads, 1-thread peak = live heap.
 - W004 (23:21-23:28, env arms x 3): default 1,132 MB / 15 s; MALLOC_ARENA_MAX=1 352 MB / 17 s / CPU +17%; =2 370 MB / 16 s / CPU +4%; =1 + c12 352 MB / 24 s. 12/12 full refreshes. Spread 1 MB at arena 1 vs ~190 MB default.
 - Recorded F35, F36, SUMMARY wallet + zero-code lines, READMEs, sanitized evidence (no wallet stdout/logs). Box free, governor schedutil. Owner not pinged (no named milestone; they were active in chat at 23:0x).
+
+## 2026-11-03 23:35 E021 (idle trim) launched
+- Design from E012's own note (post-idle 1,333 vs combo 1,107 MB: after the last light call nothing trims). Patch: scripts/e021_patch_idle_trim.py on a copy of the adapt tree (~/work/monero-fcmp-idle); `rct::idleTrimFcmpPp(5000)` from `core::on_idle` via a 2 s `once_a_time_seconds`; the verify path stores its timestamp before deciding its own trim so the idle trim never repeats a trim already done. Build + heavy/small A/B adapt vs idle x3 running (scripts/run_e021.sh). Handoff note refreshed (~/.claude/HANDOFF.md on the control box).
