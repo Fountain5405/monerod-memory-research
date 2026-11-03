@@ -1,0 +1,5 @@
+ts,height,target,VmHWM_kB,VmRSS_kB,RssAnon_kB,RssFile_kB,RssShmem_kB,VmSwap_kB,threads,priv_dirty_kB,height_src
+1793747231,,,13132,13132,1484,11648,0,0,1,1484,rpc
+1793747233,,,26732,26732,6152,20580,0,0,2,6156,rpc
+1793747235,,,74172,74172,38660,35512,0,0,25,38664,rpc
+# process exited Tue Nov  3 11:07:17 PM UTC 2026

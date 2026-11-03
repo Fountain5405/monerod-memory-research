@@ -1,0 +1,962 @@
+Debuggee command was: /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli --testnet --wallet-file /home/optimizer/work/research-artifacts/w002/wallets/ht --password  --daemon-address 127.0.0.1:28081 --trusted-daemon --log-file /home/optimizer/work/research-artifacts/w002/ht.wallet.log --log-level 1 --command refresh
+finished reading file, now analyzing data:
+PEAK MEMORY CONSUMERS
+114.57M peak memory consumed over 1153 calls from
+fcmp_pp::curve_trees::CurveTrees<>::outputs_to_leaves(std::vector<>&&, std::vector<>&, std::vector<>&, bool) const
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+42.92M consumed over 21 calls from:
+    fcmp_pp::curve_trees::CurveTrees<>::get_tree_extension(unsigned long, fcmp_pp::curve_trees::CurveTrees<>::LastHashes const&, std::vector<>&&, bool) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    fcmp_pp::curve_trees::TreeCache<>::prepare_to_grow_cache(unsigned long, crypto::hash const&, std::vector<> const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+28.61M consumed over 21 calls from:
+    fcmp_pp::curve_trees::CurveTrees<>::get_tree_extension(unsigned long, fcmp_pp::curve_trees::CurveTrees<>::LastHashes const&, std::vector<>&&, bool) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    fcmp_pp::curve_trees::TreeCache<>::prepare_to_grow_cache(unsigned long, crypto::hash const&, std::vector<> const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+28.61M consumed over 21 calls from:
+    fcmp_pp::curve_trees::CurveTrees<>::get_tree_extension(unsigned long, fcmp_pp::curve_trees::CurveTrees<>::LastHashes const&, std::vector<>&&, bool) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    fcmp_pp::curve_trees::TreeCache<>::prepare_to_grow_cache(unsigned long, crypto::hash const&, std::vector<> const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+14.31M consumed over 21 calls from:
+    fcmp_pp::curve_trees::CurveTrees<>::get_tree_extension(unsigned long, fcmp_pp::curve_trees::CurveTrees<>::LastHashes const&, std::vector<>&&, bool) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    fcmp_pp::curve_trees::TreeCache<>::prepare_to_grow_cache(unsigned long, crypto::hash const&, std::vector<> const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+  and 119.22K from 3 other places
+31.03M peak memory consumed over 2362665 calls from
+void std::__cxx11::basic_string<>::_M_construct<>(char*, char*, std::forward_iterator_tag) [clone .isra.0]
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+10.23M consumed over 181980 calls from:
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<> epee::serialization::throwable_buffer_reader::read_ae<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_array_entry[abi:cxx11](unsigned char)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_entry[abi:cxx11]()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::portable_storage::load_from_binary(epee::span<>, epee::serialization::portable_storage::limits_t const*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+10.23M consumed over 181980 calls from:
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_iterator<> std::_Rb_tree<>::_M_emplace_hint_unique<>(std::_Rb_tree_const_iterator<>, std::__cxx11::basic_string<>&&, boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<> epee::serialization::throwable_buffer_reader::read_ae<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_array_entry[abi:cxx11](unsigned char)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_entry[abi:cxx11]()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::portable_storage::load_from_binary(epee::span<>, epee::serialization::portable_storage::limits_t const*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+6.66M consumed over 181980 calls from:
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<> epee::serialization::throwable_buffer_reader::read_ae<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_array_entry[abi:cxx11](unsigned char)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_entry[abi:cxx11]()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::portable_storage::load_from_binary(epee::span<>, epee::serialization::portable_storage::limits_t const*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+859.31K consumed over 7203 calls from:
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<> epee::serialization::throwable_buffer_reader::read_ae<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_array_entry[abi:cxx11](unsigned char)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_entry[abi:cxx11]()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::portable_storage::load_from_binary(epee::span<>, epee::serialization::portable_storage::limits_t const*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+  and 3.05M from 445 other places
+22.89M peak memory consumed over 21 calls from
+std::vector<>::_M_default_append(unsigned long)
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+22.89M consumed over 21 calls from:
+    fcmp_pp::curve_trees::CurveTrees<>::outputs_to_leaves(std::vector<>&&, std::vector<>&, std::vector<>&, bool) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    fcmp_pp::curve_trees::CurveTrees<>::get_tree_extension(unsigned long, fcmp_pp::curve_trees::CurveTrees<>::LastHashes const&, std::vector<>&&, bool) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    fcmp_pp::curve_trees::TreeCache<>::prepare_to_grow_cache(unsigned long, crypto::hash const&, std::vector<> const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+21.92M peak memory consumed over 3744954 calls from
+std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+3.71M consumed over 381230 calls from:
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_iterator<> std::_Rb_tree<>::_M_emplace_hint_unique<>(std::_Rb_tree_const_iterator<>, std::__cxx11::basic_string<>&&, boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<> epee::serialization::throwable_buffer_reader::read_ae<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_array_entry[abi:cxx11](unsigned char)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_entry[abi:cxx11]()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::portable_storage::load_from_binary(epee::span<>, epee::serialization::portable_storage::limits_t const*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+3.71M consumed over 181980 calls from:
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_iterator<> std::_Rb_tree<>::_M_emplace_hint_unique<>(std::_Rb_tree_const_iterator<>, std::__cxx11::basic_string<>&&, boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<> epee::serialization::throwable_buffer_reader::read_ae<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_array_entry[abi:cxx11](unsigned char)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_entry[abi:cxx11]()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::portable_storage::load_from_binary(epee::span<>, epee::serialization::portable_storage::limits_t const*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+3.71M consumed over 181980 calls from:
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<> epee::serialization::throwable_buffer_reader::read_ae<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_array_entry[abi:cxx11](unsigned char)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_entry[abi:cxx11]()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::portable_storage::load_from_binary(epee::span<>, epee::serialization::portable_storage::limits_t const*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+3.71M consumed over 181980 calls from:
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Rb_tree_node<>* std::_Rb_tree<>::_M_copy<>(std::_Rb_tree_node<>*, std::_Rb_tree_node_base*, std::_Rb_tree<>::_Alloc_node&) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::section* std::__do_uninit_copy<>(__gnu_cxx::__normal_iterator<>, __gnu_cxx::__normal_iterator<>, epee::serialization::section*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::vector<>::vector(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<>::variant(boost::variant<>&&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<> epee::serialization::throwable_buffer_reader::read_ae<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_array_entry[abi:cxx11](unsigned char)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_entry[abi:cxx11]()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::portable_storage::load_from_binary(epee::span<>, epee::serialization::portable_storage::limits_t const*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+  and 7.07M from 65 other places
+19.54M peak memory consumed over 401931 calls from
+std::__cxx11::basic_string<>::_M_assign(std::__cxx11::basic_string<> const&)
+  in /lib/x86_64-linux-gnu/libstdc++.so.6
+18.86M consumed over 9241 calls from:
+    bool epee::serialization::kv_serialization_overloads_impl_is_base_serializable_types<>::kv_unserialize<>(std::__cxx11::basic_string<>&, epee::serialization::portable_storage&, epee::serialization::portable_storage::hsection, char const*) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::serialization::unserialize_stl_container_t_obj<>(std::vector<>&, epee::serialization::portable_storage&, epee::serialization::portable_storage::hsection, char const*) [clone .constprop.0] [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::serialization::unserialize_stl_container_t_obj<>(std::vector<>&, epee::serialization::portable_storage&, epee::serialization::portable_storage::hsection, char const*) [clone .constprop.0] [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::response_t::serialize_map<>(epee::serialization::portable_storage&, epee::serialization::portable_storage::hsection)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::waiter::wait() [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::refresh(bool, unsigned long, unsigned long&, bool&, bool, unsigned long) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::refresh_main(unsigned long, cryptonote::simple_wallet::ResetType, bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::on_command(bool (cryptonote::simple_wallet::*)(std::vector<> const&), std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::command_handler::process_command_vec(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    main
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+654.64K consumed over 999 calls from:
+    bool epee::serialization::kv_serialization_overloads_impl_is_base_serializable_types<>::kv_unserialize<>(std::__cxx11::basic_string<>&, epee::serialization::portable_storage&, epee::serialization::portable_storage::hsection, char const*) [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::serialization::unserialize_stl_container_t_obj<>(std::vector<>&, epee::serialization::portable_storage&, epee::serialization::portable_storage::hsection, char const*) [clone .constprop.0] [clone .isra.0]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::response_t::serialize_map<>(epee::serialization::portable_storage&, epee::serialization::portable_storage::hsection)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::waiter::wait() [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::refresh(bool, unsigned long, unsigned long&, bool&, bool, unsigned long) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::refresh_main(unsigned long, cryptonote::simple_wallet::ResetType, bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::on_command(bool (cryptonote::simple_wallet::*)(std::vector<> const&), std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::command_handler::process_command_vec(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    main
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+3.74K consumed over 1 calls from:
+    epee::command_handler::set_handler(std::__cxx11::basic_string<> const&, boost::function<> const&, std::__cxx11::basic_string<> const&, std::__cxx11::basic_string<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::simple_wallet() [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    main
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+1.37K consumed over 1 calls from:
+    epee::command_handler::set_handler(std::__cxx11::basic_string<> const&, boost::function<> const&, std::__cxx11::basic_string<> const&, std::__cxx11::basic_string<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::simple_wallet() [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    main
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+  and 22.98K from 262 other places
+17.58M peak memory consumed over 513860 calls from
+std::__cxx11::basic_string<>::_M_mutate(unsigned long, unsigned long, char const*, unsigned long)
+  in /lib/x86_64-linux-gnu/libstdc++.so.6
+16.69M consumed over 166 calls from:
+    std::__cxx11::basic_string<>::_M_append(char const*, unsigned long)
+      in /lib/x86_64-linux-gnu/libstdc++.so.6
+    epee::net_utils::http::http_simple_client_template<>::handle_target_data(std::__cxx11::basic_string<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::net_utils::http::http_simple_client_template<>::handle_reciev(std::chrono::duration<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::net_utils::http::http_simple_client_template<>::invoke(boost::basic_string_ref<>, boost::basic_string_ref<>, boost::basic_string_ref<>, std::chrono::duration<>, epee::net_utils::http::http_response_info const**, std::__cxx11::list<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+872.45K consumed over 17270 calls from:
+    std::__cxx11::basic_string<>::_M_replace(unsigned long, unsigned long, char const*, unsigned long)
+      in /lib/x86_64-linux-gnu/libstdc++.so.6
+    epee::serialization::throwable_buffer_reader::read(std::__cxx11::basic_string<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::__cxx11::basic_string<> epee::serialization::throwable_buffer_reader::read<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<> epee::serialization::throwable_buffer_reader::read_se<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_entry[abi:cxx11]()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    boost::variant<> epee::serialization::throwable_buffer_reader::read_ae<>()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_array_entry[abi:cxx11](unsigned char)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::load_storage_entry[abi:cxx11]()
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::throwable_buffer_reader::read(epee::serialization::section&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::serialization::portable_storage::load_from_binary(epee::span<>, epee::serialization::portable_storage::limits_t const*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+16.39K consumed over 1 calls from:
+    std::__cxx11::basic_string<>::_M_append(char const*, unsigned long)
+      in /lib/x86_64-linux-gnu/libstdc++.so.6
+    epee::net_utils::http::http_simple_client_template<>::handle_header(std::__cxx11::basic_string<>&, bool&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::net_utils::http::http_simple_client_template<>::handle_reciev(std::chrono::duration<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::net_utils::http::http_simple_client_template<>::invoke(boost::basic_string_ref<>, boost::basic_string_ref<>, boost::basic_string_ref<>, std::chrono::duration<>, epee::net_utils::http::http_response_info const**, std::__cxx11::list<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool epee::net_utils::invoke_http_bin<>(boost::basic_string_ref<>, epee::misc_utils::struct_init<> const&, epee::misc_utils::struct_init<>&, epee::net_utils::http::abstract_http_client&, std::chrono::duration<>, boost::basic_string_ref<>)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, crypto::hash&, std::vector<>&, boost::optional<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::waiter::wait() [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::refresh(bool, unsigned long, unsigned long&, bool&, bool, unsigned long) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::refresh_main(unsigned long, cryptonote::simple_wallet::ResetType, bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::on_command(bool (cryptonote::simple_wallet::*)(std::vector<> const&), std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::command_handler::process_command_vec(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    main
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+587B consumed over 7 calls from:
+    std::__cxx11::basic_string<>::_M_replace(unsigned long, unsigned long, char const*, unsigned long)
+      in /lib/x86_64-linux-gnu/libstdc++.so.6
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    el::Logger::resolveLoggerFormatSpec() const [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    el::Logger::configure(el::Configurations const&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    el::Logger::Logger(std::__cxx11::basic_string<> const&, el::Configurations const&, std::unordered_map<>*) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    el::base::RegisteredLoggers::get(std::__cxx11::basic_string<> const&, bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    el::base::Writer::construct(char const*)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    wallet_args::main(int, char const* const*, char const*, char const*, boost::program_options::options_description, boost::program_options::positional_options_description const&, std::function<> const&, char const*, bool)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    main
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+  and 1.49K from 529 other places
+15.69M peak memory consumed over 209785 calls from
+std::vector<>::reserve(unsigned long)
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+14.73M consumed over 181628 calls from:
+    bool cryptonote::transaction_prefix::deserialize_vin<>(binary_archive<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::parse_and_validate_tx_base_from_blob(boost::basic_string_ref<> const&, cryptonote::transaction&, bool)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+840.24K consumed over 419 calls from:
+    bool cryptonote::transaction_prefix::deserialize_vin<>(binary_archive<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::parse_and_validate_tx_base_from_blob(boost::basic_string_ref<> const&, cryptonote::transaction&, bool)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::waiter::wait() [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::parse_tx_batches(std::vector<> const&, std::vector<>&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::waiter::wait() [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::refresh(bool, unsigned long, unsigned long&, bool&, bool, unsigned long) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::refresh_main(unsigned long, cryptonote::simple_wallet::ResetType, bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::on_command(bool (cryptonote::simple_wallet::*)(std::vector<> const&), std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::command_handler::process_command_vec(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    main
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+119.88K consumed over 16513 calls from:
+    bool cryptonote::transaction_prefix::deserialize_vin<>(binary_archive<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool cryptonote::transaction_prefix::member_do_serialize<>(binary_archive<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool cryptonote::transaction::do_serialize_object<>(binary_archive<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::parse_and_validate_block_from_blob(boost::basic_string_ref<> const&, cryptonote::block&, crypto::hash*) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::parse_block_round(std::__cxx11::basic_string<> const&, cryptonote::block&, crypto::hash&, bool&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+120B consumed over 1 calls from:
+    bool cryptonote::transaction_prefix::deserialize_vin<>(binary_archive<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool cryptonote::transaction_prefix::member_do_serialize<>(binary_archive<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    bool cryptonote::transaction::do_serialize_object<>(binary_archive<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::parse_and_validate_block_from_blob(boost::basic_string_ref<> const&, cryptonote::block&, crypto::hash*) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::parse_block_round(std::__cxx11::basic_string<> const&, cryptonote::block&, crypto::hash&, bool&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::waiter::wait() [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::waiter::wait() [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::refresh(bool, unsigned long, unsigned long&, bool&, bool, unsigned long) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::refresh_main(unsigned long, cryptonote::simple_wallet::ResetType, bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::on_command(bool (cryptonote::simple_wallet::*)(std::vector<> const&), std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::command_handler::process_command_vec(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    main
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+  and 0B from 6 other places
+15.25M peak memory consumed over 249 calls from
+fcmp_pp::curve_trees::CurveTrees<>::get_tree_extension(unsigned long, fcmp_pp::curve_trees::CurveTrees<>::LastHashes const&, std::vector<>&&, bool) const
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+15.25M consumed over 249 calls from:
+    fcmp_pp::curve_trees::TreeCache<>::prepare_to_grow_cache(unsigned long, crypto::hash const&, std::vector<> const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+13.08M peak memory consumed over 88142 calls from
+void std::vector<>::_M_realloc_insert<>(__gnu_cxx::__normal_iterator<>, fcmp_pp::UnifiedOutput const&)
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+13.08M consumed over 88142 calls from:
+    cryptonote::set_tx_outs_by_last_locked_block(cryptonote::transaction const&, std::unordered_map<> const&, unsigned long const&, unsigned long, std::unordered_map<>&, std::unordered_map<>&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::get_outs_by_last_locked_block(std::vector<> const&, std::unordered_map<> const&, unsigned long, unsigned long)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+9.59M peak memory consumed over 18312 calls from
+fcmp_pp::curve_trees::TreeCache<>::prepare_to_grow_cache(unsigned long, crypto::hash const&, std::vector<> const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&) const
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+9.54M consumed over 18270 calls from:
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+24.00K consumed over 21 calls from:
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+24.00K consumed over 21 calls from:
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+9.56M peak memory consumed over 25830 calls from
+fcmp_pp::curve_trees::add_to_locked_outputs_cache(std::unordered_map<> const&, unsigned long, std::unordered_map<>&, std::unordered_map<>&)
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+9.41M consumed over 7496 calls from:
+    fcmp_pp::curve_trees::TreeCache<>::prepare_to_grow_cache(unsigned long, crypto::hash const&, std::vector<> const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+139.44K consumed over 18269 calls from:
+    fcmp_pp::curve_trees::TreeCache<>::prepare_to_grow_cache(unsigned long, crypto::hash const&, std::vector<> const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+11.76K consumed over 65 calls from:
+    fcmp_pp::curve_trees::TreeCache<>::init(unsigned long, crypto::hash const&, unsigned long, fcmp_pp::CompressedPath const&, std::unordered_map<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::pull_and_parse_next_blocks(bool, unsigned long&, std::__cxx11::list<> const&, std::vector<>&, std::vector<>&, std::vector<>&, crypto::hash&, bool&, std::__exception_ptr::exception_ptr&) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::waiter::wait() [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::wallet2::refresh(bool, unsigned long, unsigned long&, bool&, bool, unsigned long) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::refresh_main(unsigned long, cryptonote::simple_wallet::ResetType, bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    cryptonote::simple_wallet::on_command(bool (cryptonote::simple_wallet::*)(std::vector<> const&), std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    epee::command_handler::process_command_vec(std::vector<> const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    main
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+9.54M peak memory consumed over 87 calls from
+std::vector<>::reserve(unsigned long)
+  in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+9.54M consumed over 21 calls from:
+    fcmp_pp::curve_trees::CurveTrees<>::outputs_to_leaves(std::vector<>&&, std::vector<>&, std::vector<>&, bool) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    fcmp_pp::curve_trees::CurveTrees<>::get_tree_extension(unsigned long, fcmp_pp::curve_trees::CurveTrees<>::LastHashes const&, std::vector<>&&, bool) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    fcmp_pp::curve_trees::TreeCache<>::prepare_to_grow_cache(unsigned long, crypto::hash const&, std::vector<> const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&) const
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::prepare_tree_state_change(tools::TreeSyncStartParams const&, std::vector<> const&, fcmp_pp::curve_trees::TreeCache<> const&, unsigned long&, unsigned long&, std::vector<>&, fcmp_pp::curve_trees::TreeCache<>::CacheStateChange&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    std::_Function_handler<>::_M_invoke(std::_Any_data const&)
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    tools::threadpool::run(bool) [clone .localalias]
+      in /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+    0x7890f1df599e
+      in /lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+    start_thread
+      at ./nptl/pthread_create.c:447
+      in /lib/x86_64-linux-gnu/libc.so.6
+    __clone3
+      at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+      in /lib/x86_64-linux-gnu/libc.so.6
+total runtime: 22.92s.
+calls to allocation functions: 17163634 (748980/s)
+temporary memory allocations: 557389 (24323/s)
+peak heap memory consumption: 349.44M
+peak RSS (including heaptrack overhead): 1.20G
+total memory leaked: 21.33M
+suppressed leaks: 2.13K

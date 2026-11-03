@@ -1,0 +1,51 @@
+w002 start 2026-11-03T23:07:05+00:00 restore_height=3105000
+wallet build present 2026-11-03T23:07:05+00:00
+d6f93d0664604726aeafbaf99982f181adc5bb8f31480f4902660bb686fa3ae8  /home/optimizer/work/monero-fcmp-adapt/build/beta31-adapt/bin/monerod
+7ab1dd30f4eefc6d5a70d7bac0a9338dcb83da13acd0943ee39e2da6db34d4e4  /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+Monero 'Fluorine Fermi' (v0.19.0.0-beta.3.1-release)
+no shadow processes
+SKIP_RESTORE set: DB left as restored by the previous attempt 2026-11-03T23:07:05+00:00
+node up height=3123270 pid=682036 2026-11-03T23:07:07+00:00
+governor schedutil -> performance
+[smoke] created: 
+[smoke] started 2026-11-03T23:07:11+00:00 pid=682141 wrapper=682141 rh=3123000
+[smoke] done 2026-11-03T23:07:19+00:00 wall=5 exit=0 peak_anon=37MB vmhwm=72MB refresh_done=3
+-rw------- 1 optimizer optimizer 463159 Nov  3 23:07 smoke
+-rw------- 1 optimizer optimizer     95 Nov  3 23:07 smoke.address.txt
+-rw------- 1 optimizer optimizer   1709 Nov  3 23:07 smoke.keys
+[smoke] Refresh starting from block 3123000; blocks received: 270
+[r1] created: 
+[r1] started 2026-11-03T23:07:21+00:00 pid=682410 wrapper=682410 rh=3105000
+[r1] done 2026-11-03T23:07:39+00:00 wall=15 exit=0 peak_anon=1139MB vmhwm=1173MB refresh_done=3
+-rw------- 1 optimizer optimizer 487407 Nov  3 23:07 r1
+-rw------- 1 optimizer optimizer     95 Nov  3 23:07 r1.address.txt
+-rw------- 1 optimizer optimizer   1704 Nov  3 23:07 r1.keys
+[r2] created: 
+[r2] started 2026-11-03T23:07:44+00:00 pid=683102 wrapper=683102 rh=3105000
+[r2] done 2026-11-03T23:08:01+00:00 wall=14 exit=0 peak_anon=1002MB vmhwm=1037MB refresh_done=3
+-rw------- 1 optimizer optimizer 487407 Nov  3 23:07 r2
+-rw------- 1 optimizer optimizer     95 Nov  3 23:07 r2.address.txt
+-rw------- 1 optimizer optimizer   1712 Nov  3 23:07 r2.keys
+[r3] created: 
+[r3] started 2026-11-03T23:08:04+00:00 pid=683511 wrapper=683511 rh=3105000
+[r3] done 2026-11-03T23:08:23+00:00 wall=16 exit=0 peak_anon=1226MB vmhwm=1260MB refresh_done=3
+-rw------- 1 optimizer optimizer 487407 Nov  3 23:08 r3
+-rw------- 1 optimizer optimizer     95 Nov  3 23:08 r3.address.txt
+-rw------- 1 optimizer optimizer   1697 Nov  3 23:08 r3.keys
+[ht] created: 
+[ht] started 2026-11-03T23:08:29+00:00 pid=684002 wrapper=683979 rh=3105000
+[ht] done 2026-11-03T23:08:54+00:00 wall=23 exit=0 peak_anon=1074MB vmhwm=1114MB refresh_done=3
+-rw------- 1 optimizer optimizer 487407 Nov  3 23:08 ht
+-rw------- 1 optimizer optimizer     95 Nov  3 23:08 ht.address.txt
+-rw------- 1 optimizer optimizer   1705 Nov  3 23:08 ht.keys
+governor restored to schedutil
+node anon peak during W002: 408 MB
+== results
+run,restore_height,wall_s,peak_anon_MB,peak_rss_MB,vmhwm_MB,peak_privdirty_MB,exit,refresh_done,cpu_s
+smoke,3123000,5,37,72,72,37,0,3,3.92
+r1,3105000,15,1139,1173,1173,1139,0,3,171.35
+r2,3105000,14,1002,1037,1037,1002,0,3,179.89
+r3,3105000,16,1226,1260,1260,1226,0,3,177.5
+ht,3105000,23,1074,1110,1114,1074,0,3,171.75
+done 2026-11-03T23:08:55+00:00
+W002_COMPLETE
