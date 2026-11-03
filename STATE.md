@@ -28,7 +28,7 @@ C. (RUNNING as E010; see Currently running.) When done: write experiments/E010-l
 D. reports/SUMMARY.md DRAFTED 03:37; fill in E010 results when done, plus the small-input CPU cost (E).
 E. Small-input regression check for E007: a window or microbench with 1-2-input proofs only (e.g. the agent's measure harness at inputs = 1, 2), to price the double-build CPU cost honestly.
 F. Fix the perf_classify.py regex and the stack_attrib.py owning-frame view (low priority).
-G. Later: wallet (tree_cache), stagenet/master comparison, monerosim scenarios.
+G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tree cache is bounded by reorg depth except registered outputs, which are tiny; peak candidates are refresh-time transients). NEXT: W002 measure refresh RSS/heaptrack of a fresh wallet over the dense stretch against OUR node, after E010. Also: stagenet/master comparison, monerosim scenarios.
 
 ## Watch (read-only)
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
