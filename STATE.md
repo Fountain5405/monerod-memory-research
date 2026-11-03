@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 22:50
+Last updated: 2026-11-03 22:53
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -48,6 +48,8 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 
 ## Watch (read-only)
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
+
+- **W002 RUNNING (hydrogen, started 22:53, scripts/run_w002.sh, marker ~/work/research-artifacts/w002.chain ends W002_COMPLETE; W002_SMOKE_FAIL or W002_BUILD_FAIL on failure):** wallet refresh memory. monero-wallet-cli and monero-wallet-rpc built in ~/work/monero-fcmp/build/beta31 (base tree; the wallet is unmodified in every series). The adapt node serves the synced snapshot (h3123270) offline on 28081; a fresh wallet (`--generate-new-wallet`, `--restore-height 3105000`, `--command refresh`) refreshes 18,270 blocks incl. the heavy window and the dense small-tx stretch; smoke run over 270 blocks first, then 3 sampled runs (sample.sh 2 s on the wallet-cli pid: RssAnon, VmRSS, VmHWM, Private_Dirty; cpu from /proc/pid/stat), then 1 heaptrack run (w002/heaptrack.w002*). The node is sampled too (w002/monerod.mem.csv). Results: w002/results.csv. Then: write experiments/W002-wallet-refresh (peak table, heaptrack attribution via stack_attrib.py / heaptrack_print), FINDINGS, SUMMARY wallet line. If the smoke fails, check smoke.stdout for a prompt the cli waited on (stdin is /dev/null).
 
 ## In flight (agents)
 - None. (The Fable-tier E007 review finished 12:00: reports/E007-crypto-review.md, F28.)

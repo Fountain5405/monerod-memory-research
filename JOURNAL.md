@@ -421,3 +421,6 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Decision per the pre-registered rule: heavy within 10% NOT met, so v1/adapt stays recommended; the v2 alternative is now patches 0001-0003. The remaining +28% is unprofiled (candidate: the per-constraint fold accumulator in circuit-abstraction vs v1's in-verifier fold); a perf profile is the next step only if v2 is pushed further.
 - Recorded: experiments/E020-two-builds (README, results.csv), evidence/E020 (chain, build marker, both windows' results/check/mem.csv, negdiff json+summaries), FINDINGS F33, patch 0003 (format-patch of bde81f4) + patches README rows, SUMMARY (build history, next), HOW-IT-WORKS 2.1b / 3 table / 3.1, plain "Does it cost speed?", STATE. Owner pinged (E020 in).
 - Queue next: W002 wallet refresh measurement against our node.
+
+## 2026-11-03 22:53 W002 launched
+- Built monero-wallet-cli / monero-wallet-rpc in the base tree (ninja, 39 steps, ~5 min; marker w002.build). Launched scripts/run_w002.sh: synced snapshot served by the adapt node offline, fresh wallet refresh 3,105,000 -> 3,123,270, smoke + 3 sampled runs + 1 heaptrack run. First results at the next check-in.
