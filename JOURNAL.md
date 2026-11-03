@@ -174,3 +174,16 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - 03:37 Drafted reports/SUMMARY.md (owner-facing: headline table, mechanisms, guardrails, negatives, side findings, caveats, upstreamability). E010 marked pending.
 - 03:37 Observation (E010, combo_default): the E001 cap gives 4-block batches only while the last 100 blocks are light. Once heavy FCMP++ blocks enter the lookback, upstream adaptive sizing drops to 1-block requests, at ~7 s/block vs ~2.9 s/block with --block-sync-size 5 in the window A/B. combo_default vs combo_bss5 in E010 will quantify this. It may be a second sync-sizing issue to note in the E001 write-up (default sizing is slow for heavy blocks). Timestamp fix: an earlier note said "03:50", but the box clock read 03:37; corrected.
 - ~03:45 W001 (wallet track, step 1): a scout agent mapped the FCMP++ TreeCache. It is bounded by the 100-block reorg window except m_registered_outputs (~50-80 B per owned output, negligible). The likely wallet peaks are refresh-time transients (whole parsed_blocks batch, CacheStateChange). W002 will measure, after E010.
+
+## 2026-11-03 04:47-04:52 Check-in: E010 2/3 arms done; a small-tx slowdown found; E011 queued
+- Box: no shadow lanes, 53 GB free, load ~5 (our E010 node).
+- E010 so far (1 run each, 3,105,401 -> >=3,123,400, all hashes match .22):
+  - combo_default: wall 1,446 s, peak anon 1,588 MB, post-idle 1,301 MB.
+  - base_bss5: wall 1,365 s, peak anon 5,603 MB, post-idle 4,376 MB.
+  - combo_bss5: running (3,110,906 at 04:50).
+- **Surprise: on the long run, combo is not faster than base overall.** scripts/segment_rates.py (new; per-segment seconds from the Synced log lines) shows why:
+  - The window (to 3,105,441): combo 108-113 s vs base 217 s, as in E008.
+  - Each later 1,000-block segment of small txs: combo 155-172 s vs base 137-146 s, i.e. **combo is +15-19% slower on small-tx blocks**.
+  - combo_default vs combo_bss5 differ by only ~2%, so the batch size is not the cause.
+- Candidates: E007's double circuit build (Discard pass + Accumulate pass; the old fold was cheap at low input counts), E004c's thread cap (SMT may help small proofs), or E004e's per-block malloc_trim (fixed cost × many blocks). The 40-block window could not see any of these, since it is 82% 128-input txs.
+- E011 queued to separate them (see STATE). ab_window.sh v4 is applied only after E010 finishes, because editing a running bash script is unsafe.

@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 03:40
+Last updated: 2026-11-03 04:52
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -19,6 +19,7 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 - **profile_combo** (scripts/profile_window.sh): perf profile of the combo build over the window, to confirm why E007 is 2x faster. Output ~/work/research-artifacts/profile_combo/ (summary.txt ends PROFILE_COMPLETE; perf_symbols.txt).
 - minmem chain DONE 03:23 (E009: base 5,750 MB vs combo 1,866 MB minimum MemoryMax, -67.5%). Was: (scripts/run_minmem.sh): waits for PROFILE_COMPLETE, then runs min_mem.sh for combo (ref 117 s, lo 750, hi 4000, tol 125) and base (ref 220 s, lo 2000, hi 8000, tol 250). Governor pinned for the chain. Log ~/work/research-artifacts/minmem.chain, ending CHAIN_MINMEM_COMPLETE; per-label csv/summary in ~/work/research-artifacts/minmem/.
 - **E010 long resync RUNNING** (started 03:31; scripts/run_e010.sh): 3,105,401 → 3,123,400, arms combo_default, base_bss5, combo_bss5 (1 run each, DB restored from the wedge snapshot each run). Log ~/work/research-artifacts/e010.chain (ends CHAIN_E010_COMPLETE); data in ~/work/research-artifacts/e010/. Est. 2-5 h in total.
+- **E011 small-tx attribution QUEUED** (scripts/run_e011.sh, started 04:50, waits for CHAIN_E010_COMPLETE): applies ab_window v4 (START_H, cpu_s), makes the working snapshot snapshots/stressnet_h3106400 (deletable, NOT a baseline), records the window's input mix, then runs a 5-arm A/B (base, e004c, e004e, e007, combo; all --block-sync-size 5) over 3,106,400 -> 3,107,400, 3 alternating rounds, governor pinned. Log ~/work/research-artifacts/e011.chain (ends CHAIN_E011_COMPLETE; 'SHADOW seen' lines mean lanes ran during it). Est. ~2 h.
 - Snapshots: stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
 ## Queue (do the first item that is unblocked)
@@ -26,7 +27,7 @@ A. (DONE 02:56: the 50% verify hotspot is gone from the combo profile; recorded 
 B. (DONE 03:30: E009 written up; owner informed.)
 C. (RUNNING as E010; see Currently running.) When done: write experiments/E010-long-resync results (peak, post-idle, wall per arm, hash; per-segment block rate from the Synced log lines, to compare the small-tx stretch), then ping the owner.
 D. reports/SUMMARY.md DRAFTED 03:37; fill in E010 results when done, plus the small-input CPU cost (E).
-E. Small-input regression check for E007: a window or microbench with 1-2-input proofs only (e.g. the agent's measure harness at inputs = 1, 2), to price the double-build CPU cost honestly.
+E. Small-input regression check: E010 interim shows combo +15-19% s/1000 blocks on the small-tx stretch vs base (same bss5). E011 (queued) attributes it per change. Afterwards, if E007 is the cause, look at a cheaper Discard pass or skipping the double build for small proofs.
 F. Fix the perf_classify.py regex and the stack_attrib.py owning-frame view (low priority).
 G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tree cache is bounded by reorg depth except registered outputs, which are tiny; peak candidates are refresh-time transients). NEXT: W002 measure refresh RSS/heaptrack of a fresh wallet over the dense stretch against OUR node, after E010. Also: stagenet/master comparison, monerosim scenarios.
 
