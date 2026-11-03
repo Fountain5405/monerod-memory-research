@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 07:09
+Last updated: 2026-11-03 08:48
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -20,7 +20,8 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 - minmem chain DONE 03:23 (E009: base 5,750 MB vs combo 1,866 MB minimum MemoryMax, -67.5%). Was: (scripts/run_minmem.sh): waits for PROFILE_COMPLETE, then runs min_mem.sh for combo (ref 117 s, lo 750, hi 4000, tol 125) and base (ref 220 s, lo 2000, hi 8000, tol 250). Governor pinned for the chain. Log ~/work/research-artifacts/minmem.chain, ending CHAIN_MINMEM_COMPLETE; per-label csv/summary in ~/work/research-artifacts/minmem/.
 - E010 long resync DONE 04:58 (experiments/E010-long-resync): combo peak -73%, idle -75%, no growth; wall +3.6% overall; small-tx blocks +14.8% (F22).
 - E011 DONE 07:08 (experiments/E011-small-tx-attribution): small-tx wall vs base: cap +7.3%, cap+trim +13.3%, E007 +2.7%, combo +14.7% (F23).
-- **E012 adaptive cap+trim RUNNING** (scripts/run_e012.sh; tree committed 4a51d434d, build started 07:08): builds ~/work/monero-fcmp-adapt (branch combo-adapt = combo + patch_e012_adapt.py: cap only when the largest proof has >= 16 inputs; trim after heavy calls, else at most every 10 s). Then (a) a small-tx A/B, base/combo/adapt, into e012_small/, and (b) a heavy-window A/B, combo/adapt/e007, into e012_heavy/. 3 rounds each. Log ~/work/research-artifacts/e012.chain (ends CHAIN_E012_COMPLETE). Est. ~2.5 h.
+- **E012 adaptive cap+trim RUNNING** (scripts/run_e012.sh; build 4a51d434d OK, sha d6f93d06…). Small-tx A/B DONE 08:17: base 151 s / 1,167 MB, combo 174 s (+15%) / 732 MB, **adapt 157 s (+4%) / 822 MB**. The heavy-window A/B (combo, adapt, e007) is running in e012_heavy/; after 4 of 9 runs adapt ≈ combo (111 vs 110 s, 1,697 vs 1,769 MB) and e007 is 2,111-2,340 MB. Log e012.chain (ends CHAIN_E012_COMPLETE).
+- **E013 validation of adapt QUEUED** (scripts/run_e013.sh, started 08:48, waits for CHAIN_E012_COMPLETE). gate_e012.py requires adapt's heavy peak <= 1.10x combo and its small-tx wall <= 1.08x base (n>=3), else it stops. Steps: (a) heavy A/B base vs adapt, 3 rounds -> e013_ab/; (b) negtest at 3,105,424 and 3,105,414 -> e013_neg/; (c) min_mem adapt -> e013_minmem/; (d) long resync base_bss5/adapt_default/adapt_bss5 -> e013_long/. Log e013.chain (ends CHAIN_E013_COMPLETE). Est. ~3 h.
 - Snapshots: stressnet_h3106400 (WORKING copy for E011/E012, deletable when done), stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
 ## Queue (do the first item that is unblocked)

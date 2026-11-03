@@ -242,3 +242,19 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Ranges are ≤ 4 s. The effects add up. Peak anon: base 1,178, e004c 1,284, e004e 724, e007 918, combo 722 MB.
 - Written up in experiments/E011-small-tx-attribution (F23); SUMMARY updated.
 - E012 started on its own at 07:08: tree committed 4a51d434d, cargo/ninja build running.
+
+## 2026-11-03 08:47-08:48 Check-in: E012 small-tx result (adapt +4% vs combo +15%); E013 queued
+- Box: no shadow lanes, 35 GB free, load ~2-4 (our node).
+- E012 build OK at 4a51d434d. Small-tx A/B (3 rounds, all hashes match):
+  - base 149/151/151 s, 1,152-1,226 MB
+  - combo 174/173/180 s, 728-735 MB
+  - **adapt 155/157/157 s (+4%), 816-829 MB (-30% vs base)**
+  - The adaptive cap and trim recover ~3/4 of the slowdown. The rest is about E007's +2.7%.
+  - adapt costs ~90 MB more than combo on these light blocks, because it trims at most every 10 s.
+- Heavy-window A/B, 4 of 9 runs:
+  - combo 110 s / 1,769 MB
+  - adapt 111 s / 1,697 MB
+  - e007 111/111 s, 2,111/2,340 MB
+  - So the cap and the trim are worth ~20-25% of peak on top of E007, and the cap no longer speeds up the heavy window once E007 is in. Its 9% gain in E004c was for the stored verifier.
+  - adapt's post-idle (1,333 MB vs combo 1,087) is higher: it does not trim when idle after light calls. Note for E012.
+- Queued E013 (STATE) to validate adapt as the recommended build: headline A/B vs base, negtest, min_mem, long resync. It is gated on the full E012 numbers.
