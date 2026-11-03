@@ -70,6 +70,9 @@ A critical re-check of the raw data and source is in reports/REVIEW-70pct.md. Sh
 ## How it works
 Two explanations of the mechanism, written at the owner's request: reports/HOW-IT-WORKS.md (technical: where the memory went, the streaming verifier's design and fail-closed properties, the cap and the trim, where to look in the code) and reports/HOW-IT-WORKS-plain.md (plain language).
 
+## Prior art
+reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory (Oct-Dec 2025: per-proof footprint 1.2 GB -> 250 MB inside monero-oxide, one batch per thread, glibc arena cap; the '250 MB x threads, not returned to the OS' shape was stated and accepted in seraphis-migration/monero#224). A cap on heavy verifications and a 16-input size split were suggested in #202 but shipped differently; not storing the circuit, the trim, and the O(c x q) fold removal were not found proposed anywhere.
+
 ## Setup
 - **Machines:** hydrogen, a Ryzen 9 3900X (12 cores / 24 threads) with 16 GB of RAM, for every experiment unless stated. box81, a Ryzen 5 5600G (6 cores / 12 threads) with 14 GB of RAM, for the independent reproduction (E019: base vs adapt vs e017 on the heavy and small-tx windows) and the E017 crate work. Each box builds its own binaries (ARCH=native); timings are never compared across boxes, only percentages.
 - **Baseline:** seraphis-migration/monero v0.19.0.0-beta.3.1 (d80596ad1). This is the FCMP++ beta that stressnet runs.
