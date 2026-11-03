@@ -1,0 +1,11 @@
+min_mem combo start 2026-11-03T02:54:04+00:00 bin=/home/optimizer/work/monero-fcmp-combo/build/beta31-combo/bin/monerod ref=117 factor=1.10 lo=750 hi=4000 tol=125 extra='--block-sync-size 5'
+f0f664f1f4103913024458d5046544f40228ab49b2a3471f5cc62e64557e988b  /home/optimizer/work/monero-fcmp-combo/build/beta31-combo/bin/monerod
+[4000 MB] PASS wall=106s h=3105441 hash=yes cgroup_peak=1853MB oom_kills=0
+[750 MB] FAIL wall=8s h=3105421 hash=yes cgroup_peak=742MB oom_kills=0
+[2375 MB] PASS wall=108s h=3105441 hash=yes cgroup_peak=1895MB oom_kills=0
+[1562 MB] FAIL wall=46s h=3105426 hash=yes cgroup_peak=1536MB oom_kills=0
+[1968 MB] PASS wall=108s h=3105441 hash=yes cgroup_peak=1813MB oom_kills=0
+[1765 MB] FAIL wall=48s h=3105431 hash=yes cgroup_peak=1759MB oom_kills=0
+[1866 MB] PASS wall=106s h=3105441 hash=yes cgroup_peak=1701MB oom_kills=0
+RESULT: minimum passing MemoryMax for combo = 1866 MB (largest failing = 1765 MB, tol 125 MB)
+MINMEM_COMPLETE

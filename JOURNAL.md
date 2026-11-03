@@ -159,3 +159,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Owner pinged with the combo headline.
 - Queued: the combo CPU profile, then the min_mem chain (combo, then base) with the governor pinned.
 - 02:56 profile_combo done: the baseline 50% hotspot (ArithmeticCircuitStatement::verify) is gone; the top is now curve/field math (Selene add 19%, Montgomery 18%, mul_wide 12%). This confirms the O(c·q) explanation. The min_mem chain started right after (combo first).
+
+## 2026-11-03 03:23-03:35 E009 min cgroup memory: -67.5%
+- min_mem chain (combo, then base; governor pinned): minimum passing MemoryMax is **combo 1,866 MB vs base 5,750 MB (-67.5%)**, bracket -66.5% to -69.3%. All passes match .22's hash and finish within the 1.1x wall limit; at the minimum, walls are unchanged (106 s, 219 s).
+- All 7 fails are memcg OOM kills (kernel log), with anon at about the limit. Base near its limit first slowed as page cache was squeezed, then was killed. The A/B anon-peak metric and the cgroup metric agree (-67%).
+- Harness bug F20: oom_kills was always 0, because memory.events was read after the scope vanished. Fixed in min_mem.sh v2.
+- Owner asked (03:00) to be pinged when min_mem results were in. They were at the terminal, so PushNotification was suppressed as redundant and the result was reported in the chat.

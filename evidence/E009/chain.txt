@@ -1,0 +1,7 @@
+minmem chain start 2026-11-03T02:51:34+00:00
+wait satisfied 2026-11-03T02:54:04+00:00
+governor schedutil -> performance
+combo done 2026-11-03T03:03:55+00:00: RESULT: minimum passing MemoryMax for combo = 1866 MB (largest failing = 1765 MB, tol 125 MB)
+base done 2026-11-03T03:22:56+00:00: RESULT: minimum passing MemoryMax for base = 5750 MB (largest failing = 5562 MB, tol 250 MB)
+governor restored to schedutil
+CHAIN_MINMEM_COMPLETE

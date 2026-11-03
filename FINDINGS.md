@@ -1,6 +1,6 @@
 # Findings (living summary)
 
-Status: FIRST CONFIRMED WIN (E004a): -39.6% peak anon memory during FCMP++ sync, 11% faster. Targeted code version (E004c) and a constraint-storage change (E005) are being A/B tested.
+Status: **TARGET EXCEEDED.** Combined build (E008): peak anon -67%, post-sync idle -80%, minimum cgroup memory -67.5% (5,750 → 1,866 MB), sync 47% faster, all guardrails held. See reports/SUMMARY.md (in progress).
 
 | # | Finding / candidate | Evidence | Est. saving | Status |
 |---|---|---|---|---|
@@ -22,3 +22,5 @@ Status: FIRST CONFIRMED WIN (E004a): -39.6% peak anon memory during FCMP++ sync,
 | F16 | **E008 combined build (E004c + E004e + E007 + E001 fix): peak RssAnon -66.9% (5,289 → 1,751 MB), post-sync idle -79.5% (4,850 → 993 MB), wall -46.8% (220 → 117 s).** Best build so far. | experiments/E008-combined, evidence/E008/ | **largest** | CONFIRMED; min_mem pending |
 | F17 | Side finding: generalized-bulletproofs `ArithmeticCircuitStatement::verify` costs O(c·q) (one pass over all constraints per vector commitment). For max-input FCMP++ proofs this is ~52% of sync CPU. Folding in one pass (E007's accumulator, or an indexed fold inside the stored verifier) removes it. This is a pure CPU fix, separable from the memory change. | experiments/E006-cpu-profile, experiments/E007-streaming-verifier | CPU | candidate upstream note |
 | F18 | Harness bug: ab_window.sh peak awk compared strings, so a short sampler row ('...,,log') could win. Only r1_e007's RSS was affected (0 → 3,083 MB). Fixed with numeric comparisons. | experiments/E007-streaming-verifier | harness | fixed |
+| F19 | **E009 minimum cgroup MemoryMax (swap off, window must finish within 1.1x wall and match .22's hash): base 5,750 MB (largest fail 5,562) vs combo 1,866 MB (largest fail 1,765): -67.5% (bracket -66.5% to -69.3%).** Every fail is a memcg OOM kill with anon at about the limit, so the needed RAM is about peak anon + 100-200 MB; page cache is evictable at no wall-time cost. | experiments/E009-min-mem, evidence/E009/ | **large** | CONFIRMED |
+| F20 | Harness bug: min_mem.sh v1 read memory.events after the monerod process died; systemd removes the empty scope at once, so oom_kills was always 0. The kernel log confirmed all 7 OOM kills. Fixed in v2 (polled in the loop). | experiments/E009-min-mem | harness | fixed |

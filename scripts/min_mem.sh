@@ -7,6 +7,7 @@
 #   lo should FAIL, hi should PASS (both are verified first). FACTOR=1.10 (env FACTOR overrides).
 # Output: <outdir>/<label>.csv (limit_MB,result,wall_s,end_h,hash_match,peak_cgroup_MB,oom_kills)
 # Completion marker: last line of <outdir>/<label>.summary is MINMEM_COMPLETE.
+# v2 (2026-11-03): oom_kill count polled inside the loop (v1 read it after the scope was already gone -> always 0).
 set -u
 OUT=$1; L=$2; BIN=$3; REF=$4; LO=$5; HI=$6; TOL=$7; shift 7; EXTRA="$*"
 FACTOR=${FACTOR:-1.10}
@@ -54,18 +55,19 @@ trial() {  # trial <limit_MB> -> prints PASS|FAIL, appends to CSV
     [ -n "$MP" ] && break; sleep 1
   done
   local cg=/sys/fs/cgroup/system.slice/$unit.scope
-  local t0=$(date +%s) h=0 peak=0
+  local t0=$(date +%s) h=0 peak=0 ooms=0
   wait_rpc
   while :; do
     h=$(log_height $LOG); h=${h:-0}
     [ -f $cg/memory.peak ] && peak=$(( $(cat $cg/memory.peak) / 1048576 ))
+    [ -f $cg/memory.events ] && ooms=$(awk '/^oom_kill /{print $2}' $cg/memory.events)  # v2: poll; the scope vanishes once monerod dies
     [ "$h" -ge "$END" ] && break
     [ $(( $(date +%s) - t0 )) -ge $MAXWALL ] && break
     kill -0 $MP 2>/dev/null || break
     sleep 2
   done
   local t1=$(date +%s)
-  local ooms=$(grep -oE "oom_kill [0-9]+" $cg/memory.events 2>/dev/null | awk '{print $2}')
+  [ -f $cg/memory.events ] && ooms=$(awk '/^oom_kill /{print $2}' $cg/memory.events)
   if kill -0 $MP 2>/dev/null; then
     curl -s -m 30 http://127.0.0.1:$PORT/stop_daemon -d '{}' > /dev/null
     for i in $(seq 1 300); do kill -0 $MP 2>/dev/null || break; sleep 1; done
