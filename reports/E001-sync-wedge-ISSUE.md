@@ -50,7 +50,67 @@ Sampled FCMP++ blocks serialize to ~0.82-0.84 bytes per unit of weight (block 3,
 5. **Hidden by default:** the error is logged in category `net` at ERROR, which the default log categories (`net:FATAL`) suppress.
 
 ## Who is affected
-Nodes that were online while these blocks were mined received them one at a time via relay (each ≤ 10 MB) and are unaffected. The exposure is any node **batch-syncing across a point where ≥100 near-empty blocks are followed by >100 MB of serialized blocks within the next 100**. On stressnet that point is 3,105,401. I have not checked whether mainnet's block-weight rules permit this pattern.
+Nodes that were online while these blocks were mined received them one at a time via relay (the largest was 10.03 MB) and are unaffected. The exposure is any node **batch-syncing across a point where ≥100 near-empty blocks are followed by >100 MB of serialized blocks within the next 100**. On stressnet that point is 3,105,401. Mainnet's current block-weight rules do not permit this pattern at the default `--batch-max-weight`, but they do at larger values, and the post-FCMP++ rules the research lab has agreed would permit it at the default (see next section).
+
+## Does mainnet permit this pattern?
+**Today's rules don't permit the wedge at the default `--batch-max-weight`. They do permit it at `--batch-max-weight` above about 33 (see "Larger `--batch-max-weight`"), and at the default they allow a one-off oversize response when spans are queued ahead of the tip (see "Queued spans"). After the FCMP++ hard fork they would permit the wedge at the default.** The research lab agreed the post-fork rules at its 17 December 2025 meeting ([ArticMine, `MoneroScaling2026-02.pdf`](https://github.com/ArticMine/Monero-Documents/blob/master/MoneroScaling2026-02.pdf)): a full reward zone of 625,000 bytes, a surge factor of 8, and each block's long-term weight clamped to within 1.2× of the long-term median (was 1.7×). `fcmp++-stage` (`f25388d`) implements the same values. They haven't been released yet, and the fork height isn't set (that branch's mainnet v17/v18 heights are still mock values).
+
+**The rule.** Since HF v15 (2021 scaling, active on mainnet), `Blockchain::update_next_cumulative_weight_limit` sets the block weight limit to `2 × min(max(F, short-term median), surge × F)`. Here F is the long-term effective median, `max(full reward zone, long-term median)`. Empty blocks lower the short-term median but never take the limit below 2F. The short-term median (`epee::misc_utils::median` of the last 100 block weights, which averages the two middle values) only rises above F once 51 of those 100 blocks are above F. So after a quiet stretch, blocks 1-51 are capped at about 2F and blocks 52-100 at 4F, and a 100-block batch can weigh at most **298 × F**. Filling every block to its limit is the worst case, because each limit only grows with the weights before it. The surge cap (50 × F today, 8 × F from v17) never binds within 100 blocks of a quiet tip.
+
+| | F | limit after a quiet stretch | max weight of the next 100 blocks |
+|---|---|---|---|
+| mainnet today (v16) | 300 kB. `get_info` at height 3,797,876 (2026-11-02) reports `block_weight_limit` 600,000 and `block_weight_median` 300,000 | 600 kB | 89.4 MB: under the 100 MB levin limit |
+| mainnet v17 per `fcmp++-stage` `f25388d` | 625 kB (`CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V17`) | 1.25 MB | 186 MB: over |
+| stressnet v17 (`d80596ad1`) | 10 MB (same constant, marked "STRESSNET SPECIFIC") | 20 MB | 2.98 GB: over |
+
+**Bytes per unit of weight** (this answers "please confirm" under "Trade-offs and assumptions"):
+- Pre-FCMP++ txs: `get_transaction_weight` returns the blob size, plus the BP+ clawback above 2 outputs, so weight is never below size. A response adds a little that weight doesn't count, about 34 bytes per tx (its hash in the block blob plus a length prefix), which is about 2% for the smallest txs. That puts mainnet's 89.4 MB at about 92 MB on the wire. This overhead is estimated from the format, not measured, and the margin to 100 MB is only about 8%.
+- FCMP++ txs: `get_fcmp_pp_transaction_weight_v1` computes weight from the input count, output count and extra length, assuming 7 tree layers (`fake_n_tree_layers`) and maximum-length varints. A real tx is no larger than its weight while the tree has at most 7 layers, and is smaller when it has fewer. The 0.82-0.84 measured on stressnet depends on stressnet's tree depth, so the figures below use 1.0 as well as 0.83.
+
+**What a post-fork mainnet wedge needs** (F = 625 kB). The estimator requests `min(100, batch_max_weight / W)` blocks, where W is the largest of the node's last 100 blocks. A wedge needs:
+- every one of those 100 blocks to be at most 151 kB at 1.0 bytes per weight (135 kB at 0.83), with the default `--batch-max-weight` of 10 MB;
+- then a surge that fills the next ~66-100 blocks close to the limit.
+
+**Larger `--batch-max-weight`.** The 298 × F bound needs every block in the window to be at most F, so that the limit sits at the 2F floor for 51 more blocks. The estimator only guarantees that at the default batch size. With a larger batch the window can hold blocks above F, and then the short-term median catches up after the first new block, not the 51st. Example under today's rules: 100 blocks at 500 kB, which is legal (under the 600 kB floor limit) and penalty-free once the median has caught up. Then W = 500 kB and the limit is 1 MB. A node with `--batch-max-weight 50` (the allowed maximum) requests 100 blocks (500 kB × 100 < 50 MB), and the next 100 can weigh 51 × 1 MB + 49 × 2 MB = 149 MB. So `--batch-max-weight` above about 33 is exposed under today's rules, and the post-fork rules are exposed at the default. The worst cases below come from [`scripts/e001_batch_weight_sim.py`](../scripts/e001_batch_weight_sim.py), which searches windows of k small blocks followed by 100 − k blocks of one weight, and the reverse, keeping only windows the rules can produce (a search over those shapes, not a proof). The three caps are defined under "Effect on the proposed fix".
+
+| rules | `--batch-max-weight` | unpatched | patch as proposed | step-51 cap | window-aware cap |
+|---|---|---|---|---|---|
+| today | 10 (default) | 89.5 MB | 89.5 | 89.5 | 89.5 |
+| today | 30 | 89.7 | 89.7 | 89.7 | 89.7 |
+| today | 40 | 119.3 | 119.3 | 118.7 | 89.7 |
+| today | 50 | 149.4 | 148.2 | 148.2 | 89.7 |
+| v17 | 10 (default) | 186.3 | 116.4 | 88.9 | 88.9 |
+| v17 | 30 | 186.6 | 116.7 | 89.2 | 89.2 |
+| v17 | 40 | 186.7 | 116.8 | 93.2 | 89.4 |
+| v17 | 50 | 186.8 | 129.3 | 115.9 | 90.0 |
+
+**Stressnet.** The trigger is the stressnet-specific 10 MB zone. At the wedge point the patched binary logged a limit of exactly 20,000,000 (2 × the zone), so the long-term median was at or below the zone and the shortened 10,080-block long-term window played no part.
+
+**Queued spans.** The bound above assumes the request starts at the chain tip, which is the wedge's steady state. When downloaded spans are queued ahead of the tip, the estimator uses `max_average_of_blocksize_in_queue()` (the largest per-span average), and the request starts after the queue. Then even today's rules allow a one-off oversize response. Example: a queued 100-block span averaging 96 kB, with 16 blocks of 600 kB at its end, followed by a 100-block request that can reach 116 MB of weight. From reading the code (not tested), this should not wedge. `on_connection_close` calls `flush_spans(id, false)`, which only drops spans that have no blocks yet, so the queued span is kept and added, and the next estimate sees the 600 kB blocks. The oversize close takes that path: the check at `levin_protocol_handler_async.h:619` returns false from `handle_recv`, the connection is torn down, the levin handler's destructor calls `del_connection`, which calls `on_connection_close` (`levin_protocol_handler_async.h:709`), and `net_node.inl:2841` forwards it to the protocol handler's `on_connection_close`. `drop_connection_with_score`, whose flush-all flag is set at runtime, is not on that path. Traced by reading, not tested.
+
+**Effect on the proposed fix.** From a quiet tip, the limit L = 2F holds for 51 blocks and can then double. So it can't rise within a 4-block batch in the wedge state. The step that matters comes after block 51: a batch of N > 51 blocks from a quiet tip can weigh up to about (2N − 51) × L. The patch caps N at 0.9 × 100 MB / L, which only accounts for L:
+
+| F | patch cap | max batch weight | corrected cap | max batch weight |
+|---|---|---|---|---|
+| 300 kB (mainnet today) | 100 | 89.4 MB | 100 | 89.4 MB |
+| 500 kB | 90 | 129.0 MB | 70 | 89.0 MB |
+| 625 kB (`fcmp++-stage` v17) | 72 | 116.3 MB | 61 | 88.8 MB |
+| 10 MB (stressnet) | 4 | 80.0 MB | 4 | 80.0 MB |
+
+The corrected cap counts the step: `cap = (cap + 51) / 2` when `cap > 51`. That fixes the quiet-tip case (the "step-51 cap" column in the table under "Larger `--batch-max-weight`") but still fails when the window already holds blocks above F, because then the median catches up after one block. The limit to budget for is the one the chain will have once the median reaches W, the largest block in the window, and that is at most L_W = max(L, 2W). From any window, blocks 1-50 are at most L_W (with fewer than 50 new blocks, both middle values of the median are old blocks, so at most W), block 51 at most 1.5 L_W, block 52 at most 2.5 L_W, and blocks 53-100 at most 2 L_W (the next doubling needs 51 blocks above L_W). So N blocks weigh at most (2N − 50) × L_W. The estimator already has W as `max_weight`. This is the "window-aware cap" column; it has been simulated, not built or tested:
+
+```cpp
+// The limit can only rise once the short-term median does, and until 50 more blocks have
+// arrived the median is at most W, the largest block in the window. So budget for
+// L = max(current limit, 2 * W) for the next 50 blocks and 2 * L after that.
+const uint64_t budget_limit = std::max<uint64_t>(weight_limit, 2 * max_weight);
+size_t cap = std::max<uint64_t>(1, budget / budget_limit);
+const size_t step = CRYPTONOTE_REWARD_BLOCKS_WINDOW / 2;
+if (cap > step)
+  cap = (cap + step) / 2;
+```
+
+In the simulation this keeps every batch at or under 90.0 MB of weight under both rule sets for every `--batch-max-weight` up to 50, keeps 100-block batches on today's quiet mainnet, and gives 61 blocks on a quiet post-fork tip. It only partly covers the queued-span case, since W doesn't include queued blocks; backoff on failure would.
 
 ## Workaround
 Run with `--block-sync-size N` using a small N (5 worked) while syncing through such a stretch.
@@ -108,7 +168,7 @@ With the unpatched binary the default-settings run stays at 3,105,401 indefinite
 
 **Trade-offs and assumptions:**
 - The cap applies only while the block weight limit is large. On stressnet (limit 20 MB) it allows 4 blocks per request. Through this heavy window throughput was unchanged (verification-bound: 30 blocks / 90 s in both runs). During long empty stretches it means more round trips per block than the 100-block batches; requests to several peers still run in parallel.
-- On mainnet, with a block weight limit around 600 kB, the cap works out to ~150 blocks, above `BLOCKS_MAX_WINDOW` (100), so behavior is unchanged.
+- On mainnet, with a block weight limit around 600 kB, the cap works out to ~150 blocks, above `BLOCKS_MAX_WINDOW` (100), so behavior is unchanged. That holds for today's rules. At the v17 zone in `fcmp++-stage` (limit 1.25 MB) the cap is 72 blocks, which is not enough, and under today's rules it doesn't protect nodes run with `--batch-max-weight` 40 or above; see "Does mainnet permit this pattern?" for both and for the window-aware cap that does.
 - The cap relies on a block's serialized size (block blob + tx blobs + small framing) not exceeding its weight by more than the 10% margin. Measured on FCMP++ blocks: 0.82-0.84 bytes per unit of weight. For other tx versions I believe weight ≥ size by construction (clawback); please confirm.
 - The limit is read at the current tip; it could rise within a 4-block batch. The 10% margin absorbs a small rise, and the backoff below would make this airtight.
 
@@ -123,3 +183,4 @@ While a requester is wedged, the serving peer rebuilds and sends a ~134 MB respo
 
 ## Related
 - seraphis-migration/monero#157: the same 100 MB levin limit hit by the txpool-complement response.
+- monero-project/research-lab#154 ("Limit blocks to 32 MB", open): treats the 100 MB levin limit as a problem only for a single block over 100 MB. It settled on no hard cap and slower scaling, which "means we have years warning to fix how blocks are sent around the network" (Boog900, 2026-01-23). This issue hits the limit with a batch of blocks that are each at most 2.5 MB under the agreed post-fork rules, reachable as soon as the fork activates. So that timeline doesn't cover batched sync, and a per-block cap wouldn't prevent it.
