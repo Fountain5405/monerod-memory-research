@@ -1,0 +1,16 @@
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| base | 3 | 1,178 (1,036-1,461) | 1,306 (1,206-1,597) | 4,120 (3,975-4,247) | 150 (147-151) | 1,106 (973-1,229) | 57 (57-57) | 1,117 (1,117-1,123) | 1,322 (1,317-1,328) | all yes |
+| e004c | 3 | 1,284 (1,194-1,459) | 1,416 (1,363-1,585) | 4,132 (4,047-4,154) | 161 (160-161) | 1,113 (1,026-1,128) | 58 (57-80) | 1,128 (1,123-1,128) | 832 (831-833) | all yes |
+| e004e | 3 | 724 (721-729) | 919 (888-926) | 3,740 (3,725-3,749) | 170 (166-170) | 721 (709-725) | 57 (57-57) | 1,117 (1,117-1,123) | 845 (844-851) | all yes |
+| e007 | 3 | 918 (918-934) | 1,104 (1,091-1,118) | 3,991 (3,990-4,005) | 154 (154-157) | 918 (918-934) | 55 (55-78) | 1,117 (1,117-1,117) | 1,435 (1,429-1,436) | all yes |
+| combo | 3 | 722 (720-733) | 890 (879-901) | 3,798 (3,793-3,810) | 172 (172-172) | 714 (713-726) | 55 (55-56) | 1,123 (1,123-1,128) | 930 (927-936) | all yes |
+
+e004c vs base (medians): peak RssAnon MB +9.0%; peak Private_Dirty MB +8.4%; peak RSS MB +0.3%; wall s +7.3%; post-idle RssAnon MB +0.6%; read MB +1.8%; write MB +1.0%; CPU s -37.1%
+  peak anon ranges overlap: yes (base 1,036-1,461, e004c 1,194-1,459)
+e004e vs base (medians): peak RssAnon MB -38.5%; peak Private_Dirty MB -29.6%; peak RSS MB -9.2%; wall s +13.3%; post-idle RssAnon MB -34.8%; read MB +0.0%; write MB +0.0%; CPU s -36.1%
+  peak anon ranges overlap: no (base 1,036-1,461, e004e 721-729)
+e007 vs base (medians): peak RssAnon MB -22.1%; peak Private_Dirty MB -15.5%; peak RSS MB -3.1%; wall s +2.7%; post-idle RssAnon MB -17.0%; read MB -3.5%; write MB +0.0%; CPU s +8.5%
+  peak anon ranges overlap: no (base 1,036-1,461, e007 918-934)
+combo vs base (medians): peak RssAnon MB -38.7%; peak Private_Dirty MB -31.9%; peak RSS MB -7.8%; wall s +14.7%; post-idle RssAnon MB -35.4%; read MB -3.5%; write MB +0.5%; CPU s -29.7%
+  peak anon ranges overlap: no (base 1,036-1,461, combo 720-733)

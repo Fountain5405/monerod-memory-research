@@ -230,3 +230,15 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
   - CPU seconds are not comparable across thread counts, because SMT siblings inflate CPU time; wall is the metric.
   - Small-tx window memory: base 1.0-1.5 GB, e004c 1.2-1.5, e004e 0.72, e007 0.92, combo 0.72-0.73 GB.
 - Next: E012 makes the cap and the trim adaptive to proof size (patch dry-run clean, see STATE). The goal is to keep the window memory win and lose the small-tx cost.
+
+## 2026-11-03 07:08-07:12 E011 DONE: small-tx cost = cap +7%, trim +6%, streaming +3%
+- All 15 runs are done; all hashes match .22; no shadow lanes. The chain ended at 07:07:51 (governor restored).
+- Medians for 1,000 blocks of 2-input txs:
+  - base 150 s
+  - e004c 161 s (+7.3%)
+  - e004e 170 s (+13.3%)
+  - e007 154 s (+2.7%)
+  - combo 172 s (+14.7%)
+- Ranges are ≤ 4 s. The effects add up. Peak anon: base 1,178, e004c 1,284, e004e 724, e007 918, combo 722 MB.
+- Written up in experiments/E011-small-tx-attribution (F23); SUMMARY updated.
+- E012 started on its own at 07:08: tree committed 4a51d434d, cargo/ninja build running.

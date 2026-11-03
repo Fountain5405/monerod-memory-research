@@ -1,0 +1,11 @@
+chain e011 start 2026-11-03T04:59:37+00:00
+e010 complete; starting 2026-11-03T04:59:37+00:00
+patched ab_window.sh v4 and ab_stats.py
+no shadow processes
+RESULT OK height 3106400
+snapshot /home/optimizer/work/research-artifacts/snapshots/stressnet_h3106400 made 2026-11-03T05:15:38+00:00; df: /dev/mapper/ubuntu--vg-ubuntu--lv  217G  172G   36G  84% /
+txs=28891 inputs=58025 mean_inputs=2.01
+governor schedutil -> performance
+governor restored to schedutil
+done 2026-11-03T07:07:51+00:00
+CHAIN_E011_COMPLETE
