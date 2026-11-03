@@ -45,4 +45,24 @@ Builds B and C each still run the whole gadget pass (c1 and c2 are interleaved i
 ## Plan
 Needs cargo on hydrogen, so it runs after E014's timing runs (~14:20): implement on a new branch of ~/work/monero-oxide-e007 from 31c26d9 (not on top of E007), crate tests, then a monerod build (`adapt` with the E007 cargo patch pointed at the new branch) and the standard validation: heavy-window A/B vs adapt and base, small-tx window, negdiff vs base, min_mem, long resync. If it holds, E017 replaces E007 in `patches/` and in the recommended build, and E016's base-equivalence test is written against it instead.
 
-**Status:** planned 2026-11-03 12:10, not yet implemented.
+## Implementation (2026-11-03 12:10-12:45)
+Branch `e017-folded-verify` on upstream monero-oxide 31c26d9 (built and tested on box81; also as a worktree on hydrogen). Two commits: (1) refactor only, `verifier_layout` + `build_verifier_circuits` extracted so the circuits can be built more than once; (2) the fold. Sizes vs 31c26d9: generalized-bulletproofs **+25 lines, additive** (`#[derive(Clone)]` on `VerifierTranscript`, `peek_z`); circuit-abstraction +171/-6 (Discarded/Folded modes, the `FoldedConstraints` accumulator, `CircuitStatementError`); fcmps +370/-82 (of which the refactor commit is pure motion); tests +228 plus a benchmark. The audited `ArithmeticCircuitStatement::verify` is byte-identical.
+
+Compile history: round 1 failed (cloning `PointWithDlog` / `TranscriptedInput` for the rebuilds needs `Clone` bounds the parameter types lack); fixed by recomputing the layout per build. Round 2 clean.
+
+## Crate-level results (box81, 2026-11-03)
+- **`test_folded_verify_matches_stored` PASS:** on 8 (inputs, layers) shapes, `Fcmp::verify` (folded) and `Fcmp::verify_stored` (the stored circuit through the UNCHANGED stock `verify`) leave the batch verifiers field-by-field identical, and both batches verify.
+- **`test_folded_verify_matches_stored_on_tampered_proofs` PASS:** 64 random single-bit flips per shape (4 shapes) plus the genuine proof with two inputs swapped: identical Ok/Err decisions, identical verifier state where Ok, and the batch never verifies.
+- `test_discarded_and_folded_circuit_statements` PASS: a discarded circuit cannot yield a statement; a folded circuit refuses Pedersen commitments.
+- **Peak heap of one verification** (counting global allocator, `verify_memory_benchmark`, 8 layers; `random_paths` allows at most 18 paths, so 128-input proofs are measured at the node level in E018):
+
+| inputs | stored (stock) | folded (E017) | change | stored ms | folded ms |
+|---|---|---|---|---|---|
+| 1 | 1.97 MB | 0.41 MB | -79% | 5 | 10 |
+| 2 | 3.93 MB | 0.78 MB | -80% | 9 | 18 |
+| 8 | 15.5 MB | 3.0 MB | -81% | 32 | 66 |
+| 16 | 31.1 MB | 6.1 MB | -81% | 69 | 133 |
+
+The memory saving per proof is larger than the E007 micro-benchmark showed (0.53 / 1.05 / 4.1 MB for 1 / 2 / 8 inputs). The CPU cost at these sizes is about 2x per verification (three circuit builds instead of one, and no quadratic fold to remove at small input counts); E007 measured +40-50%. What this means for node wall time on small-tx blocks is measured in E018 (the E007 crate-level +40-50% became +2.7% at the node).
+
+**Status:** crate tests passing on box81 12:45; GBP / circuit-abstraction suites and the existing fcmps suite running; node-level measurement E018 armed on hydrogen.
