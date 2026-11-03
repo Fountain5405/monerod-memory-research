@@ -291,3 +291,16 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
   - The whole step took only 23 s, which I checked: the log counts are 8 and 16.
 - (c) min_mem adapt = 1,866 MB (largest fail 1,765, tol 125). That is the same grid point as the combo: at 125 MB resolution they are equal, and -67.5% vs base. All fails were OOM kills.
 - (d) Long resync: base_bss5 1,345 s / 5,613 MB (E010: 1,365 / 5,603). adapt_default was at 3,107,463 at 10:47; adapt_bss5 comes after it.
+
+## 2026-11-03 11:15-11:25 Owner question "how real is ~70%?"; E015 (safety) and E014 (small machines) queued
+- 11:15: adapt_default long resync done: 1,305 s vs base_bss5 1,345 s (-3%), peak 1,663 vs 5,613 MB (-70%), post-idle 1,267 vs 4,642 (-73%), hash yes. adapt_bss5 is running.
+- The owner asked how real the ~70% is. My answer:
+  - Solid: it reproduces across sessions; two metrics agree (anon peak and the minimum cgroup limit); the guardrails held; the mechanisms are understood.
+  - Limits:
+    - It is a worst-case window: 2-input blocks give ~-30%.
+    - One 24-thread machine: the base peak scales with threads.
+    - About 2/3 of the win is unaudited crypto (E007).
+    - glibc-only trim; FCMP++ is still a beta.
+- The owner then asked for 'the next thing that needs doing to show this works and is safe'. Queued:
+  - E015 safety: a differential negtest with the base as the oracle. Many more cases (32 flips per proof, proof swaps, a mix of input counts), and the same cases for both builds.
+  - E014: a thread-count sweep, to see whether the win holds on 1-4 thread machines.
