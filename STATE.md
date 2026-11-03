@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 05:03
+Last updated: 2026-11-03 06:51
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -20,7 +20,8 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 - minmem chain DONE 03:23 (E009: base 5,750 MB vs combo 1,866 MB minimum MemoryMax, -67.5%). Was: (scripts/run_minmem.sh): waits for PROFILE_COMPLETE, then runs min_mem.sh for combo (ref 117 s, lo 750, hi 4000, tol 125) and base (ref 220 s, lo 2000, hi 8000, tol 250). Governor pinned for the chain. Log ~/work/research-artifacts/minmem.chain, ending CHAIN_MINMEM_COMPLETE; per-label csv/summary in ~/work/research-artifacts/minmem/.
 - E010 long resync DONE 04:58 (experiments/E010-long-resync): combo peak -73%, idle -75%, no growth; wall +3.6% overall; small-tx blocks +14.8% (F22).
 - **E011 small-tx attribution RUNNING** (scripts/run_e011.sh, restarted 04:59 after the v4 patch's anchor failed at 04:58; the failed chain log is e011.chain.failed-v4patch): applies ab_window v4 (START_H, cpu_s), makes the working snapshot snapshots/stressnet_h3106400 (deletable, NOT a baseline), records the window's input mix, then runs a 5-arm A/B (base, e004c, e004e, e007, combo; all --block-sync-size 5) over 3,106,400 -> 3,107,400, 3 alternating rounds, governor pinned. Log ~/work/research-artifacts/e011.chain (ends CHAIN_E011_COMPLETE; 'SHADOW seen' lines mean lanes ran during it). Est. ~2 h.
-- Snapshots: stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
+- **E012 adaptive cap+trim QUEUED** (scripts/run_e012.sh, started 06:50, waits for CHAIN_E011_COMPLETE): builds ~/work/monero-fcmp-adapt (branch combo-adapt = combo + patch_e012_adapt.py: cap only when the largest proof has >= 16 inputs; trim after heavy calls, else at most every 10 s). Then (a) a small-tx A/B, base/combo/adapt, into e012_small/, and (b) a heavy-window A/B, combo/adapt/e007, into e012_heavy/. 3 rounds each. Log ~/work/research-artifacts/e012.chain (ends CHAIN_E012_COMPLETE). Est. ~2.5 h.
+- Snapshots: stressnet_h3106400 (WORKING copy for E011/E012, deletable when done), stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
 ## Queue (do the first item that is unblocked)
 A. (DONE 02:56: the 50% verify hotspot is gone from the combo profile; recorded in E007.)

@@ -212,3 +212,21 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Owner pinged with the E010 result (as requested).
 - Timestamp fix (05:03): I had pre-written 05:05 into STATE and this heading before the work finished. The box clock read 05:02 at commit, so I corrected them. Rule: take times from the box clock, never estimate ahead.
 - E011 at 05:02: prep is running (wedge snapshot restored, base syncing to 3,106,400). 56 GB free.
+
+## 2026-11-03 06:47-06:51 Check-in: E011 12/15 runs; slowdown is the cap + trim, not E007; E012 queued
+- Box: no shadow lanes, 42 GB free (the working snapshot h3106400 took 18 GB), load ~2-3 (our node).
+- E011 prep:
+  - Snapshot h3106400 made 05:15; pop_to RESULT OK.
+  - Input mix of 3,106,400..3,107,399: 28,891 txs, mean 2.01 inputs (2-input 28,186; 1-input 685). Only 4 blocks hold a proof with >= 16 inputs.
+- E011 interim (12 of 15 runs; walls in s for 1,000 blocks; cpu_s = utime + stime):
+  - base 151/150/147, cpu ~1,320
+  - e004c 161/160/161 (**+7%**), cpu ~832 (-37%)
+  - e004e 170/170 (**+13%** vs base, so the trim adds +6% on top of the cap), cpu ~848
+  - e007 157/154 (**+3%**), cpu ~1,435 (+8.5%)
+  - combo 172/172 (+15%), cpu ~930
+- Reading:
+  - The combo's small-tx regression is mostly the two cheap fixes, which were designed for the old stored verifier: the batch cap (SMT helps small proofs, so the cap loses wall even though it saves CPU seconds) and the per-block trim (~9 ms per block, from the trim call and/or re-faulting).
+  - E007's double build costs only ~3% wall here.
+  - CPU seconds are not comparable across thread counts, because SMT siblings inflate CPU time; wall is the metric.
+  - Small-tx window memory: base 1.0-1.5 GB, e004c 1.2-1.5, e004e 0.72, e007 0.92, combo 0.72-0.73 GB.
+- Next: E012 makes the cap and the trim adaptive to proof size (patch dry-run clean, see STATE). The goal is to keep the window memory win and lose the small-tx cost.
