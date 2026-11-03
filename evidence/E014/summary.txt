@@ -1,0 +1,46 @@
+ab_window start 2026-11-03T11:43:01+00:00 end=3105441 timeout=1800 rounds=3 arms=6
+arm base_c4: /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod --block-sync-size 5 --max-concurrency 4 | 2d1e3e9c17518b12
+arm adapt_c4: /home/optimizer/work/monero-fcmp-adapt/build/beta31-adapt/bin/monerod --block-sync-size 5 --max-concurrency 4 | d6f93d0664604726
+arm base_c2: /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod --block-sync-size 5 --max-concurrency 2 | 2d1e3e9c17518b12
+arm adapt_c2: /home/optimizer/work/monero-fcmp-adapt/build/beta31-adapt/bin/monerod --block-sync-size 5 --max-concurrency 2 | d6f93d0664604726
+arm base_c1: /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod --block-sync-size 5 --max-concurrency 1 | 2d1e3e9c17518b12
+arm adapt_c1: /home/optimizer/work/monero-fcmp-adapt/build/beta31-adapt/bin/monerod --block-sync-size 5 --max-concurrency 1 | d6f93d0664604726
+ 11:43:01 up 1 day, 15 min,  4 users,  load average: 1.15, 1.83, 3.93
+no shadow processes
+[r1_base_c4] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T11:46:59+00:00
+[r1_base_c4] --block-sync-size 5 --max-concurrency 4 -> h=3105441 wall=261s peak_anon=1351MB post_idle_anon=1313MB tip=3105446 yes
+[r1_adapt_c4] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T11:55:49+00:00
+[r1_adapt_c4] --block-sync-size 5 --max-concurrency 4 -> h=3105441 wall=223s peak_anon=1064MB post_idle_anon=675MB tip=3105446 yes
+[r1_base_c2] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T12:03:55+00:00
+[r1_base_c2] --block-sync-size 5 --max-concurrency 2 -> h=3105441 wall=498s peak_anon=1348MB post_idle_anon=1314MB tip=3105446 yes
+[r1_adapt_c2] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T12:16:32+00:00
+[r1_adapt_c2] --block-sync-size 5 --max-concurrency 2 -> h=3105441 wall=379s peak_anon=884MB post_idle_anon=628MB tip=3105446 yes
+[r1_base_c1] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T12:27:26+00:00
+[r1_base_c1] --block-sync-size 5 --max-concurrency 1 -> h=3105441 wall=840s peak_anon=1260MB post_idle_anon=1229MB tip=3105446 yes
+[r1_adapt_c1] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T12:45:50+00:00
+[r1_adapt_c1] --block-sync-size 5 --max-concurrency 1 -> h=3105441 wall=612s peak_anon=912MB post_idle_anon=602MB tip=3105441 yes
+[r2_adapt_c1] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T13:00:36+00:00
+[r2_adapt_c1] --block-sync-size 5 --max-concurrency 1 -> h=3105441 wall=612s peak_anon=893MB post_idle_anon=621MB tip=3105446 yes
+[r2_base_c1] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T13:15:22+00:00
+[r2_base_c1] --block-sync-size 5 --max-concurrency 1 -> h=3105441 wall=852s peak_anon=1252MB post_idle_anon=1195MB tip=3105446 yes
+[r2_adapt_c2] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T13:33:57+00:00
+[r2_adapt_c2] --block-sync-size 5 --max-concurrency 2 -> h=3105441 wall=379s peak_anon=941MB post_idle_anon=609MB tip=3105446 yes
+[r2_base_c2] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T13:44:40+00:00
+[r2_base_c2] --block-sync-size 5 --max-concurrency 2 -> h=3105441 wall=507s peak_anon=1077MB post_idle_anon=960MB tip=3105446 yes
+[r2_adapt_c4] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T13:57:44+00:00
+[r2_adapt_c4] --block-sync-size 5 --max-concurrency 4 -> h=3105441 wall=210s peak_anon=1050MB post_idle_anon=692MB tip=3105446 yes
+[r2_base_c4] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T14:05:36+00:00
+[r2_base_c4] --block-sync-size 5 --max-concurrency 4 -> h=3105441 wall=281s peak_anon=2193MB post_idle_anon=2193MB tip=3105441 yes
+[r3_base_c4] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T14:14:52+00:00
+[r3_base_c4] --block-sync-size 5 --max-concurrency 4 -> h=3105441 wall=289s peak_anon=2020MB post_idle_anon=1997MB tip=3105446 yes
+[r3_adapt_c4] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T14:24:13+00:00
+[r3_adapt_c4] --block-sync-size 5 --max-concurrency 4 -> h=3105441 wall=232s peak_anon=1060MB post_idle_anon=667MB tip=3105446 yes
+[r3_base_c2] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T14:32:44+00:00
+[r3_base_c2] --block-sync-size 5 --max-concurrency 2 -> h=3105441 wall=506s peak_anon=1246MB post_idle_anon=1194MB tip=3105446 yes
+[r3_adapt_c2] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T14:45:28+00:00
+[r3_adapt_c2] --block-sync-size 5 --max-concurrency 2 -> h=3105441 wall=361s peak_anon=928MB post_idle_anon=592MB tip=3105446 yes
+[r3_base_c1] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T14:56:00+00:00
+[r3_base_c1] --block-sync-size 5 --max-concurrency 1 -> h=3105441 wall=850s peak_anon=1253MB post_idle_anon=1203MB tip=3105446 yes
+[r3_adapt_c1] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-03T15:14:47+00:00
+[r3_adapt_c1] --block-sync-size 5 --max-concurrency 1 -> h=3105441 wall=609s peak_anon=879MB post_idle_anon=621MB tip=3105441 yes
+AB_COMPLETE
