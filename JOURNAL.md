@@ -273,3 +273,21 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Post-idle is adapt 1,333 vs combo 1,107 MB: no idle trim.
 - E013's gate passed at 09:15:55; its heavy-window A/B base vs adapt is running.
 - Written up in experiments/E012-adaptive-cap-trim (F24); SUMMARY updated.
+
+## 2026-11-03 10:47-10:48 Check-in: E013 (a)-(c) done; adapt holds the headline; long resync running
+- Box: no shadow lanes, 35 GB free, load ~5 (our node).
+- (a) Heavy-window A/B, base vs adapt, 3 rounds, all 6 hashes match:
+  - peak RssAnon 5,600 (5,403-5,617) → 1,780 (1,762-1,816) MB: **-68.2%**
+  - Private_Dirty -67.8%
+  - post-idle 4,993 → 1,368 MB: -72.6%
+  - wall 222 → 111 s: -50.0%
+  - CPU s -78.8%
+  - writes unchanged
+  - adapt's peak here (1,780) is above its E012 median (1,639). So the 12% gap vs the combo in E012 was session variance, as suspected; adapt ≈ combo on the heavy window (combo medians 1,751 in E008, 1,861 in E012).
+- (b) negtest PASS:
+  - 128-input tx at 3,105,424: 8/8 tampered rejected.
+  - 8- and 2-input txs at 3,105,414: 16/16 rejected.
+  - Every rejection logged "Failed to verify input FCMP++ signatures"; all originals accepted.
+  - The whole step took only 23 s, which I checked: the log counts are 8 and 16.
+- (c) min_mem adapt = 1,866 MB (largest fail 1,765, tol 125). That is the same grid point as the combo: at 125 MB resolution they are equal, and -67.5% vs base. All fails were OOM kills.
+- (d) Long resync: base_bss5 1,345 s / 5,613 MB (E010: 1,365 / 5,603). adapt_default was at 3,107,463 at 10:47; adapt_bss5 comes after it.

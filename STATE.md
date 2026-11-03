@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 09:16
+Last updated: 2026-11-03 10:48
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -21,7 +21,7 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 - E010 long resync DONE 04:58 (experiments/E010-long-resync): combo peak -73%, idle -75%, no growth; wall +3.6% overall; small-tx blocks +14.8% (F22).
 - E011 DONE 07:08 (experiments/E011-small-tx-attribution): small-tx wall vs base: cap +7.3%, cap+trim +13.3%, E007 +2.7%, combo +14.7% (F23).
 - E012 DONE 09:15 (experiments/E012-adaptive-cap-trim, F24): adapt small-tx +4.0% vs base (combo +15.2%); heavy window adapt 109 s / 1,639 MB vs combo 110 s / 1,861 MB; e007 2,338 MB.
-- **E013 validation of adapt RUNNING** (scripts/run_e013.sh; gate PASSED 09:15: heavy peak -11.9% vs combo, small wall +4.0% vs base). gate_e012.py requires adapt's heavy peak <= 1.10x combo and its small-tx wall <= 1.08x base (n>=3), else it stops. Steps: (a) heavy A/B base vs adapt, 3 rounds -> e013_ab/; (b) negtest at 3,105,424 and 3,105,414 -> e013_neg/; (c) min_mem adapt -> e013_minmem/; (d) long resync base_bss5/adapt_default/adapt_bss5 -> e013_long/. Log e013.chain (ends CHAIN_E013_COMPLETE). Est. ~3 h.
+- **E013 validation of adapt RUNNING** (scripts/run_e013.sh; gate PASSED 09:15). Done so far: (a) heavy A/B base vs adapt, 3 rounds: peak 5,600 → 1,780 MB (-68.2%), post-idle 4,993 → 1,368 (-72.6%), wall 222 → 111 s (-50.0%), writes unchanged, 6/6 hashes. (b) negtest PASS: 24/24 tampered rejected at the FCMP++ check, 3/3 originals OK. (c) min_mem adapt = 1,866 MB (largest fail 1,765), the same grid point as combo; -67.5% vs base 5,750. (d) the long resync is running in e013_long/: base_bss5 done (1,345 s, peak 5,613), adapt_default started 10:40, adapt_bss5 next. Log e013.chain (ends CHAIN_E013_COMPLETE); waiter armed.
 - Snapshots: stressnet_h3106400 (WORKING copy for E011/E012, deletable when done), stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
 ## Queue (do the first item that is unblocked)
