@@ -1,0 +1,55 @@
+   Compiling ciphersuite v0.4.2
+   Compiling dalek-ff-group v0.5.0
+   Compiling generalized-bulletproofs v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/generalized-bulletproofs)
+warning: variant `InconsistentWitness` is never constructed
+   --> crypto/generalized-bulletproofs/src/inner_product.rs:101:3
+    |
+ 93 | pub(crate) enum IpProveError {
+    |                 ------------ variant in this enum
+...
+101 |   InconsistentWitness,
+    |   ^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `IpProveError` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+   Compiling generalized-bulletproofs-circuit-abstraction v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/fcmps/circuit-abstraction)
+warning: `generalized-bulletproofs` (lib) generated 1 warning
+   Compiling generalized-bulletproofs-ec-gadgets v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/fcmps/ec-gadgets)
+   Compiling ec-divisors v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/divisors)
+   Compiling helioselene v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/helioselene)
+   Compiling full-chain-membership-proofs v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/fcmps)
+    Finished `release` profile [optimized] target(s) in 7.35s
+     Running unittests src/lib.rs (target/release/deps/full_chain_membership_proofs-efb0fe5d7e5eb006)
+
+running 1 test
+test tests::e007_measure_verify ... Output blinds took 64ms to calculate
+3 C1 branch blinds and 3 C2 branch blinds took 71ms to calculate
+E007 inputs=1 layers=7 | streaming: median 7325us (min 7291 max 7352), peak heap 518600 B (min 518600 max 518600) | stored: median 5209us (min 5190 max 5256), peak heap 1797512 B (min 1797512 max 1797512)
+Output blinds took 60ms to calculate
+4 C1 branch blinds and 3 C2 branch blinds took 74ms to calculate
+E007 inputs=1 layers=8 | streaming: median 7999us (min 7979 max 8054), peak heap 534632 B (min 534632 max 534632) | stored: median 5736us (min 5722 max 5752), peak heap 1968160 B (min 1968160 max 1968160)
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+8 C1 branch blinds and 6 C2 branch blinds took 150ms to calculate
+E007 inputs=2 layers=8 | streaming: median 13595us (min 13558 max 13609), peak heap 1045488 B (min 1045488 max 1045488) | stored: median 9345us (min 9306 max 9392), peak heap 3931160 B (min 3931160 max 3931160)
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+16 C1 branch blinds and 12 C2 branch blinds took 300ms to calculate
+E007 inputs=4 layers=8 | streaming: median 24866us (min 24785 max 24906), peak heap 2089824 B (min 2089824 max 2089824) | stored: median 16635us (min 16596 max 16944), peak heap 7876264 B (min 7876264 max 7876264)
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+Output blinds took 60ms to calculate
+32 C1 branch blinds and 24 C2 branch blinds took 600ms to calculate
+E007 inputs=8 layers=8 | streaming: median 47425us (min 47326 max 49899), peak heap 4096704 B (min 4096704 max 4096704) | stored: median 31751us (min 31661 max 33208), peak heap 15732424 B (min 15732424 max 15732424)
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 420.82s
+
