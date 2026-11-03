@@ -1,0 +1,50 @@
+2026-11-03 16:35:08.524	    7ab066e7f600	INFO	logging	contrib/epee/src/mlog.cpp:274	New log categories: *:WARNING,net:FATAL,net.http:FATAL,net.ssl:FATAL,net.p2p:FATAL,net.cn:FATAL,daemon.rpc:FATAL,global:INFO,verify:FATAL,serialization:FATAL,daemon.rpc.payment:ERROR,stacktrace:INFO,logging:INFO,msgwriter:INFO
+2026-11-03 16:35:08.524	    7ab066e7f600	INFO	logging	contrib/epee/src/mlog.cpp:274	New log categories: *:WARNING,net:FATAL,net.http:FATAL,net.ssl:FATAL,net.p2p:FATAL,net.cn:FATAL,daemon.rpc:FATAL,global:INFO,verify:FATAL,serialization:FATAL,daemon.rpc.payment:ERROR,stacktrace:INFO,logging:INFO,msgwriter:INFO
+2026-11-03 16:35:08.524	    7ab066e7f600	INFO	global	src/daemon/main.cpp:298	Monero 'Fluorine Fermi' (v0.19.0.0-beta.3.1-4a51d434d)
+2026-11-03 16:35:08.524	    7ab066e7f600	INFO	global	src/daemon/protocol.h:57	Initializing cryptonote protocol...
+2026-11-03 16:35:08.524	    7ab066e7f600	INFO	global	src/daemon/protocol.h:62	Cryptonote protocol initialized OK
+2026-11-03 16:35:08.525	    7ab066e7f600	INFO	global	src/daemon/core.h:64	Initializing core...
+2026-11-03 16:35:08.525	    7ab066e7f600	INFO	global	src/cryptonote_core/cryptonote_core.cpp:501	Loading blockchain from folder /home/optimizer/work/chains/stressnet/testnet/lmdb ...
+2026-11-03 16:35:08.701	    7ab066e7f600	WARNING	cn	src/cryptonote_core/cryptonote_core.cpp:693	When --block-sync-size defined, the --batch-max-weight is not going to have any effect.
+2026-11-03 16:35:08.701	    7ab066e7f600	INFO	global	src/cryptonote_core/cryptonote_core.cpp:710	Loading checkpoints
+2026-11-03 16:35:08.701	    7ab066e7f600	INFO	global	src/daemon/core.h:81	Core initialized OK
+2026-11-03 16:35:08.701	    7ab066e7f600	INFO	global	src/daemon/p2p.h:64	Initializing p2p server...
+2026-11-03 16:35:08.703	    7ab066e7f600	INFO	global	src/daemon/p2p.h:69	p2p server initialized OK
+2026-11-03 16:35:08.703	    7ab066e7f600	INFO	global	src/daemon/rpc.h:65	Initializing core RPC server...
+2026-11-03 16:35:08.703	    7ab066e7f600	INFO	global	contrib/epee/include/net/http_server_impl_base.h:94	Binding on 127.0.0.1 (IPv4):28081
+2026-11-03 16:35:08.716	    7ab066e7f600	INFO	global	src/daemon/rpc.h:71	core RPC server initialized OK on port: 28081
+2026-11-03 16:35:08.717	    7ab066e7f600	INFO	global	src/daemon/rpc.h:76	Starting core RPC server...
+2026-11-03 16:35:08.717	[SRV_MAIN]	INFO	global	src/daemon/rpc.h:81	core RPC server started ok
+2026-11-03 16:35:08.717	[SRV_MAIN]	INFO	global	src/daemon/p2p.h:79	Starting p2p net loop...
+2026-11-03 16:35:09.718	[P2P1]	INFO	global	src/cryptonote_core/cryptonote_core.cpp:1629	
+2026-11-03 16:35:09.718	[P2P1]	INFO	global	src/cryptonote_core/cryptonote_core.cpp:1629	**********************************************************************
+2026-11-03 16:35:09.718	[P2P1]	INFO	global	src/cryptonote_core/cryptonote_core.cpp:1629	The daemon will start synchronizing with the network. This may take a long time to complete.
+2026-11-03 16:35:09.718	[P2P1]	INFO	global	src/cryptonote_core/cryptonote_core.cpp:1629	
+2026-11-03 16:35:09.718	[P2P1]	INFO	global	src/cryptonote_core/cryptonote_core.cpp:1629	You can set the level of process detailization through "set_log <level|categories>" command,
+2026-11-03 16:35:09.718	[P2P1]	INFO	global	src/cryptonote_core/cryptonote_core.cpp:1629	where <level> is between 0 (no details) and 4 (very verbose), or custom category based levels (eg, *:WARNING).
+2026-11-03 16:35:09.718	[P2P1]	INFO	global	src/cryptonote_core/cryptonote_core.cpp:1629	
+2026-11-03 16:35:09.718	[P2P1]	INFO	global	src/cryptonote_core/cryptonote_core.cpp:1629	Use the "help" command to see the list of available commands.
+2026-11-03 16:35:09.718	[P2P1]	INFO	global	src/cryptonote_core/cryptonote_core.cpp:1629	Use "help <command>" to see a command's documentation.
+2026-11-03 16:35:09.718	[P2P1]	INFO	global	src/cryptonote_core/cryptonote_core.cpp:1629	**********************************************************************
+2026-11-03 16:35:09.720	[P2P2]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:550	[192.168.1.22:28080 OUT] Sync data returned a new top block candidate: 3105401 -> 3123868 [Your node is 18467 blocks (25.6 days) behind] 
+2026-11-03 16:35:09.720	[P2P2]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:550	SYNCHRONIZATION started
+2026-11-03 16:35:11.534	[P2P9]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:1821	Synced 3105406/3123868 (99%, 18462 left)
+2026-11-03 16:35:11.589	[P2P8]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:1821	Synced 3105411/3123868 (99%, 18457 left)
+2026-11-03 16:35:12.150	[P2P9]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:1821	Synced 3105416/3123868 (99%, 18452 left)
+2026-11-03 16:35:12.182	[P2P1]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:1821	Synced 3105421/3123868 (99%, 18447 left)
+2026-11-03 16:35:23.335	[P2P3]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:1821	Synced 3105426/3123868 (99%, 18442 left)
+2026-11-03 16:36:05.567	[P2P6]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:1821	Synced 3105431/3123868 (99%, 18437 left)
+2026-11-03 16:36:48.742	[P2P0]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:1821	Synced 3105436/3123868 (99%, 18432 left)
+2026-11-03 16:37:24.487	[P2P6]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:1821	Synced 3105441/3123868 (99%, 18427 left)
+2026-11-03 16:37:25.815	[RPC1]	INFO	global	src/p2p/net_node.inl:414	Host 192.168.1.22 blocked.
+2026-11-03 16:37:27.016	[P2P1]	INFO	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:1821	Synced 3105446/3123869 (99%, 18423 left)
+2026-11-03 16:37:27.016	[P2P1]	WARNING	global	src/cryptonote_protocol/cryptonote_protocol_handler.inl:3155	monerod is now disconnected from the network
+2026-11-03 16:38:10.826	[RPC0]	INFO	global	src/p2p/net_node.inl:428	Host 192.168.1.22 unblocked.
+2026-11-03 16:38:10.832	[SRV_MAIN]	INFO	global	src/daemon/p2p.h:81	p2p net loop stopped
+2026-11-03 16:38:10.832	[SRV_MAIN]	INFO	global	src/daemon/rpc.h:86	Stopping core RPC server...
+2026-11-03 16:38:10.832	[SRV_MAIN]	INFO	global	src/daemon/daemon.cpp:288	Node stopped.
+2026-11-03 16:38:10.889	[SRV_MAIN]	INFO	global	src/daemon/rpc.h:98	Deinitializing core RPC server...
+2026-11-03 16:38:10.890	[SRV_MAIN]	INFO	global	src/daemon/p2p.h:91	Deinitializing p2p...
+2026-11-03 16:38:11.761	[SRV_MAIN]	INFO	global	src/daemon/core.h:102	Deinitializing core...
+2026-11-03 16:38:11.818	[SRV_MAIN]	INFO	global	src/daemon/protocol.h:79	Stopping cryptonote protocol...
+2026-11-03 16:38:11.818	[SRV_MAIN]	INFO	global	src/daemon/protocol.h:83	Cryptonote protocol stopped successfully

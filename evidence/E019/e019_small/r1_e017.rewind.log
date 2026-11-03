@@ -1,0 +1,7 @@
+pop_to start 2026-11-03T17:30:51+00:00 bin=/home/optimizer/work/monero-fcmp/build/beta31/bin/monerod datadir=/home/optimizer/work/chains/stressnet target=3106400
+start height 3107405, txpool size 0
+after flush_txpool: txpool size 0
+17:30:55 popped 1000 in 2s -> height 3106405
+17:30:55 popped 5 in 0s -> height 3106400
+top block (index 3106399): ours=353775655dd3ffa5adf4f2ee0d9694a22a2ced10f3b6a9207958ebc3bc9d7691  .22=353775655dd3ffa5adf4f2ee0d9694a22a2ced10f3b6a9207958ebc3bc9d7691 ; final txpool size 0
+RESULT OK height 3106400

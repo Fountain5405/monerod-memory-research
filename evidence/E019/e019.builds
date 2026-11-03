@@ -1,0 +1,13 @@
+builds start 2026-11-03T15:11:47+00:00 load 0.02 0.02 0.00
+[base] d80596ad1 Merge pull request #506 from xmrack/fix-tx-request-queue-cap-stressnet start 2026-11-03T15:11:47+00:00
+[base] BUILD_OK 2026-11-03T15:15:10+00:00 sha=bac70623e27810ff Monero 'Fluorine Fermi' (v0.19.0.0-beta.3.1-release)
+[adapt] 4a51d434d E012: FCMP++ batch cap and malloc_trim adaptive to proof size start 2026-11-03T15:15:10+00:00
+[adapt] BUILD_OK 2026-11-03T15:17:15+00:00 sha=fba28e56e8ebb528 Monero 'Fluorine Fermi' (v0.19.0.0-beta.3.1-4a51d434d)
+[e017] 92f7ac279 E017: build fcmp_pp_rust against monero-oxide-e017 (folded verify) ins start 2026-11-03T15:17:15+00:00
+[e017] BUILD_OK 2026-11-03T15:19:19+00:00 sha=4ff51c27f9f89253 Monero 'Fluorine Fermi' (v0.19.0.0-beta.3.1-92f7ac279)
+  Hits:              456 / 1093 (41.72%)
+  Misses:            637 / 1093 (58.28%)
+  Hits:              456 / 1093 (41.72%)
+  Misses:            637 / 1093 (58.28%)
+/dev/mapper/ubuntu--vg-ubuntu--lv  107G   24G   79G  23% /
+BUILDS_OK

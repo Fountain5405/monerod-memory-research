@@ -59,7 +59,7 @@ A critical re-check of the raw data and source is in reports/REVIEW-70pct.md. Sh
 
 **Limits:**
 - **Worst-case workload.** 82% of the window's txs have 128 inputs. On 2-input blocks the saving is ~30%. The worst case does set what a node must provision, since anyone can fill blocks with max-input txs.
-- **One machine with 24 threads.** The stock node's peak scales with thread count (E003: 1.2 GB at 1 thread, 5.4 GB at 24), so part of the win is the 24-thread baseline. **E014 (done, experiments/E014-thread-sweep) measured base vs adapt at 4, 2 and 1 threads: peak -47.5% / -25.5% / -28.7%, post-idle -66% / -49% / -48%, and adapt is 21-28% faster at every thread count with 25-28% less CPU. So on a 4-thread machine the reduction is about half of the peak; on 1-2 threads about a quarter of the peak and half of the idle footprint, plus a speed-up. The 40% target holds from 4 threads up. E019 repeats the A/B on a real 6-core box (box81).**
+- **One machine with 24 threads.** The stock node's peak scales with thread count (E003: 1.2 GB at 1 thread, 5.4 GB at 24), so part of the win is the 24-thread baseline. **E014 (done, experiments/E014-thread-sweep) measured base vs adapt at 4, 2 and 1 threads: peak -47.5% / -25.5% / -28.7%, post-idle -66% / -49% / -48%, and adapt is 21-28% faster at every thread count with 25-28% less CPU. So on a 4-thread machine the reduction is about half of the peak; on 1-2 threads about a quarter of the peak and half of the idle footprint, plus a speed-up. The 40% target holds from 4 threads up.** **E019 (done, experiments/E019-box81-reproduction) is the review's second machine: on box81 (Ryzen 5 5600G 6c/12t, 14 GB, binaries built there) adapt is -61.5% peak / -71% post-idle / -43% wall / -73% CPU on the heavy window and -33% peak at +5% wall on small-tx blocks, 18/18 hashes, VmSwap 0 in every sample. Same picture as hydrogen with a smaller stock peak (3.4 GB at 12 threads vs 5.4 GB at 24).**
 - **About two thirds of the win is cryptographic code not yet reviewed by cryptographers** (E007, ~1,000 lines in monero-oxide). It was reviewed by me and then by an independent Fable-tier agent (reports/E007-crypto-review.md: no soundness bug, no new panic, fail-closed holds; one medium test gap, being closed). That is still not an audit. Without it, the ~15-line cap + trim changes give about -45%, and the zero-code `--max-concurrency 12` gives -40%.
 - `malloc_trim` is glibc-only. FCMP++ itself is still a beta (stressnet), not mainnet.
 
@@ -174,6 +174,6 @@ Two explanations of the mechanism, written at the owner's request: reports/HOW-I
 ## Still running / next
 - E014 thread-count sweep: done (above).
 - E018 (hydrogen): node-level measurement of the v2 / E017 folded verifier against base and adapt (heavy, small-tx, negdiff, min_mem, long resync).
-- E019 (box81, Ryzen 5 5600G 6c/12t, 14 GB): independent A/B base vs adapt vs e017 on the heavy and small-tx windows, the review's 'second machine'.
+- E019 (box81): done (above).
 - Base-equivalence test for E007 / v1 (the crypto review's F1): only if v1 stays the recommended series; v2 closes it by construction. Decide after E018.
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth); W002 measurement next.

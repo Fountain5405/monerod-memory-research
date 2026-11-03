@@ -1,0 +1,47 @@
+chain e019 start 2026-11-03T15:16:51+00:00
+builds and DB present 2026-11-03T15:42:52+00:00
+wedge snapshot h3105401 unpruned, 18883166208 bytes, streamed from hydrogen 2026-11-03T15:35:09+00:00; working copy made
+bac70623e27810ff
+fba28e56e8ebb528
+4ff51c27f9f89253
+idle check 2026-11-03T15:44:54+00:00: load 0.38 1.44 1.56; users:       4 user 
+governor powersave -> performance
+(a) heavy A/B done 2026-11-03T17:16:42+00:00
+(b) prep sync to 3,106,400 done 2026-11-03T17:23:54+00:00: [r1_base_prep] --block-sync-size 5 -> h=3106401 wall=374s peak_anon=3366MB post_idle_anon=2548MB tip=3106406 yes
+(c) small-tx A/B done 2026-11-03T17:56:23+00:00
+governor restored to powersave
+== e019_heavy
+| e017 | 3 | 1,207 (1,183-1,270) | 1,223 (1,209-1,293) | 2,441 (2,393-2,501) | 213 (210-213) | 851 (812-897) | 9 (9-32) | 466 (466-466) | 1,075 (1,067-1,075) | all yes |
+
+adapt vs base (medians): peak RssAnon MB -61.5%; peak Private_Dirty MB -60.9%; peak RSS MB -46.2%; wall s -42.9%; post-idle RssAnon MB -70.9%; read MB +0.0%; write MB +0.0%; CPU s -72.6%
+  peak anon ranges overlap: no (base 3,063-3,557, adapt 1,296-1,357)
+e017 vs base (medians): peak RssAnon MB -64.3%; peak Private_Dirty MB -63.9%; peak RSS MB -48.0%; wall s -10.5%; post-idle RssAnon MB -72.5%; read MB +0.0%; write MB +0.0%; CPU s -55.3%
+  peak anon ranges overlap: no (base 3,063-3,557, e017 1,183-1,270)
+r1_adapt max VmSwap kB 0
+r1_base max VmSwap kB 0
+r1_e017 max VmSwap kB 0
+r2_adapt max VmSwap kB 0
+r2_base max VmSwap kB 0
+r2_e017 max VmSwap kB 0
+r3_adapt max VmSwap kB 0
+r3_base max VmSwap kB 0
+r3_e017 max VmSwap kB 0
+== e019_small
+| e017 | 3 | 721 (721-731) | 900 (859-910) | 3,713 (3,177-3,777) | 174 (172-176) | 710 (701-713) | 0 (0-0) | 1,139 (1,137-1,152) | 1,218 (1,212-1,236) | all yes |
+
+adapt vs base (medians): peak RssAnon MB -33.2%; peak Private_Dirty MB -28.0%; peak RSS MB -7.3%; wall s +5.4%; post-idle RssAnon MB -18.5%; write MB +0.1%; CPU s +9.7%
+  peak anon ranges overlap: no (base 964-1,252, adapt 727-738)
+e017 vs base (medians): peak RssAnon MB -33.9%; peak Private_Dirty MB -29.5%; peak RSS MB -0.9%; wall s +16.8%; post-idle RssAnon MB -16.8%; write MB +1.0%; CPU s +25.7%
+  peak anon ranges overlap: no (base 964-1,252, e017 721-731)
+r1_adapt max VmSwap kB 0
+r1_base max VmSwap kB 0
+r1_e017 max VmSwap kB 0
+r2_adapt max VmSwap kB 0
+r2_base max VmSwap kB 0
+r2_e017 max VmSwap kB 0
+r3_adapt max VmSwap kB 0
+r3_base max VmSwap kB 0
+r3_e017 max VmSwap kB 0
+/dev/mapper/ubuntu--vg-ubuntu--lv  107G   59G   44G  58% /
+done 2026-11-03T17:56:23+00:00
+CHAIN_E019_COMPLETE
