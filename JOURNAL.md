@@ -188,7 +188,7 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Candidates: E007's double circuit build (Discard pass + Accumulate pass; the old fold was cheap at low input counts), E004c's thread cap (SMT may help small proofs), or E004e's per-block malloc_trim (fixed cost × many blocks). The 40-block window could not see any of these, since it is 82% 128-input txs.
 - E011 queued to separate them (see STATE). ab_window.sh v4 is applied only after E010 finishes, because editing a running bash script is unsafe.
 
-## 2026-11-03 04:58-05:05 E010 DONE: memory holds over 18k blocks; wall +3.6% (small-tx +15%)
+## 2026-11-03 04:58-05:03 E010 DONE: memory holds over 18k blocks; wall +3.6% (small-tx +15%)
 - combo_bss5 finished at 04:58. All three arms match .22's hash.
 - Combo vs base (both bss5):
   - peak 5,603 → 1,503 MB (-73.2%)
@@ -210,3 +210,5 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
   - segment_rates.py: per-segment seconds from Synced lines.
   - mem_segments.py: RssAnon per height segment.
 - Owner pinged with the E010 result (as requested).
+- Timestamp fix (05:03): I had pre-written 05:05 into STATE and this heading before the work finished. The box clock read 05:02 at commit, so I corrected them. Rule: take times from the box clock, never estimate ahead.
+- E011 at 05:02: prep is running (wedge snapshot restored, base syncing to 3,106,400). 56 GB free.

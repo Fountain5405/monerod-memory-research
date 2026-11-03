@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 05:05
+Last updated: 2026-11-03 05:03
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -25,8 +25,8 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 ## Queue (do the first item that is unblocked)
 A. (DONE 02:56: the 50% verify hotspot is gone from the combo profile; recorded in E007.)
 B. (DONE 03:30: E009 written up; owner informed.)
-C. (DONE 05:05: E010 written up; owner pinged.)
-D. reports/SUMMARY.md: E010 filled in 05:05 (bottom line now says speed is mixed). Fill in E011 when done.
+C. (DONE 05:02: E010 written up; owner pinged.)
+D. reports/SUMMARY.md: E010 filled in 05:02 (bottom line now says speed is mixed). Fill in E011 when done.
 E. RUNNING as E011. When done: ab_stats.py on ~/work/research-artifacts/e011/results.csv (wall and cpu_s per arm), window_inputs mix from e011/window_inputs_3106400-3107399.txt; write experiments/E011; if E007 is the cause, consider (a) skipping the double build for proofs with few inputs (use the stored path, where the old fold is cheap), or (b) a cheaper Discard pass. If E004c is the cause, cap only for large proofs. If E004e, trim every N blocks or only after large batches. Then delete snapshots/stressnet_h3106400 if disk is needed (it is a working copy).
 F. Fix the perf_classify.py regex and the stack_attrib.py owning-frame view (low priority).
 G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tree cache is bounded by reorg depth except registered outputs, which are tiny; peak candidates are refresh-time transients). NEXT: W002 measure refresh RSS/heaptrack of a fresh wallet over the dense stretch against OUR node, after E010. Also: stagenet/master comparison, monerosim scenarios.
