@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 11:25
+Last updated: 2026-11-03 11:26
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -44,6 +44,8 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 
 ## Needs owner (do not act on these alone)
 - E001 upstream filing: READY (tested fix included, 2026-11-02 21:10). The owner will paste reports/E001-sync-wedge-ISSUE.md into the upstream repo themselves, once the prototype fix has been tested (E001-fix in queue). Never post it ourselves.
+- E001: the owner's 72a62f5 shows the proposed cap is too loose for post-FCMP++ mainnet rules (the limit can double after 51 blocks) and proposes a window-aware cap (simulated, not built). On stressnet both caps give 4 blocks, so no research build is affected. Building and testing the window-aware cap is the owner's call; I have not acted on it.
+
 
 ## Rules for autonomous operation
 - Shared box: before any A/B timing run, check `pgrep -fa shadow` and `uptime`. If selfishmining lanes are running, do only non-timing work (analysis, building, profiling). Never touch /home/selfishmining or their processes. Build with -j10 or less.
@@ -54,5 +56,6 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 - At the end of each check-in: update this file (Currently running, Queue, Last updated), append to JOURNAL.md, commit, then on the control box run `git -C ~/research-mirror pull -q origin master && git -C ~/research-mirror push -q github master`.
 - The repo is PUBLIC at https://github.com/Fountain5405/monerod-memory-research (owner approved 2026-11-02). Never commit third-party (non-LAN) IPs, credentials, or large artifacts. Before each push, check: `git log -p -1 | grep -oE "([0-9]{1,3}\\.){3}[0-9]{1,3}"` should show only LAN/loopback/version strings.
 - Delegate: mechanical runs and waits go to frugal:builder or frugal:mechanic with a complete spec; code location to frugal:scout; log or summary extraction to frugal:extractor. Keep design, interpretation and notes in the main context. Never pull raw transcripts or big logs into context (owner, 2026-11-02).
+- The owner also commits to GitHub directly (first time: 72a62f5, 2026-11-03 11:13, E001 mainnet analysis). Mirror sync is therefore: `git -C ~/research-mirror pull -q origin master && git -C ~/research-mirror fetch -q github`. If github/master has commits we lack, merge them in the mirror (`merge --no-ff`, never rebase or force-push), push to github, then `git push origin master:refs/heads/owner-sync` and on hydrogen `git merge --ff-only owner-sync && git branch -d owner-sync`.
 - Timestamps: take them from the box clock at the moment of writing; in record scripts use $(date +%H:%M), never a literal time guessed ahead (this went wrong twice on 2026-11-03).
 - Harness gotchas: write prose files locally and scp them (apostrophes break `ssh '...'` heredocs); find monerod PIDs with `pgrep -x monerod` plus a cmdline match (pgrep -f self-matches); get_info returns target_height=0 when synced; restricted RPC 28089 lacks ranges, so use .22:28081.

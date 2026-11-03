@@ -304,3 +304,11 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - The owner then asked for 'the next thing that needs doing to show this works and is safe'. Queued:
   - E015 safety: a differential negtest with the base as the oracle. Many more cases (32 flips per proof, proof swaps, a mix of input counts), and the same cases for both builds.
   - E014: a thread-count sweep, to see whether the win holds on 1-4 thread machines.
+
+## 2026-11-03 11:26 Owner commit merged (E001 mainnet analysis)
+- The GitHub push was rejected: the owner had pushed 72a62f5 at 11:13 ("E001: mainnet block-weight analysis, corrected cap, batch-weight sim": reports/E001-sync-wedge-ISSUE.md, scripts/e001_batch_weight_sim.py and its output).
+- Their findings:
+  - Today's mainnet rules do not allow the wedge at the default --batch-max-weight. They do above ~33 MB, and post-FCMP++ (F = 625 kB) they do at the default.
+  - My proposed cap (0.9 × 100 MB / limit) ignores the doubling of the limit after 51 blocks: 116 MB worst case at v17. They propose a window-aware cap with a worst case ≤ 90 MB in their simulation.
+  - On stressnet both caps give 4, so E008-E013 are unaffected.
+- Merged with --no-ff in the mirror (no rebase, no force-push), pushed to GitHub, and fast-forwarded hydrogen via a temporary owner-sync branch. All three are at bc35b9b. The sync procedure is now in STATE.
