@@ -1,0 +1,13 @@
+chain e012 start 2026-11-03T06:50:00+00:00
+e011 complete; starting 2026-11-03T07:08:00+00:00
+patched src/ringct/rctSigs.cpp
+4a51d434d E012: FCMP++ batch cap and malloc_trim adaptive to proof size
+BUILD_OK
+d6f93d0664604726aeafbaf99982f181adc5bb8f31480f4902660bb686fa3ae8  /home/optimizer/work/monero-fcmp-adapt/build/beta31-adapt/bin/monerod
+no shadow processes
+governor schedutil -> performance
+small-tx A/B done 2026-11-03T08:17:17+00:00
+heavy A/B done 2026-11-03T09:15:35+00:00
+governor restored to schedutil
+done 2026-11-03T09:15:35+00:00
+CHAIN_E012_COMPLETE

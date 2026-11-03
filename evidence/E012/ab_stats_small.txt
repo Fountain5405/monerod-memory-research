@@ -1,0 +1,10 @@
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| base | 3 | 1,167 (1,152-1,226) | 1,319 (1,301-1,364) | 4,206 (4,083-4,215) | 151 (149-151) | 1,110 (1,000-1,127) | 54 (54-54) | 1,123 (1,117-1,123) | 1,325 (1,319-1,328) | all yes |
+| combo | 3 | 732 (728-735) | 892 (876-901) | 3,883 (3,880-3,886) | 174 (173-180) | 725 (724-728) | 52 (52-52) | 1,123 (1,123-1,128) | 931 (928-933) | all yes |
+| adapt | 3 | 822 (816-829) | 998 (986-1,002) | 3,942 (3,920-3,961) | 157 (155-157) | 767 (764-770) | 52 (51-53) | 1,117 (1,117-1,128) | 1,431 (1,424-1,438) | all yes |
+
+combo vs base (medians): peak RssAnon MB -37.3%; peak Private_Dirty MB -32.4%; peak RSS MB -7.7%; wall s +15.2%; post-idle RssAnon MB -34.7%; read MB -3.7%; write MB +0.0%; CPU s -29.7%
+  peak anon ranges overlap: no (base 1,152-1,226, combo 728-735)
+adapt vs base (medians): peak RssAnon MB -29.6%; peak Private_Dirty MB -24.3%; peak RSS MB -6.3%; wall s +4.0%; post-idle RssAnon MB -30.9%; read MB -3.7%; write MB -0.5%; CPU s +8.0%
+  peak anon ranges overlap: no (base 1,152-1,226, adapt 816-829)

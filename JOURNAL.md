@@ -258,3 +258,18 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
   - So the cap and the trim are worth ~20-25% of peak on top of E007, and the cap no longer speeds up the heavy window once E007 is in. Its 9% gain in E004c was for the stored verifier.
   - adapt's post-idle (1,333 MB vs combo 1,087) is higher: it does not trim when idle after light calls. Note for E012.
 - Queued E013 (STATE) to validate adapt as the recommended build: headline A/B vs base, negtest, min_mem, long resync. It is gated on the full E012 numbers.
+
+## 2026-11-03 09:15-09:16 E012 DONE: adapt keeps the memory win and drops most of the small-tx cost
+- E012 is complete: 18 runs, all hashes match .22.
+- Small-tx window:
+  - base 151 s / 1,167 MB
+  - combo 174 s (+15.2%) / 732 MB
+  - **adapt 157 s (+4.0%) / 822 MB (-30%)**
+- Heavy window:
+  - combo 110 s / 1,861 MB
+  - **adapt 109 s / 1,639 MB**
+  - e007 111 s / 2,338 MB
+- adapt's 12% lower heavy peak vs the combo has disjoint ranges, but I have no mechanism for it (same code path on heavy calls), so I record it as "no worse".
+- Post-idle is adapt 1,333 vs combo 1,107 MB: no idle trim.
+- E013's gate passed at 09:15:55; its heavy-window A/B base vs adapt is running.
+- Written up in experiments/E012-adaptive-cap-trim (F24); SUMMARY updated.

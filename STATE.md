@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 08:48
+Last updated: 2026-11-03 09:16
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -20,8 +20,8 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 - minmem chain DONE 03:23 (E009: base 5,750 MB vs combo 1,866 MB minimum MemoryMax, -67.5%). Was: (scripts/run_minmem.sh): waits for PROFILE_COMPLETE, then runs min_mem.sh for combo (ref 117 s, lo 750, hi 4000, tol 125) and base (ref 220 s, lo 2000, hi 8000, tol 250). Governor pinned for the chain. Log ~/work/research-artifacts/minmem.chain, ending CHAIN_MINMEM_COMPLETE; per-label csv/summary in ~/work/research-artifacts/minmem/.
 - E010 long resync DONE 04:58 (experiments/E010-long-resync): combo peak -73%, idle -75%, no growth; wall +3.6% overall; small-tx blocks +14.8% (F22).
 - E011 DONE 07:08 (experiments/E011-small-tx-attribution): small-tx wall vs base: cap +7.3%, cap+trim +13.3%, E007 +2.7%, combo +14.7% (F23).
-- **E012 adaptive cap+trim RUNNING** (scripts/run_e012.sh; build 4a51d434d OK, sha d6f93d06…). Small-tx A/B DONE 08:17: base 151 s / 1,167 MB, combo 174 s (+15%) / 732 MB, **adapt 157 s (+4%) / 822 MB**. The heavy-window A/B (combo, adapt, e007) is running in e012_heavy/; after 4 of 9 runs adapt ≈ combo (111 vs 110 s, 1,697 vs 1,769 MB) and e007 is 2,111-2,340 MB. Log e012.chain (ends CHAIN_E012_COMPLETE).
-- **E013 validation of adapt QUEUED** (scripts/run_e013.sh, started 08:48, waits for CHAIN_E012_COMPLETE). gate_e012.py requires adapt's heavy peak <= 1.10x combo and its small-tx wall <= 1.08x base (n>=3), else it stops. Steps: (a) heavy A/B base vs adapt, 3 rounds -> e013_ab/; (b) negtest at 3,105,424 and 3,105,414 -> e013_neg/; (c) min_mem adapt -> e013_minmem/; (d) long resync base_bss5/adapt_default/adapt_bss5 -> e013_long/. Log e013.chain (ends CHAIN_E013_COMPLETE). Est. ~3 h.
+- E012 DONE 09:15 (experiments/E012-adaptive-cap-trim, F24): adapt small-tx +4.0% vs base (combo +15.2%); heavy window adapt 109 s / 1,639 MB vs combo 110 s / 1,861 MB; e007 2,338 MB.
+- **E013 validation of adapt RUNNING** (scripts/run_e013.sh; gate PASSED 09:15: heavy peak -11.9% vs combo, small wall +4.0% vs base). gate_e012.py requires adapt's heavy peak <= 1.10x combo and its small-tx wall <= 1.08x base (n>=3), else it stops. Steps: (a) heavy A/B base vs adapt, 3 rounds -> e013_ab/; (b) negtest at 3,105,424 and 3,105,414 -> e013_neg/; (c) min_mem adapt -> e013_minmem/; (d) long resync base_bss5/adapt_default/adapt_bss5 -> e013_long/. Log e013.chain (ends CHAIN_E013_COMPLETE). Est. ~3 h.
 - Snapshots: stressnet_h3106400 (WORKING copy for E011/E012, deletable when done), stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
 ## Queue (do the first item that is unblocked)
@@ -29,7 +29,7 @@ A. (DONE 02:56: the 50% verify hotspot is gone from the combo profile; recorded 
 B. (DONE 03:30: E009 written up; owner informed.)
 C. (DONE 05:02: E010 written up; owner pinged.)
 D. reports/SUMMARY.md: E010 filled in 05:02 (bottom line now says speed is mixed). Fill in E011 when done.
-E. DONE as E011 (F23). The follow-up E012 is running. When it is done: write experiments/E012 (small-tx wall and peak for base/combo/adapt; heavy-window peak and wall for combo/adapt/e007), then update SUMMARY and FINDINGS. If adapt keeps the combo's window peak (within ~5%) and drops the small-tx cost, it becomes the recommended build. Then re-run on adapt: negtest, an E010-style long resync (base_bss5 vs adapt_bss5), and min_mem. Then delete snapshots/stressnet_h3106400 if disk is needed.
+E. DONE (E011 -> E012). E013 is running. When it is done: write experiments/E013 and make adapt the SUMMARY headline if it holds (the new headline table is base vs adapt from e013_ab; min_mem from e013_minmem; long run from e013_long). Then ping the owner with the final recommended-build numbers. Optional refinements: an idle trim for post-idle; a sweep of the 16-input threshold. Delete snapshots/stressnet_h3106400 when disk is needed.
 F. Fix the perf_classify.py regex and the stack_attrib.py owning-frame view (low priority).
 G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tree cache is bounded by reorg depth except registered outputs, which are tiny; peak candidates are refresh-time transients). NEXT: W002 measure refresh RSS/heaptrack of a fresh wallet over the dense stretch against OUR node, after E010. Also: stagenet/master comparison, monerosim scenarios.
 

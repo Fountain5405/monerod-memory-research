@@ -2,7 +2,7 @@
 
 **Bottom line:** on the FCMP++ stressnet sync workload, three small, separable changes cut monerod's memory needs by about two thirds: -67% peak in a 40-block worst-case window, -73% over an 18,000-block resync. All guardrails held: same chain state as the reference node, invalid proofs still rejected, no cost shifted to disk or swap.
 
-**Speed is mixed.** Sync is about 2x faster on blocks full of max-input txs, but ~15% slower on blocks of small txs. The 18,000-block resync therefore takes 3.6% longer overall. E011 found that most of that cost comes from the two cheap fixes, not from the streaming verifier. On 2-input txs the thread cap costs +7% and the per-block trim +6%, while the streaming verifier costs +3%. E012 tests making the cap and the trim adaptive to proof size.
+**Speed is mixed.** Sync is about 2x faster on blocks full of max-input txs, but ~15% slower on blocks of small txs. The 18,000-block resync therefore takes 3.6% longer overall. E011 found that most of that cost comes from the two cheap fixes, not from the streaming verifier. On 2-input txs the thread cap costs +7% and the per-block trim +6%, while the streaming verifier costs +3%. E012 made the cap and the trim adaptive to proof size ("adapt"): small-tx blocks are then only +4% vs base, while heavy-window memory and speed stay at the combined build's level. adapt is being validated as the recommended build (E013).
 
 | metric (40-block FCMP++ window, 3 alternating A/B rounds, medians) | baseline v0.19.0.0-beta.3.1 | combined build (E008) | change |
 |---|---|---|---|
@@ -118,5 +118,6 @@ The owner's target was 40%. The minimum-cgroup number is the "real RAM a node ne
 ## Results still pending
 - E010 long resync: DONE (above).
 - E011 small-tx attribution: DONE (cap +7%, trim +6%, streaming verifier +3%).
-- E012 adaptive cap + trim: running.
+- E012 adaptive cap + trim: DONE (small-tx +4.0% vs base instead of +15%; heavy window = combo).
+- E013 validation of adapt (A/B vs base, negtest, min_mem, long resync): running.
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth); W002 measurement next.
