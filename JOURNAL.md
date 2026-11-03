@@ -344,3 +344,4 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Corrected one claim in my E007 notes ("old stored path kept").
 - Queued E016 (STATE, F2) to close F1 with a verbatim-base equivalence test and a differential fuzz, after E014 frees the box.
 - 12:02 Owner asked where the code is. Added patches/ (git format-patch series from both trees, with a README on how to rebuild) and linked it from README and SUMMARY.
+- 12:10 Owner: the E007 patch is too large for human reviewers of crates under audit; can it shrink? Analysis: 1,004 non-test lines, 570 of them restructuring the audited verify. Proposed E017 (experiments/E017-minimal-streaming): leave verify untouched and pre-fold each circuit into one constraint (z * sum z^k c_k = sum z^(k+1) c_k; verify does not hash constraints or q), three builds, est. 150-200 lines. Queued ahead of E016, after E014 (2/18 runs at 12:10, est. done ~14:35).

@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 12:00
+Last updated: 2026-11-03 12:10
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -34,6 +34,7 @@ C. (DONE 05:02: E010 written up; owner pinged.)
 D. reports/SUMMARY.md: E010 filled in 05:02 (bottom line now says speed is mixed). Fill in E011 when done.
 E. DONE (E011 -> E012 -> E013; adapt recommended). NEXT after E015/E014: write experiments/E015 (negdiff summaries: DIFF PASS/FAIL, case counts, the oracle's rejection flag mix) and experiments/E014 (ab_stats per thread count; base vs adapt peak and wall at c4/c2/c1), update SUMMARY 'How real' and the guardrails, ping the owner. Then W002 (wallet) or an idle-trim refinement for adapt.
 F. Fix the perf_classify.py regex and the stack_attrib.py owning-frame view (low priority).
+F1. **E017 minimal streaming verifier (after E014; owner request 12:0x: shrink the E007 patch).** Plan in experiments/E017-minimal-streaming/README.md: keep `ArithmeticCircuitStatement::verify` byte-identical; fcmps pre-folds each circuit into ONE constraint L = sum z^k c_k (so verify computes sum z^(k+1) c_k as before), using Discard + Fold circuit modes and a peeked z; three builds. Target ~150-200 non-test lines. New branch from 31c26d9 in ~/work/monero-oxide-e007 (not on top of E007). Acceptance: crate equivalence vs the UNCHANGED stock verify (8 shapes, honest + tampered), window peak within ~10% of adapt, wall within ~5%, hashes, negdiff identical to base. If it holds it replaces E007 in patches/ and E016 targets it.
 F2. **E016 (after E014; needs cargo on hydrogen, so not during timing runs): close the crypto review's F1.** In ~/work/monero-oxide-e007 add, under #[cfg(test)], a VERBATIM copy of base `Fcmp::verify` (git show 31c26d9:crypto/fcmps/src/lib.rs) and base `ArithmeticCircuitStatement::verify` (31c26d9:crypto/generalized-bulletproofs/src/arithmetic_circuit_proof.rs:657-820; `legacy_verify` in acp/tests.rs is already that copy, make it reachable), extracted by line range, not retyped; a test over the 8 shapes with honest and tampered proofs comparing streaming vs base verifier state with `additional` as a multiset; and the FCMP-level differential fuzz from section 5.2 of the review. Verbatim-ness check: diff the copied bodies against the git-show extracts. Run with `cargo test -p fcmps --release -- --skip prove_benchmark` (-j10). Record in experiments/E016. Delegate the typing to a builder with this spec; review the diff in the main context.
 G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tree cache is bounded by reorg depth except registered outputs, which are tiny; peak candidates are refresh-time transients). NEXT: W002 measure refresh RSS/heaptrack of a fresh wallet over the dense stretch against OUR node, after E010. Also: stagenet/master comparison, monerosim scenarios.
 
