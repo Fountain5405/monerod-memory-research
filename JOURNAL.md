@@ -171,3 +171,4 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - ab_window.sh v3 adds REWIND_SNAPSHOT: the DB is restored from snapshots/stressnet_wedge_h3105401 (a 1-2 min copy) instead of popping 18k blocks, and pop_to.sh then verifies the hash at 3,105,400 (RESULT OK).
 - Arms: combo_default, base_bss5, combo_bss5. combo_default is syncing in 4-block batches from the start, which is the E001 cap at work. At log level 0 the cap message itself is not printed; the 4-block Synced increments are the evidence.
 - Owner was told the min_mem result in chat (03:30).
+- 03:50 Drafted reports/SUMMARY.md (owner-facing: headline table, mechanisms, guardrails, negatives, side findings, caveats, upstreamability). E010 marked pending.

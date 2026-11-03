@@ -25,7 +25,7 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 A. (DONE 02:56: the 50% verify hotspot is gone from the combo profile; recorded in E007.)
 B. (DONE 03:30: E009 written up; owner informed.)
 C. (RUNNING as E010; see Currently running.) When done: write experiments/E010-long-resync results (peak, post-idle, wall per arm, hash; per-segment block rate from the Synced log lines, to compare the small-tx stretch), then ping the owner.
-D. Write reports/SUMMARY.md: an owner-facing summary of results, negative results, side findings, caveats (128-input worst case; glibc-only trim; E007 is unaudited crypto code; small-input CPU cost of the double build), and what would be upstreamable.
+D. reports/SUMMARY.md DRAFTED 03:50; fill in E010 results when done, plus the small-input CPU cost (E).
 E. Small-input regression check for E007: a window or microbench with 1-2-input proofs only (e.g. the agent's measure harness at inputs = 1, 2), to price the double-build CPU cost honestly.
 F. Fix the perf_classify.py regex and the stack_attrib.py owning-frame view (low priority).
 G. Later: wallet (tree_cache), stagenet/master comparison, monerosim scenarios.
