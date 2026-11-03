@@ -56,7 +56,7 @@ The smaller second version of part 1 (1b above) does cost speed, but it trades s
 
 ## Is it safe?
 Nothing about what gets checked has changed; only how the sums are organised. We tested this several ways:
-- The new code and the old code end up with exactly the same final numbers before the last step of the check, bit for bit, in the test suite.
+- The new code and the old code end up with exactly the same final numbers before the last step of the check, bit for bit, in the test suite. "The old code" here is a verbatim copy of the checker as it was before the change, kept for the tests, and the comparison covers honest proofs, deliberately tampered ones and randomly corrupted ones, which are rejected in the same way by both.
 - The node ends every test run on the same block as the reference node.
 - We fed 236 deliberately corrupted or mismatched transactions to both the old and the new software. They made identical decisions on every one, rejecting all the bad ones and accepting all the genuine ones.
 

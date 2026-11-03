@@ -53,6 +53,7 @@ A critical re-check of the raw data and source is in reports/REVIEW-70pct.md. Sh
   - E008: -67%
   - E010: -73%
   - E012/E013: -68% / -70%
+- The streaming verifier is equivalent to the verifier it replaced, not just to its own refactoring (E016): verbatim copies of the pre-change `Fcmp::verify` and `ArithmeticCircuitStatement::verify` from 31c26d9, under test only, leave the batch verifier in the same state as the streaming path on 8 honest shapes, every tampered region and 256 random single-byte mutations, with the same error on every malformed proof.
 - It reproduces on a second, different machine (E019, box81, Ryzen 5 5600G 6c/12t, 14 GB, binaries built there): -61.5% peak / -71% post-idle / -43% wall on the heavy window, -33% peak on small-tx blocks, 18/18 hashes. The stock peak is smaller there (3.4 GB at 12 threads) so the percentage is smaller; the absolute saving is 2.1 GB vs 3.8 GB.
 - Every A/B has tight, disjoint ranges.
 - Two independent metrics agree: peak anon memory, and the minimum cgroup limit (which includes page cache, and whose failures are OOM kills, not slowdowns).
@@ -61,7 +62,7 @@ A critical re-check of the raw data and source is in reports/REVIEW-70pct.md. Sh
 **Limits:**
 - **Worst-case workload.** 82% of the window's txs have 128 inputs. On 2-input blocks the saving is ~30%. The worst case does set what a node must provision, since anyone can fill blocks with max-input txs.
 - **One machine with 24 threads.** The stock node's peak scales with thread count (E003: 1.2 GB at 1 thread, 5.4 GB at 24), so part of the win is the 24-thread baseline. **E014 (done, experiments/E014-thread-sweep) measured base vs adapt at 4, 2 and 1 threads: peak -47.5% / -25.5% / -28.7%, post-idle -66% / -49% / -48%, and adapt is 21-28% faster at every thread count with 25-28% less CPU. So on a 4-thread machine the reduction is about half of the peak; on 1-2 threads about a quarter of the peak and half of the idle footprint, plus a speed-up. The 40% target holds from 4 threads up.** **E019 (done, experiments/E019-box81-reproduction) is the review's second machine: on box81 (Ryzen 5 5600G 6c/12t, 14 GB, binaries built there) adapt is -61.5% peak / -71% post-idle / -43% wall / -73% CPU on the heavy window and -33% peak at +5% wall on small-tx blocks, 18/18 hashes, VmSwap 0 in every sample. Same picture as hydrogen with a smaller stock peak (3.4 GB at 12 threads vs 5.4 GB at 24).**
-- **About two thirds of the win is cryptographic code not yet reviewed by cryptographers** (E007, ~1,000 lines in monero-oxide). It was reviewed by me and then by an independent Fable-tier agent (reports/E007-crypto-review.md: no soundness bug, no new panic, fail-closed holds; one medium test gap, being closed). That is still not an audit. Without it, the ~15-line cap + trim changes give about -45%, and the zero-code `--max-concurrency 12` gives -40%.
+- **About two thirds of the win is cryptographic code not yet reviewed by cryptographers** (E007, ~1,000 lines in monero-oxide). It was reviewed by me and then by an independent Fable-tier agent (reports/E007-crypto-review.md: no soundness bug, no new panic, fail-closed holds; the one medium test gap, F1, closed by E016). That is still not an audit. Without it, the ~15-line cap + trim changes give about -45%, and the zero-code `--max-concurrency 12` gives -40%.
 - `malloc_trim` is glibc-only. FCMP++ itself is still a beta (stressnet), not mainnet.
 
 ## The code
@@ -135,7 +136,7 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
 - Crate-level tests (E007):
   - All existing monero-oxide tests pass, including byte-malleation.
   - New tests: streaming vs stored verification on valid and tampered proofs; accumulator vs stored fold (bit-identical batch-verifier state); a Discard-mode circuit cannot yield a statement; an un-applied verification fails closed.
-- **Independent static review (reports/E007-crypto-review.md):** a separate Fable-tier agent walked the base verifier check by check against the streaming path: every structural check and every multiexp term is reproduced, the transcript is cloned at the right point and never sees proof bytes, every error path rejects, and no new panic is reachable from proof bytes (the FFI aborts on panic). Finding to close: the crate's FCMP-level equivalence test now compares against the refactored stored path rather than the original verifier (F1).
+- **Independent static review (reports/E007-crypto-review.md):** a separate Fable-tier agent walked the base verifier check by check against the streaming path: every structural check and every multiexp term is reproduced, the transcript is cloned at the right point and never sees proof bytes, every error path rejects, and no new panic is reachable from proof bytes (the FFI aborts on panic). The one finding, that the crate's equivalence test compared against the refactored stored path rather than the base verifier, is closed by E016 (verbatim base verifiers under test; identical states and errors on honest, tampered and randomly mutated proofs).
 - Disk writes are unchanged, and swap is off. Under the minimum cgroup limit the builds keep their unconstrained wall time; every failure below it was an OOM kill (kernel log), not slow thrashing.
 
 ## Things that did not work (kept for the record)
@@ -174,12 +175,12 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
 |---|---|---|
 | E001 sync-size cap | ~10 lines | stressnet-tested. For post-FCMP++ mainnet use the owner's window-aware cap (simulated, not built) |
 | adaptive batch cap + `malloc_trim` (E012) | ~25 lines in rctSigs.cpp | glibc-guarded trim; independent of E007 |
-| E007 streaming verifier | ~1,000 lines + tests (monero-oxide) | biggest win; independent static review found no defect (reports/E007-crypto-review.md); add the base-equivalence test (F1) and the two low hardening items first; still needs review by the FCMP++ authors; alternatively, propose only the O(c·q) fold fix for CPU |
+| E007 streaming verifier | ~1,000 lines + tests (monero-oxide) | biggest win; independent static review found no defect (reports/E007-crypto-review.md); base-equivalence test added (E016, F1 closed); apply the two low hardening items first; still needs review by the FCMP++ authors; alternatively, propose only the O(c·q) fold fix for CPU |
 
 ## Still running / next
 - E014 thread-count sweep: done (above).
 - E018 (hydrogen): done (experiments/E018-node-level-v2, F31). v2 keeps v1's memory (heavy peak +2.6%, idle -16%, cgroup minimum 1,765 vs 1,866 MB, long-resync peak -72%) and its correctness (negdiff identical to base, 236 cases; all hashes), but fails the pre-registered speed criterion: heavy window +43% wall over v1, small-tx +12% over base, long resync +5.1% over base where v1 is -4.6%. **v1 / adapt stays the recommended build; v2 is the small-diff alternative (reports/HOW-IT-WORKS.md 2.1b).**
 - E019 (box81): done (above).
-- E016, base-equivalence test for E007 / v1 (the crypto review's F1): now needed, since v1 stays the recommended series.
+- E016 (done, experiments/E016-base-equivalence): the streaming verifier is now tested against verbatim copies of the 31c26d9 verifiers (8 honest shapes, ~100 region tamperings, 256 random byte mutations): identical verifier states and identical errors. Closes the crypto review's F1.
 - E020 candidate: v2 with two builds instead of three (peek z1 and z2 both from the discard build, fold c1 and c2 in one pass), to recover v1's speed with v2's diff.
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth); W002 measurement next.

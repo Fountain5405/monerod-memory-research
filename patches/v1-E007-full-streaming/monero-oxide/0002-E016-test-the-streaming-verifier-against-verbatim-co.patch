@@ -1,0 +1,754 @@
+From 64c79eaad6f68ba1f310f5157cf07472093d5887 Mon Sep 17 00:00:00 2001
+From: optimizer <optimizer@hydrogen>
+Date: Tue, 3 Nov 2026 19:38:06 +0000
+Subject: [PATCH] E016: test the streaming verifier against verbatim copies of
+ the 31c26d9 verifiers
+
+Adds ArithmeticCircuitStatement::verify_base (feature tests) and Fcmp::verify_base (cfg(test)), the pre-streaming verifiers copied by line range from 31c26d9 with only the names changed, and three tests comparing the streaming path against them on 8 honest shapes, every tampering region and 256 random single-byte mutations: identical batch-verifier state (additional as a multiset), identical errors, batch never verifies when tampered. The tampering-region computation of the existing test moves into a shared helper. Closes F1 of the E007 crypto review.
+---
+ crypto/fcmps/src/lib.rs                       | 234 ++++++++++++++
+ crypto/fcmps/src/tests.rs                     | 285 ++++++++++++++----
+ .../src/arithmetic_circuit_proof.rs           | 176 +++++++++++
+ 3 files changed, 641 insertions(+), 54 deletions(-)
+
+diff --git a/crypto/fcmps/src/lib.rs b/crypto/fcmps/src/lib.rs
+index 28d8b31..66d34d8 100644
+--- a/crypto/fcmps/src/lib.rs
++++ b/crypto/fcmps/src/lib.rs
+@@ -1249,6 +1249,240 @@ where
+     Ok(())
+   }
+ 
++
++  /// E016: `Fcmp::verify` of monero-oxide 31c26d9 (before the streaming change), copied verbatim,
++  /// renamed, and calling the equally verbatim `ArithmeticCircuitStatement::verify_base`. Test-only;
++  /// the reference the streaming verifier is checked against.
++  #[cfg(test)]
++  #[allow(clippy::too_many_arguments)]
++  pub(crate) fn verify_base<R: RngCore + CryptoRng>(
++    &self,
++    rng: &mut R,
++    verifier_1: &mut BatchVerifier<C::C1>,
++    verifier_2: &mut BatchVerifier<C::C2>,
++    params: &FcmpParams<C>,
++    tree: TreeRoot<C::C1, C::C2>,
++    layers: usize,
++    inputs: &[Input<<C::C1 as Ciphersuite>::F>],
++  ) -> Result<(), FcmpError> {
++    if (layers == 0) || inputs.is_empty() {
++      Err(FcmpError::EmptyProof)?;
++    }
++
++    let (c1_padded_pow_2, c2_padded_pow_2) = Self::ipa_rows(inputs.len(), layers);
++
++    let mut c1_tape = VectorCommitmentTape::<<C::C1 as Ciphersuite>::F> {
++      commitment_len: c1_padded_pow_2,
++      current_j_offset: 0,
++      commitments: Vec::with_capacity(inputs.len() * layers),
++      branch_lengths: Vec::with_capacity(inputs.len() * layers / 2),
++    };
++    let mut c1_branches = Vec::with_capacity((layers / 2) + (layers % 2));
++    let mut c2_tape = VectorCommitmentTape::<<C::C2 as Ciphersuite>::F> {
++      commitment_len: c2_padded_pow_2,
++      current_j_offset: 0,
++      commitments: Vec::with_capacity(inputs.len() * layers),
++      branch_lengths: Vec::with_capacity(inputs.len() * layers / 2),
++    };
++    let mut c2_branches = Vec::with_capacity(layers / 2);
++
++    // Append the leaves and the non-root branches to the tape
++    for _ in inputs {
++      for i in 0 .. (layers - 1) {
++        if (i % 2) == 0 {
++          c1_branches.push(
++            c1_tape.append_branch(if i == 0 { 6 * LAYER_ONE_LEN } else { LAYER_ONE_LEN }, None),
++          );
++        } else {
++          c2_branches.push(c2_tape.append_branch(LAYER_TWO_LEN, None));
++        }
++      }
++    }
++
++    // Append the root branch to the tape
++    let root = if (layers % 2) == 1 {
++      c1_tape.append_branch(if layers == 1 { 6 * LAYER_ONE_LEN } else { LAYER_ONE_LEN }, None)
++    } else {
++      c2_tape.append_branch(LAYER_TWO_LEN, None)
++    };
++
++    // Transcript the inputs
++    let append_claimed_point_1 = |c1_tape: &mut VectorCommitmentTape<<C::C1 as Ciphersuite>::F>| {
++      c1_tape.append_claimed_point::<C::OcParameters>(None, None, None, None)
++    };
++
++    let mut input_openings = Vec::with_capacity(inputs.len());
++    for _ in inputs {
++      // Since this is presumed over Ed25519, which has a 253-bit discrete logarithm, we have two
++      // items avilable in padding. We use this padding for all the other points we must commit to
++      // For o_blind, we use the padding for O
++      let (o_blind_claim, O) = append_claimed_point_1(&mut c1_tape);
++      // For i_blind_u, we use the padding for I
++      let (i_blind_u_claim, I) = append_claimed_point_1(&mut c1_tape);
++
++      // Commit to the divisor for `i_blind V`, which doesn't commit to the point `i_blind V`
++      // (and that still has to be done)
++      let (i_blind_v_divisor, _extra) = c1_tape.append_divisor(None, None);
++
++      // For i_blind_blind, we use the padding for (i_blind V)
++      let (i_blind_blind_claim, i_blind_V) = append_claimed_point_1(&mut c1_tape);
++
++      let i_blind_v_claim = PointWithDlog {
++        // This has the same discrete log, i_blind, as i_blind_u
++        dlog: i_blind_u_claim.dlog.clone(),
++        divisor: i_blind_v_divisor,
++        point: (i_blind_V[0], i_blind_V[1]),
++      };
++
++      // For c_blind, we use the padding for C
++      let (c_blind_claim, C) = append_claimed_point_1(&mut c1_tape);
++
++      input_openings.push(TranscriptedInput {
++        O: (O[0], O[1]),
++        I: (I[0], I[1]),
++        C: (C[0], C[1]),
++        o_blind_claim,
++        i_blind_u_claim,
++        i_blind_v_claim,
++        i_blind_blind_claim,
++        c_blind_claim,
++      });
++    }
++
++    // We now have committed to O, I, C, and all interpolated points
++
++    // The first circuit's tape opens the blinds from the second curve
++    let mut commitment_blind_claims_1 = vec![];
++    for _ in 0 .. (if c1_branches.is_empty() {
++      // There's only the leaves handled by C1, which don't have branch unblindings
++      0
++    } else {
++      // We unblind a C2 branch for every branch except the ones representing the leaves
++      // We also unblind a C2 branch in the root branch, if the root branch is C1
++      (c1_branches.len() - inputs.len()) +
++        (inputs.len() * usize::from(u8::from(matches!(tree, TreeRoot::C1(_)))))
++    }) {
++      commitment_blind_claims_1
++        .push(c1_tape.append_claimed_point::<C::C2Parameters>(None, None, None, None).0);
++    }
++    let commitment_blind_claims_1 = commitment_blind_claims_1.into_iter();
++
++    // The second circuit's tape opens the blinds from the first curve
++    let mut commitment_blind_claims_2 = vec![];
++    for _ in 0 .. (c2_branches.len() +
++      (inputs.len() * usize::from(u8::from(matches!(tree, TreeRoot::C2(_))))))
++    {
++      commitment_blind_claims_2
++        .push(c2_tape.append_claimed_point::<C::C1Parameters>(None, None, None, None).0);
++    }
++    let commitment_blind_claims_2 = commitment_blind_claims_2.into_iter();
++
++    let mut transcript = VerifierTranscript::new(
++      Self::transcript(tree, inputs, &self.root_blind_pok[.. 32]),
++      &self.proof,
++    );
++    let proof_1_vcs = transcript.read_commitments::<C::C1>(c1_tape.commitments.len(), 0)?;
++    let proof_2_vcs = transcript.read_commitments::<C::C2>(c2_tape.commitments.len(), 0)?;
++
++    // Verify the root blind PoK
++    {
++      let claimed_root = if (layers % 2) == 1 {
++        #[allow(clippy::wildcard_enum_match_arm)]
++        TreeRoot::<C::C1, C::C2>::C1(match root[0] {
++          Variable::CG { commitment: i, index: _ } => params.curve_1_hash_init + proof_1_vcs.C()[i],
++          _ => panic!("branch wasn't present in a vector commitment"),
++        })
++      } else {
++        #[allow(clippy::wildcard_enum_match_arm)]
++        TreeRoot::<C::C1, C::C2>::C2(match root[0] {
++          Variable::CG { commitment: i, index: _ } => params.curve_2_hash_init + proof_2_vcs.C()[i],
++          _ => panic!("branch wasn't present in a vector commitment"),
++        })
++      };
++      match (claimed_root, tree) {
++        (TreeRoot::C1(claimed), TreeRoot::C1(actual)) => {
++          let R = <C::C1 as Ciphersuite>::read_G(&mut &self.root_blind_pok[.. 32])?;
++          let s = <C::C1 as Ciphersuite>::read_F(&mut &self.root_blind_pok[32 ..])?;
++
++          let c = transcript.challenge::<C::C1>();
++
++          // R + cX == sH, where X is the difference in the roots
++          // (which should only be the randomness, and H is the generator for the randomness)
++          let batch_verifier_weight = <C::C1 as Ciphersuite>::F::random(&mut *rng);
++          verifier_1.additional.push((batch_verifier_weight, R));
++          verifier_1.additional.push((batch_verifier_weight * c, claimed - actual));
++          verifier_1.h -= s * batch_verifier_weight;
++        }
++        (TreeRoot::C2(claimed), TreeRoot::C2(actual)) => {
++          let R = <C::C2 as Ciphersuite>::read_G(&mut &self.root_blind_pok[.. 32])?;
++          let s = <C::C2 as Ciphersuite>::read_F(&mut &self.root_blind_pok[32 ..])?;
++
++          let c = transcript.challenge::<C::C2>();
++
++          // R + cX == sH, where X is the difference in the roots
++          // (which should only be the randomness, and H is the generator for the randomness)
++          let batch_verifier_weight = <C::C2 as Ciphersuite>::F::random(&mut *rng);
++          verifier_2.additional.push((batch_verifier_weight, R));
++          verifier_2.additional.push((batch_verifier_weight * c, claimed - actual));
++          verifier_2.h -= s * batch_verifier_weight;
++        }
++        _ => panic!("claimed root is on a distinct layer than tree root"),
++      }
++    };
++
++    // Create the circuits
++    let mut c1_circuit = Circuit::<C::C1>::verify();
++    let mut c2_circuit = Circuit::<C::C2>::verify();
++
++    let mut c1_dlog_challenge = None;
++    let mut c2_dlog_challenge = None;
++
++    let mut c1_branches = c1_branches.into_iter();
++    let mut c2_branches = c2_branches.into_iter();
++    let mut c1_commitments =
++      proof_1_vcs.C().iter().copied().zip(core::iter::repeat(None)).zip(commitment_blind_claims_2);
++    let mut c2_commitments =
++      proof_2_vcs.C().iter().copied().zip(core::iter::repeat(None)).zip(commitment_blind_claims_1);
++
++    // Perform the layers
++    for (input, opening) in inputs.iter().zip(input_openings) {
++      Self::input(
++        params,
++        layers,
++        &mut transcript,
++        &mut c1_circuit,
++        &mut c1_dlog_challenge,
++        &mut c2_circuit,
++        &mut c2_dlog_challenge,
++        root.clone(),
++        &mut c1_branches,
++        &mut c2_branches,
++        &mut c1_commitments,
++        &mut c2_commitments,
++        input,
++        opening,
++      )?;
++    }
++
++    // Escape to the raw weights to form a GBP with
++    debug_assert!(c1_circuit.muls() <= c1_padded_pow_2);
++    debug_assert!(c2_circuit.muls() <= c2_padded_pow_2);
++
++    let (c1_statement, _witness) = c1_circuit.statement(
++      params.curve_1_generators.reduce(c1_padded_pow_2).ok_or(FcmpError::NotEnoughGenerators)?,
++      proof_1_vcs,
++    )?;
++    c1_statement.verify_base(rng, verifier_1, &mut transcript)?;
++
++    let (c2_statement, _witness) = c2_circuit.statement(
++      params.curve_2_generators.reduce(c2_padded_pow_2).ok_or(FcmpError::NotEnoughGenerators)?,
++      proof_2_vcs,
++    )?;
++    c2_statement.verify_base(rng, verifier_2, &mut transcript)?;
++
++    Ok(())
++  }
++
+   /// Read an FCMP.
+   pub fn read(reader: &mut impl io::Read, inputs: usize, layers: usize) -> io::Result<Self> {
+     let mut proof = vec![0; Self::proof_size(inputs, layers) - 64];
+diff --git a/crypto/fcmps/src/tests.rs b/crypto/fcmps/src/tests.rs
+index 6397222..fb90d58 100644
+--- a/crypto/fcmps/src/tests.rs
++++ b/crypto/fcmps/src/tests.rs
+@@ -882,6 +882,72 @@ fn test_streaming_verify_matches_stored() {
+   }
+ }
+ 
++/// An element of a serialized FCMP, for tampering tests.
++#[derive(Clone, Copy, Debug)]
++enum Element {
++  C1Point,
++  C1Scalar,
++  C2Point,
++  C2Scalar,
++}
++
++/// The offsets of a variety of elements within a serialized proof of `proof_len` bytes, with a
++/// name for the region and the kind of element found there.
++fn tampering_regions(
++  proof_len: usize,
++  root: TreeRoot<Selene, Helios>,
++  layers: usize,
++  paths: usize,
++) -> Vec<(&'static str, usize, Element)> {
++  // Find the commitments' quantities
++  let (c1_commitments, c2_commitments) = {
++    let layout = Fcmp::<MoneroCurves>::verifier_layout(root, layers, paths);
++    (layout.c1_commitments, layout.c2_commitments)
++  };
++  let (c1_rows, c2_rows) = Fcmp::<MoneroCurves>::ipa_rows(paths, layers);
++
++  // The offsets of a variety of elements within the serialized proof
++  let mut regions = vec![];
++  regions.push(("C1 vector commitment", 0, Element::C1Point));
++  if c2_commitments != 0 {
++    regions.push(("C2 vector commitment", 32 * c1_commitments, Element::C2Point));
++  }
++  let mut offset = 32 * (c1_commitments + c2_commitments);
++  for (name, c, rows, point, scalar) in [
++    ("C1", c1_commitments, c1_rows, Element::C1Point, Element::C1Scalar),
++    ("C2", c2_commitments, c2_rows, Element::C2Point, Element::C2Scalar),
++  ] {
++    let lr_len = usize::try_from(rows.ilog2()).unwrap();
++    let t_commitments = 3 * c + 5;
++    regions.push((name, offset, point)); // AI
++    regions.push((name, offset + 32, point)); // AO
++    regions.push((name, offset + 64, point)); // S
++    offset += 96;
++    regions.push((name, offset, point)); // The first T
++    regions.push((name, offset + (32 * (t_commitments - 1)), point)); // The last T
++    offset += 32 * t_commitments;
++    regions.push((name, offset, scalar)); // tau_x
++    regions.push((name, offset + 32, scalar)); // mu
++    regions.push((name, offset + 64, scalar)); // t_caret
++    offset += 96;
++    regions.push((name, offset, point)); // The first L
++    regions.push((name, offset + (32 * ((2 * lr_len) - 1)), point)); // The last R
++    offset += 64 * lr_len;
++    regions.push((name, offset, scalar)); // a
++    regions.push((name, offset + 32, scalar)); // b
++    offset += 64;
++  }
++  // Sanity check our offsets by checking we've reached the root blind PoK
++  assert_eq!(offset + 64, proof_len);
++  let (pok_point, pok_scalar) = match root {
++    TreeRoot::C1(_) => (Element::C1Point, Element::C1Scalar),
++    TreeRoot::C2(_) => (Element::C2Point, Element::C2Scalar),
++  };
++  regions.push(("root blind PoK", offset, pok_point));
++  regions.push(("root blind PoK", offset + 32, pok_scalar));
++  regions
++}
++
+ #[test]
+ fn test_streaming_verify_rejects_tampered_proofs() {
+   let (G, T, U, V, params) = random_params(2);
+@@ -892,60 +958,7 @@ fn test_streaming_verify_rejects_tampered_proofs() {
+     let mut buf = vec![];
+     proof.write(&mut buf).unwrap();
+ 
+-    // Find the commitments' quantities
+-    let (c1_commitments, c2_commitments) = {
+-      let layout = Fcmp::<MoneroCurves>::verifier_layout(root, layers, paths);
+-      (layout.c1_commitments, layout.c2_commitments)
+-    };
+-    let (c1_rows, c2_rows) = Fcmp::<MoneroCurves>::ipa_rows(paths, layers);
+-
+-    #[derive(Clone, Copy, Debug)]
+-    enum Element {
+-      C1Point,
+-      C1Scalar,
+-      C2Point,
+-      C2Scalar,
+-    }
+-
+-    // The offsets of a variety of elements within the serialized proof
+-    let mut regions = vec![];
+-    regions.push(("C1 vector commitment", 0, Element::C1Point));
+-    if c2_commitments != 0 {
+-      regions.push(("C2 vector commitment", 32 * c1_commitments, Element::C2Point));
+-    }
+-    let mut offset = 32 * (c1_commitments + c2_commitments);
+-    for (name, c, rows, point, scalar) in [
+-      ("C1", c1_commitments, c1_rows, Element::C1Point, Element::C1Scalar),
+-      ("C2", c2_commitments, c2_rows, Element::C2Point, Element::C2Scalar),
+-    ] {
+-      let lr_len = usize::try_from(rows.ilog2()).unwrap();
+-      let t_commitments = 3 * c + 5;
+-      regions.push((name, offset, point)); // AI
+-      regions.push((name, offset + 32, point)); // AO
+-      regions.push((name, offset + 64, point)); // S
+-      offset += 96;
+-      regions.push((name, offset, point)); // The first T
+-      regions.push((name, offset + (32 * (t_commitments - 1)), point)); // The last T
+-      offset += 32 * t_commitments;
+-      regions.push((name, offset, scalar)); // tau_x
+-      regions.push((name, offset + 32, scalar)); // mu
+-      regions.push((name, offset + 64, scalar)); // t_caret
+-      offset += 96;
+-      regions.push((name, offset, point)); // The first L
+-      regions.push((name, offset + (32 * ((2 * lr_len) - 1)), point)); // The last R
+-      offset += 64 * lr_len;
+-      regions.push((name, offset, scalar)); // a
+-      regions.push((name, offset + 32, scalar)); // b
+-      offset += 64;
+-    }
+-    // Sanity check our offsets by checking we've reached the root blind PoK
+-    assert_eq!(offset + 64, buf.len());
+-    let (pok_point, pok_scalar) = match root {
+-      TreeRoot::C1(_) => (Element::C1Point, Element::C1Scalar),
+-      TreeRoot::C2(_) => (Element::C2Point, Element::C2Scalar),
+-    };
+-    regions.push(("root blind PoK", offset, pok_point));
+-    regions.push(("root blind PoK", offset + 32, pok_scalar));
++    let regions = tampering_regions(buf.len(), root, layers, paths);
+ 
+     for (name, offset, element) in regions {
+       // Replace the element with another valid element, and flip a bit within it
+@@ -1190,3 +1203,167 @@ fn test_replay_check_detects_divergence() {
+     }
+   }
+ }
++
++// ---- E016: equivalence with the verifier of monero-oxide 31c26d9 ----
++//
++// `Fcmp::verify_base` and `ArithmeticCircuitStatement::verify_base` are verbatim copies of the
++// verifiers before the streaming change. These tests check the streaming verifier against them,
++// not against the refactored stored path (`Fcmp::verify_stored`), which shares code with it.
++
++/// `additional` as a multiset, so the comparison doesn't depend on the order terms were pushed in.
++fn additional_multiset<C: Ciphersuite>(
++  verifier: &generalized_bulletproofs::BatchVerifier<C>,
++) -> Vec<(Vec<u8>, Vec<u8>)> {
++  let mut res = verifier
++    .additional
++    .iter()
++    .map(|(scalar, point)| (scalar.to_repr().as_ref().to_vec(), point.to_bytes().as_ref().to_vec()))
++    .collect::<Vec<_>>();
++  res.sort();
++  res
++}
++
++/// Assert two batch verifiers are equal, with `additional` compared as a multiset.
++fn assert_verifiers_eq_multiset<C: Ciphersuite>(
++  a: &generalized_bulletproofs::BatchVerifier<C>,
++  b: &generalized_bulletproofs::BatchVerifier<C>,
++) {
++  assert_eq!(a.g, b.g);
++  assert_eq!(a.h, b.h);
++  assert_eq!(a.g_bold, b.g_bold);
++  assert_eq!(a.h_bold, b.h_bold);
++  assert_eq!(a.h_sum, b.h_sum);
++  assert_eq!(a.additional.len(), b.additional.len());
++  assert_eq!(additional_multiset(a), additional_multiset(b));
++}
++
++/// Verify a proof with the streaming verifier (`Fcmp::verify`) and the base verifier
++/// (`Fcmp::verify_base`), using the same randomness.
++fn verify_streaming_and_base(
++  proof: &Fcmp<MoneroCurves>,
++  params: &FcmpParams<MoneroCurves>,
++  root: TreeRoot<Selene, Helios>,
++  layers: usize,
++  inputs: &[Input<<Selene as Ciphersuite>::F>],
++) -> (VerificationResult, VerificationResult) {
++  let rng = DeterministicRng::new();
++
++  let mut streaming_1 = generalized_bulletproofs::Generators::batch_verifier();
++  let mut streaming_2 = generalized_bulletproofs::Generators::batch_verifier();
++  let streaming = proof.verify(
++    &mut rng.clone(),
++    &mut streaming_1,
++    &mut streaming_2,
++    params,
++    root,
++    layers,
++    inputs,
++  );
++
++  let mut base_1 = generalized_bulletproofs::Generators::batch_verifier();
++  let mut base_2 = generalized_bulletproofs::Generators::batch_verifier();
++  let base =
++    proof.verify_base(&mut rng.clone(), &mut base_1, &mut base_2, params, root, layers, inputs);
++
++  ((streaming, streaming_1, streaming_2), (base, base_1, base_2))
++}
++
++#[test]
++fn test_streaming_verify_matches_base() {
++  let (G, T, U, V, params) = random_params(4);
++
++  // Both C1 and C2 roots, with and without branches on either curve
++  for (paths, layers) in [(1, 1), (1, 2), (1, 3), (1, 5), (2, 1), (2, 4), (3, 2), (3, 3)] {
++    println!("Comparing the streaming and base verifiers for {paths} inputs and {layers} layers");
++    let (proof, root, inputs) = random_proof(&params, (G, T, U, V), paths, layers);
++
++    let ((streaming, streaming_1, streaming_2), (base, base_1, base_2)) =
++      verify_streaming_and_base(&proof, &params, root, layers, &inputs);
++    streaming.unwrap();
++    base.unwrap();
++    assert_verifiers_eq_multiset(&streaming_1, &base_1);
++    assert_verifiers_eq_multiset(&streaming_2, &base_2);
++    assert!(batch_verifies(&params, &streaming_1, &streaming_2));
++    assert!(batch_verifies(&params, &base_1, &base_2));
++  }
++}
++
++#[test]
++fn test_streaming_verify_matches_base_on_tampered_proofs() {
++  let (G, T, U, V, params) = random_params(2);
++
++  // A C1 root (with branches on both curves) and a C2 root
++  for (paths, layers) in [(2, 3), (1, 2)] {
++    let (proof, root, inputs) = random_proof(&params, (G, T, U, V), paths, layers);
++    let mut buf = vec![];
++    proof.write(&mut buf).unwrap();
++
++    for (name, offset, element) in tampering_regions(buf.len(), root, layers, paths) {
++      // Replace the element with another valid element, and flip a bit within it
++      let replacement = match element {
++        Element::C1Point => <Selene as Ciphersuite>::G::random(&mut OsRng).to_bytes(),
++        Element::C1Scalar => <Selene as Ciphersuite>::F::random(&mut OsRng).to_repr(),
++        Element::C2Point => <Helios as Ciphersuite>::G::random(&mut OsRng).to_bytes(),
++        Element::C2Scalar => <Helios as Ciphersuite>::F::random(&mut OsRng).to_repr(),
++      };
++      let mut replaced = buf.clone();
++      replaced[offset .. (offset + 32)].copy_from_slice(&replacement);
++      let mut flipped = buf.clone();
++      flipped[offset + 1] ^= 1;
++
++      for tampered in [replaced, flipped] {
++        assert_ne!(tampered, buf);
++        let tampered = Fcmp::<MoneroCurves>::read(&mut tampered.as_slice(), paths, layers).unwrap();
++        let ((streaming, streaming_1, streaming_2), (base, base_1, base_2)) =
++          verify_streaming_and_base(&tampered, &params, root, layers, &inputs);
++        // The same proofs are well-formed, with the same error otherwise
++        assert_eq!(streaming.is_ok(), base.is_ok(), "{name} {element:?}");
++        assert_eq!(format!("{streaming:?}"), format!("{base:?}"), "{name} {element:?}");
++        if streaming.is_ok() {
++          assert_verifiers_eq_multiset(&streaming_1, &base_1);
++          assert_verifiers_eq_multiset(&streaming_2, &base_2);
++          assert!(!batch_verifies(&params, &streaming_1, &streaming_2), "{name} {element:?}");
++          assert!(!batch_verifies(&params, &base_1, &base_2), "{name} {element:?}");
++        }
++      }
++    }
++  }
++}
++
++#[test]
++fn test_streaming_verify_matches_base_under_random_mutation() {
++  let (G, T, U, V, params) = random_params(2);
++
++  // Random single-byte mutations anywhere in the serialized proof, including the root blind PoK
++  for (paths, layers) in [(2, 3), (1, 2)] {
++    let (proof, root, inputs) = random_proof(&params, (G, T, U, V), paths, layers);
++    let mut buf = vec![];
++    proof.write(&mut buf).unwrap();
++
++    let mut well_formed = 0;
++    for i in 0 .. 128 {
++      let mut mutated = buf.clone();
++      let offset = usize::try_from(OsRng.next_u64() % u64::try_from(buf.len()).unwrap()).unwrap();
++      let mut mask = 0;
++      while mask == 0 {
++        mask = u8::try_from(OsRng.next_u64() & 0xff).unwrap();
++      }
++      mutated[offset] ^= mask;
++      assert_ne!(mutated, buf);
++
++      let mutated = Fcmp::<MoneroCurves>::read(&mut mutated.as_slice(), paths, layers).unwrap();
++      let ((streaming, streaming_1, streaming_2), (base, base_1, base_2)) =
++        verify_streaming_and_base(&mutated, &params, root, layers, &inputs);
++      assert_eq!(streaming.is_ok(), base.is_ok(), "mutation {i} at byte {offset}");
++      assert_eq!(format!("{streaming:?}"), format!("{base:?}"), "mutation {i} at byte {offset}");
++      if streaming.is_ok() {
++        well_formed += 1;
++        assert_verifiers_eq_multiset(&streaming_1, &base_1);
++        assert_verifiers_eq_multiset(&streaming_2, &base_2);
++        assert!(!batch_verifies(&params, &streaming_1, &streaming_2), "mutation {i} at byte {offset}");
++        assert!(!batch_verifies(&params, &base_1, &base_2), "mutation {i} at byte {offset}");
++      }
++    }
++    println!("{paths} inputs, {layers} layers: 128 mutations, {well_formed} still well-formed");
++  }
++}
+diff --git a/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof.rs b/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof.rs
+index cfb7468..c432a74 100644
+--- a/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof.rs
++++ b/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof.rs
+@@ -1313,5 +1313,181 @@ impl<C: Ciphersuite> PendingVerification<'_, C> {
+   }
+ }
+ 
++
++#[cfg(feature = "tests")]
++impl<C: Ciphersuite> ArithmeticCircuitStatement<'_, C>
++where
++  C::F: FromUniformBytes<64>,
++  C::G: ConditionallySelectable,
++{
++  /// E016: the verifier of monero-oxide 31c26d9 (`ArithmeticCircuitStatement::verify` before the
++  /// streaming change), copied verbatim and renamed. Test-only; the reference the streaming
++  /// verifier is checked against.
++  pub fn verify_base<R: RngCore + CryptoRng>(
++    self,
++    rng: &mut R,
++    verifier: &mut BatchVerifier<C>,
++    transcript: &mut VerifierTranscript,
++  ) -> Result<(), AcVerifyError> {
++    if verifier.g_bold.len() < self.generators.len() {
++      verifier.g_bold.resize(self.generators.len(), C::F::ZERO);
++      verifier.h_bold.resize(self.generators.len(), C::F::ZERO);
++      verifier.h_sum.resize(self.generators.len(), C::F::ZERO);
++    }
++
++    let n = self.n();
++    let c = self.c();
++
++    let ni = (2 * c) + 2;
++
++    let ilr = ni / 2;
++    let io = ni;
++    let is = ni + 1;
++    let jo = 0;
++
++    let AI = transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++    let AO = transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++    let S = transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++    let y = transcript.challenge::<C>();
++    let z = transcript.challenge::<C>();
++    let YzChallenges { y_inv, z } = self.yz_challenges(y, z);
++
++    // The fixed GBP paper writes this as `2 * (ni + 1)` (inclusive), but this is exclusive
++    let t_poly_len = (2 * (ni + 1)) + 1;
++    let mut T_before_ni = Vec::with_capacity(ni - (ni / 2));
++    for _ in (ni / 2) .. ni {
++      T_before_ni.push(transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?);
++    }
++    let mut T_after_ni = Vec::with_capacity(t_poly_len - (ni + 1));
++    for _ in (ni + 1) .. t_poly_len {
++      T_after_ni.push(transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?);
++    }
++    let x: ScalarVector<C::F> = ScalarVector::powers(transcript.challenge::<C>(), t_poly_len);
++
++    let mut l_weights = ScalarVector::new(n);
++    let mut r_weights = ScalarVector::new(n);
++    let mut o_weights = ScalarVector::new(n);
++    for (constraint, z) in self.constraints.iter().zip(&z.0) {
++      accumulate_vector(&mut l_weights, &constraint.WL, *z);
++      accumulate_vector(&mut r_weights, &constraint.WR, *z);
++      accumulate_vector(&mut o_weights, &constraint.WO, *z);
++    }
++    let r_weights = r_weights * &y_inv;
++
++    let delta = r_weights.inner_product(l_weights.0.iter());
++
++    let tau_x = transcript.read_scalar::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++    let mu = transcript.read_scalar::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++    let t_caret = transcript.read_scalar::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++
++    // Lines 88-90, modified per Generalized Bulletproofs as needed w.r.t. `t`
++    // This corresponds to the verifier's final Step 4 in the 'fixed' paper
++    {
++      let verifier_weight = C::F::random(&mut *rng);
++      // lhs of the equation, weighted to enable batch verification
++      verifier.g += t_caret * verifier_weight;
++      verifier.h += tau_x * verifier_weight;
++
++      // rhs of the equation, negated to cause a sum to zero
++
++      /*
++        `delta - z...`, instead of `delta + z...`, is because we write our constraint as
++        `+ c = 0`, not `= c`, so we have to subtract it from both sides, which this effects.
++      */
++      verifier.g -= verifier_weight *
++        x[ni] *
++        (delta - z.inner_product(self.constraints.iter().map(|constraint| &constraint.c)));
++      let mut V_weights = ScalarVector::new(self.V.len());
++      for (constraint, z) in self.constraints.iter().zip(&z.0) {
++        accumulate_vector(&mut V_weights, &constraint.WV, *z);
++      }
++      V_weights = V_weights * x[ni];
++      for pair in V_weights.0.into_iter().zip(self.V.0) {
++        /*
++          We actually don't negate `verifier_weight` here as we write our constraint as
++          `... + WV V = 0` not `= WV V + ..`. This means we need to subtract it from both sides,
++          which this effects.
++        */
++        verifier.additional.push((verifier_weight * pair.0, pair.1));
++      }
++      for (i, T) in T_before_ni.into_iter().enumerate() {
++        verifier.additional.push((-verifier_weight * x[(ni / 2) + i], T));
++      }
++      for (i, T) in T_after_ni.into_iter().enumerate() {
++        verifier.additional.push((-verifier_weight * x[ni + 1 + i], T));
++      }
++    }
++
++    // This corresponds to the verifier's final Steps 3, 5 in the 'fixed' paper
++
++    let verifier_weight = C::F::random(&mut *rng);
++    // Multiply `x` by `verifier_weight` as this effects `verifier_weight` onto most scalars and
++    // saves a notable amount of operations
++    let x = x * verifier_weight;
++
++    // This following block effectively calculates P, within the multiexp
++    {
++      verifier.additional.push((x[ilr], AI));
++      verifier.additional.push((x[io], AO));
++      // `h_bold' * y` is equivalent to `h_bold` as `h_bold'` _is_ `h_bold * y^{-1}`
++      let mut log2_n = 0;
++      while (1 << log2_n) != n {
++        log2_n += 1;
++      }
++      verifier.h_sum[log2_n] -= verifier_weight;
++      verifier.additional.push((x[is], S));
++
++      // Lines 85-87 calculate `WL`, `WR`, `WO`
++      // We preserve them in terms of `g_bold` and `h_bold` for a more efficient multiexp
++      let mut h_bold_scalars = l_weights * x[ilr];
++      for (i, wr) in (r_weights * x[ilr]).0.into_iter().enumerate() {
++        verifier.g_bold[i] += wr;
++      }
++      h_bold_scalars = h_bold_scalars + &(o_weights * x[jo]);
++
++      for i in 0 .. self.C.len() {
++        let mut cg = ScalarVector::new(n);
++        for (constraint, z) in self.constraints.iter().zip(&z.0) {
++          if let Some(WCG) = constraint.WCG().get(&i) {
++            accumulate_vector(&mut cg, WCG, *z);
++          }
++        }
++
++        // Push the terms for `C`, which increment from `0`, and the terms for `WC`, which
++        // decrement from `n'`
++        {
++          let C = self.C.0[i];
++          let WCG = cg;
++          let i = 1 + i;
++          let j = ni - i;
++          verifier.additional.push((x[j], C));
++          h_bold_scalars = h_bold_scalars + &(WCG * x[i]);
++        }
++      }
++
++      // All terms for `h_bold` here have actually been for `h_bold'`, `h_bold * y^{-1}`
++      h_bold_scalars = h_bold_scalars * &y_inv;
++      for (i, scalar) in h_bold_scalars.0.into_iter().enumerate() {
++        verifier.h_bold[i] += scalar;
++      }
++
++      // Remove `mu * h` from `P`
++      verifier.h -= verifier_weight * mu;
++    }
++
++    // Prove for lines 88, 92 with an Inner-Product statement
++    // This inlines Protocol 1, as our IpStatement implements Protocol 2
++    let ip_x = transcript.challenge::<C>();
++    // `P` is amended with this additional term
++    verifier.g += verifier_weight * ip_x * t_caret;
++    IpStatement::new(self.generators, y_inv, ip_x, P::Verifier { verifier_weight })
++      .expect("created an invalid IpStatement")
++      .verify(verifier, transcript)
++      .map_err(|e| match e {
++        IpVerifyError::IncompleteProof => AcVerifyError::IncompleteProof,
++      })
++  }
++}
++
+ #[cfg(test)]
+ mod tests;
+-- 
+2.43.0
+

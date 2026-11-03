@@ -16,6 +16,7 @@ Base: `monero-oxide/monero-oxide` at `31c26d96eaadbba910ffe3613ad8b4cf9c598a93` 
 | patch | what | measured as |
 |---|---|---|
 | `v1-E007-full-streaming/monero-oxide/0001-E007-verify-FCMPs-with-streaming-constraint-accumula.patch` | streaming FCMP++ verifier: `Circuit` Store/Discard/Accumulate modes, `ConstraintAccumulator`, `FoldedStatement::verify_transcript` / `PendingVerification::apply`, two-build `Fcmp::verify` with replay check; +1,182 lines of tests. 7 files, +2,186/-134. | E007 (-59% peak alone), reviewed in reports/E007-crypto-review.md |
+| `v1-E007-full-streaming/monero-oxide/0002-E016-test-the-streaming-verifier-against-verbatim-co.patch` | tests only: verbatim copies of the 31c26d9 `Fcmp::verify` and `ArithmeticCircuitStatement::verify` (`#[cfg(test)]` / feature `tests`) and three tests comparing the streaming verifier against them on honest, tampered and randomly mutated proofs. 3 files, +641/-54 (54 = moving the tampering-region computation into a helper). | E016 (closes the review's F1) |
 
 Touches `crypto/generalized-bulletproofs/`, `crypto/fcmps/`, `crypto/fcmps/circuit-abstraction/`.
 
