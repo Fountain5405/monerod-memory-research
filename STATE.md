@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 03:00
+Last updated: 2026-11-03 03:00 (profile A done)
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -21,7 +21,7 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 - Snapshots: stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
 ## Queue (do the first item that is unblocked)
-A. When profile_combo is done: compare with E006 (evidence/E006) and check that `ArithmeticCircuitStatement::verify`'s ~52% share is gone. Write the result into experiments/E007-streaming-verifier.
+A. (DONE 02:56: the 50% verify hotspot is gone from the combo profile; recorded in E007.)
 B. When the minmem chain is done: write experiments/E009-min-mem (base vs combo minimum MemoryMax, cgroup peak, OOM kills), update FINDINGS, ping the owner.
 C. Longer resync with combo: from the wedge snapshot (3,105,401) to the tip, DEFAULT settings (no --block-sync-size, so the E001 fix is exercised), hash check, peak and post-idle. Ideally base too for comparison, but base with default settings wedges (E001), so base must use --block-sync-size 5. Consider ~3,105,401 → 3,123,270 (the pristine snapshot height) so the end hash can be checked against .22.
 D. Write reports/SUMMARY.md: an owner-facing summary of results, negative results, side findings, caveats (128-input worst case; glibc-only trim; E007 is unaudited crypto code; small-input CPU cost of the double build), and what would be upstreamable.

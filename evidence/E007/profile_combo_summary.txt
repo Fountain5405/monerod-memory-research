@@ -1,0 +1,9 @@
+profile queued 2026-11-03T02:51:34+00:00 bin=/home/optimizer/work/monero-fcmp-combo/build/beta31-combo/bin/monerod f0f664f1f4103913
+start 2026-11-03T02:51:34+00:00
+no shadow processes
+governor schedutil -> performance
+RESULT OK height 3105401
+window done h=3105441 after 118s
+governor restored to schedutil
+samples: Samples: 0
+PROFILE_COMPLETE

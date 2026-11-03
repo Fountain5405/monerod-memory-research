@@ -158,3 +158,4 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Harness bug found and fixed: the peak awk compared strings (F18). One RSS value was corrected; all anon peaks re-verified.
 - Owner pinged with the combo headline.
 - Queued: the combo CPU profile, then the min_mem chain (combo, then base) with the governor pinned.
+- 02:56 profile_combo done: the baseline 50% hotspot (ArithmeticCircuitStatement::verify) is gone; the top is now curve/field math (Selene add 19%, Montgomery 18%, mul_wide 12%). This confirms the O(c·q) explanation. The min_mem chain started right after (combo first).

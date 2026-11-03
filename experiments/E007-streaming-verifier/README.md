@@ -109,5 +109,20 @@ Medians (evidence/E007/stats.md):
 - Some flips may produce invalid encodings that the Rust decoder rejects. The crate-level tests cover valid-but-wrong elements for each proof region.
 - Evidence: evidence/negtest/.
 
+**Profile confirmation (profile_combo, 2026-11-03 02:51-02:55; scripts/profile_window.sh, perf -F 199, governor pinned; the window took 118 s, matching the A/B):**
+- `ArithmeticCircuitStatement::verify` was 50.37% + 1.33% of all sync CPU in the baseline (E006). In the combo profile it no longer appears among the symbols above 0.3%.
+- Top self time is now real curve and field math:
+  - `SelenePoint::add` 19.4%
+  - crypto_bigint `montgomery_reduction` 18.0%
+  - `mul_wide` 11.9%
+  - memmove 5.2%
+  - dalek_ff_group `FieldElement::pow` 5.1%
+  - `LinComb::term` 4.4%
+  - curve25519 AVX2 scalar_mul 3.4%
+  - multiexp `prep_bits` 2.1%
+- The new accumulator's fold (`accumulate_vector` 1.3%) and `constrain_equal_to_zero` (1.4%) are small. malloc/free (`_int_malloc` 0.9%, `_int_free` 0.5%) is minor.
+- So the 2x wall-time win is the removal of the O(c·q) fold, as hypothesized. What remains is multiexp/IPA arithmetic, which the batch verifier needs anyway.
+- Evidence: evidence/E007/profile_combo_top.txt (top 60 symbols).
+
 Verdict: **CONFIRMED.** This is the largest single change: -59% peak and -50% wall on this workload, guardrails held (hash, verification, disk). It is not an audit; upstream use needs cryptographic review.
 
