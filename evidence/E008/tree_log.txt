@@ -1,0 +1,6 @@
+1c15cefd6 E007: build fcmp_pp_rust against local monero-oxide-e007 (streaming verify)
+90921e2b3 cryptonote_core: cap adaptive block sync size by the block weight limit
+3ffb58c77 rctSigs: malloc_trim after FCMP++ batch verification (on top of the batch cap)
+2e80c0685 rctSigs: cap FCMP++ batch verification at physical cores
+d80596ad1 Merge pull request #506 from xmrack/fix-tx-request-queue-cap-stressnet-v3
+e23eef072 Merge pull request #505 from xmrack/fix-tree-cache-leaf-iterator-stressnet-v3

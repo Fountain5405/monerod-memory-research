@@ -1,0 +1,88 @@
+{
+ "local_height": 3105424,
+ "block_txs": 8,
+ "cases": [
+  {
+   "tx": "4c07f9e1ea2a41623a66b21ad6b01fe936882c5eb266f991865ca6f4db02e6bb",
+   "inputs": 128,
+   "reference_block": 3103427,
+   "fcmp_bytes": 133504,
+   "tampered": [
+    {
+     "offset": 8,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 40,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 100,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 33376,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 66752,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 100128,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 133464,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 133496,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    }
+   ],
+   "original": {
+    "status": "OK",
+    "reason": "Not relayed",
+    "flags": {
+     "not_relayed": true
+    }
+   },
+   "all_tampered_rejected": true,
+   "original_accepted": true
+  }
+ ],
+ "PASS": true
+}

@@ -73,9 +73,9 @@ for r in $(seq 1 $ROUNDS); do
     curl -s -m 30 http://127.0.0.1:$PORT/json_rpc -d '{"jsonrpc":"2.0","id":0,"method":"set_bans","params":{"bans":[{"host":"192.168.1.22","ban":false}]}}' > /dev/null
     stop_node $MP
     sleep 3
-    pa=$(awk -F, 'NR>1 && $6>m {m=$6} END {print int(m/1024)}' $OUT/$tag.mem.csv)
-    pd=$(awk -F, 'NR>1 && $11>m {m=$11} END {print int(m/1024)}' $OUT/$tag.mem.csv)
-    pr=$(awk -F, 'NR>1 && $5>m {m=$5} END {print int(m/1024)}' $OUT/$tag.mem.csv)
+    pa=$(awk -F, 'NR>1 && ($6+0)>m {m=$6+0} END {print int(m/1024)}' $OUT/$tag.mem.csv)
+    pd=$(awk -F, 'NR>1 && ($11+0)>m {m=$11+0} END {print int(m/1024)}' $OUT/$tag.mem.csv)
+    pr=$(awk -F, 'NR>1 && ($5+0)>m {m=$5+0} END {print int(m/1024)}' $OUT/$tag.mem.csv)
     tip=$(check_tip $BIN)
     echo "$r,$L,$h0,$h,$(( h - ${h0:-0} )),$(( t1 - t0 )),$pa,$pd,$pr,${io_r:-},${io_w:-},${tip% *},${tip#* },${post:-}" >> $R
     echo "[$tag] $EXTRA -> h=$h wall=$((t1 - t0))s peak_anon=${pa}MB post_idle_anon=${post:-?}MB tip=$tip" >> $S

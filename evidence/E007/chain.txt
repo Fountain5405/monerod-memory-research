@@ -1,0 +1,11 @@
+chain e007 start 2026-11-03T00:29:18+00:00 tree=/home/optimizer/work/monero-fcmp-e007 wait=/home/optimizer/work/research-artifacts/e004e.chain:CHAIN_E004E_COMPLETE rounds=3 extra='--block-sync-size 5'
+wait satisfied 2026-11-03T00:53:18+00:00
+BUILD_OK
+ab3038be4bebeef83f4497e05dbeb749da0193dd5efb802eabf70e193ae591bb  /home/optimizer/work/monero-fcmp-e007/build/beta31-e007/bin/monerod
+bfd179a6a E007: build fcmp_pp_rust against local monero-oxide-e007 (streaming verify)
+d80596ad1 Merge pull request #506 from xmrack/fix-tx-request-queue-cap-stressnet-v3
+e23eef072 Merge pull request #505 from xmrack/fix-tree-cache-leaf-iterator-stressnet-v3
+governor schedutil -> performance
+governor restored to schedutil
+A/B done 2026-11-03T01:18:35+00:00
+CHAIN_E007_COMPLETE

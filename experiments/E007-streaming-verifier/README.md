@@ -74,4 +74,40 @@ Spec: ~/work/monero-oxide-e007 (branch e007-streaming-verify) + ~/work/monero-fc
 - One FCMP++ proof covers all of a tx's inputs. At about 2 MB of stored constraints per input (agent measurement), a 128-input proof stores roughly 250 MB, which matches the ~150-200 MB per verifier thread seen in E002b/E003/E004a. Streaming would bring that to about 65 MB.
 - Caveat for the report: stressnet's window is dominated by 128-input (max-size) txs. Mainnet-like 1-2-input txs keep only a few MB per thread. The peak here is therefore a worst-case / adversarial-block measurement, which is still the number that sets the RAM a node must have.
 
-**Results (monerod window A/B):** queued as chain e007 (scripts/chain_build_ab.sh v2, waits for CHAIN_E004E_COMPLETE).
+**Results (monerod window A/B, chain e007, 2026-11-03 00:53-01:18):**
+- Setup: 3 alternating rounds, governor pinned, every end hash = .22.
+- Build: ~/work/monero-fcmp-e007/build/beta31-e007, sha256 ab3038be…. This is beta31 plus only the Rust streaming verifier; 24 verifier threads, no trim.
+
+| round | arm | peak RssAnon MB | post-idle RssAnon MB | wall s |
+|---|---|---|---|---|
+| 1 | base | 5,592 | 5,022 | 219 |
+| 1 | e007 | 2,108 | 2,050 | 108 |
+| 2 | e007 | 2,297 | 2,093 | 115 |
+| 2 | base | 5,088 | 3,969 | 218 |
+| 3 | base | 5,582 | 4,699 | 218 |
+| 3 | e007 | 2,291 | 2,253 | 108 |
+
+Medians (evidence/E007/stats.md):
+- **peak RssAnon 5,582 → 2,291 MB (-59.0%)**. The ranges don't overlap: 5,088-5,592 vs 2,108-2,297.
+- Private_Dirty -58.8%
+- peak RSS 6,619 → 3,296 MB (-50.2%)
+- **wall 218 → 108 s (-50.5%)**
+- post-idle 4,699 → 2,093 MB (-55.5%). E007 alone has no trim, so glibc still retains about 2 GB after sync.
+- Disk writes unchanged.
+
+**Harness fix:** for r1_e007, peak RSS was reported as 0. The sampler had written one short row (`ts,height,target,,log`). The awk max in ab_window.sh compared the strings, and "log" sorted above the numbers. Fixed with numeric comparisons (`($5+0)>m`), for anon and privdirty as well. I recomputed all 18 e004e/e007/combo runs: every anon peak matches results.csv, and only that one RSS value changed, to the true 3,083 MB. results.raw.csv keeps the original.
+
+**Why it is also 2x faster.** The agent's micro-benchmark predicted +40-50% CPU per verify call. The opposite happened on this workload. Old `ArithmeticCircuitStatement::verify` folds the per-commitment CG weights in c separate passes over all q constraints, with a BTreeMap lookup per constraint per pass. That is O(c·q). For a 128-input proof, both c (vector commitments, which scale with inputs × layers) and q (constraints) are large, so the cost is effectively quadratic in inputs. The accumulator visits each constraint's own WCG entries once, which is O(total terms). The micro-benchmark used 1-8-input proofs, where c is small and the extra circuit build dominates. On stressnet's 128-input txs the quadratic fold dominated, which is E006's 52% hotspot.
+- The profile of the combined build (profile_combo) is meant to confirm this.
+- Expect a small CPU regression for 1-2-input txs (the second build) and a large win for big-input txs.
+
+**Guardrail: monerod-level negative test (scripts/negtest.sh + negtest.py, 2026-11-03 02:49).**
+- The DB was rewound to height N. Txs of block N were fetched from .22 (read-only RPC) and submitted to our own offline node with `send_raw_transaction` (do_not_relay).
+- For each tx, 8 tampered copies were submitted first, each with one bit flipped in the fcmp_pp proof at offsets 8, 40, 100, ¼, ½ and ¾ of the length, len-40 and len-8. The original came last.
+- Txs: one 128-input tx (proof 133,504 B, N = 3,105,424), one 8-input tx and one 2-input tx (N = 3,105,414).
+- **Base and combo both: 24/24 tampered copies rejected and 3/3 originals accepted.** Every rejection was logged as `blockchain.cpp:4015 Failed to verify input FCMP++ signatures` (8 + 16 per binary), i.e. by the FCMP++ proof check (`ver_input_proofs_fcmps`), not by an earlier parse/semantics check.
+- Some flips may produce invalid encodings that the Rust decoder rejects. The crate-level tests cover valid-but-wrong elements for each proof region.
+- Evidence: evidence/negtest/.
+
+Verdict: **CONFIRMED.** This is the largest single change: -59% peak and -50% wall on this workload, guardrails held (hash, verification, disk). It is not an audit; upstream use needs cryptographic review.
+

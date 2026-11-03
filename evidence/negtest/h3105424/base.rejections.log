@@ -1,0 +1,25 @@
+2026-11-03 02:49:27.802	[RPC0]	ERROR	verify	src/cryptonote_core/blockchain.cpp:4015	Failed to verify input FCMP++ signatures for tx <17073ade45ae4a0e5dba4ae02d8b19bf50d9a60eb0f198d91d29384455a49f19>
+2026-11-03 02:49:27.802	[RPC0]	INFO	txpool	src/cryptonote_core/tx_pool.cpp:334	tx used wrong inputs, rejected
+2026-11-03 02:49:27.802	[RPC0]	WARNING	daemon.rpc	src/rpc/core_rpc_server.cpp:1267	[on_send_raw_tx]: tx verification failed: invalid input
+2026-11-03 02:49:27.854	[RPC0]	ERROR	verify	src/cryptonote_core/blockchain.cpp:4015	Failed to verify input FCMP++ signatures for tx <b750ecef8f04f75ae7988b65a1db76ce765a380f37f1eee5a3212c62c8972656>
+2026-11-03 02:49:27.854	[RPC0]	INFO	txpool	src/cryptonote_core/tx_pool.cpp:334	tx used wrong inputs, rejected
+2026-11-03 02:49:27.854	[RPC0]	WARNING	daemon.rpc	src/rpc/core_rpc_server.cpp:1267	[on_send_raw_tx]: tx verification failed: invalid input
+2026-11-03 02:49:27.905	[RPC0]	ERROR	verify	src/cryptonote_core/blockchain.cpp:4015	Failed to verify input FCMP++ signatures for tx <e4a661fff5d814c960b07e039acab158d54f39fb5e976f2f6e5887aa2aed32f8>
+2026-11-03 02:49:27.905	[RPC0]	INFO	txpool	src/cryptonote_core/tx_pool.cpp:334	tx used wrong inputs, rejected
+2026-11-03 02:49:27.905	[RPC0]	WARNING	daemon.rpc	src/rpc/core_rpc_server.cpp:1267	[on_send_raw_tx]: tx verification failed: invalid input
+2026-11-03 02:49:28.030	[RPC1]	ERROR	verify	src/cryptonote_core/blockchain.cpp:4015	Failed to verify input FCMP++ signatures for tx <326617ce595d8e3bc6a2a3ae8d4dd901bd45a4e4fd0e1464faf064d0f0fb7cbb>
+2026-11-03 02:49:28.030	[RPC1]	INFO	txpool	src/cryptonote_core/tx_pool.cpp:334	tx used wrong inputs, rejected
+2026-11-03 02:49:28.030	[RPC1]	WARNING	daemon.rpc	src/rpc/core_rpc_server.cpp:1267	[on_send_raw_tx]: tx verification failed: invalid input
+2026-11-03 02:49:29.772	[RPC1]	ERROR	verify	src/cryptonote_core/blockchain.cpp:4015	Failed to verify input FCMP++ signatures for tx <7b74a87debbc468dd0316974c205304b5c827cc13de697bfce99c8b51bca61bd>
+2026-11-03 02:49:29.772	[RPC1]	INFO	txpool	src/cryptonote_core/tx_pool.cpp:334	tx used wrong inputs, rejected
+2026-11-03 02:49:29.772	[RPC1]	WARNING	daemon.rpc	src/rpc/core_rpc_server.cpp:1267	[on_send_raw_tx]: tx verification failed: invalid input
+2026-11-03 02:49:31.647	[RPC0]	ERROR	verify	src/cryptonote_core/blockchain.cpp:4015	Failed to verify input FCMP++ signatures for tx <640c84cfbe5b1aa3c14f90a13f15b9a9a1e859061283860b93e3c346cee5cef6>
+2026-11-03 02:49:31.647	[RPC0]	INFO	txpool	src/cryptonote_core/tx_pool.cpp:334	tx used wrong inputs, rejected
+2026-11-03 02:49:31.647	[RPC0]	WARNING	daemon.rpc	src/rpc/core_rpc_server.cpp:1267	[on_send_raw_tx]: tx verification failed: invalid input
+2026-11-03 02:49:33.535	[RPC1]	ERROR	verify	src/cryptonote_core/blockchain.cpp:4015	Failed to verify input FCMP++ signatures for tx <fb2c958ec17876c796596265c294b34faea62ff68309ab548b4aca3c0220b157>
+2026-11-03 02:49:33.535	[RPC1]	INFO	txpool	src/cryptonote_core/tx_pool.cpp:334	tx used wrong inputs, rejected
+2026-11-03 02:49:33.535	[RPC1]	WARNING	daemon.rpc	src/rpc/core_rpc_server.cpp:1267	[on_send_raw_tx]: tx verification failed: invalid input
+2026-11-03 02:49:35.307	[RPC0]	ERROR	verify	src/cryptonote_core/blockchain.cpp:4015	Failed to verify input FCMP++ signatures for tx <970b917ecd1070f2b8e21824d2df077ec5b1dd15393e0b3fd210cc09226bd0bc>
+2026-11-03 02:49:35.307	[RPC0]	INFO	txpool	src/cryptonote_core/tx_pool.cpp:334	tx used wrong inputs, rejected
+2026-11-03 02:49:35.307	[RPC0]	WARNING	daemon.rpc	src/rpc/core_rpc_server.cpp:1267	[on_send_raw_tx]: tx verification failed: invalid input
+2026-11-03 02:49:37.344	[RPC1]	WARNING	daemon.rpc	src/rpc/core_rpc_server.cpp:1278	[on_send_raw_tx]: tx accepted, but not relayed

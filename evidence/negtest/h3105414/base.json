@@ -1,0 +1,169 @@
+{
+ "local_height": 3105414,
+ "block_txs": 6,
+ "cases": [
+  {
+   "tx": "c546ff0ee035d4699fc7a9f36507ecee938f83b50d212b5a7de2a34c8afb335c",
+   "inputs": 8,
+   "reference_block": 3105413,
+   "fcmp_bytes": 13952,
+   "tampered": [
+    {
+     "offset": 8,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 40,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 100,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 3488,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 6976,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 10464,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 13912,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 13944,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    }
+   ],
+   "original": {
+    "status": "OK",
+    "reason": "Not relayed",
+    "flags": {
+     "not_relayed": true
+    }
+   },
+   "all_tampered_rejected": true,
+   "original_accepted": true
+  },
+  {
+   "tx": "5074b6e7d02171dd682cdcfa272d19027b7d72aa9add3e67b0fdb781407ae1bf",
+   "inputs": 2,
+   "reference_block": 3105413,
+   "fcmp_bytes": 7744,
+   "tampered": [
+    {
+     "offset": 8,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 40,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 100,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 1936,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 3872,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 5808,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 7704,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    },
+    {
+     "offset": 7736,
+     "status": "Failed",
+     "reason": "",
+     "flags": {
+      "invalid_input": true
+     }
+    }
+   ],
+   "original": {
+    "status": "OK",
+    "reason": "Not relayed",
+    "flags": {
+     "not_relayed": true
+    }
+   },
+   "all_tampered_rejected": true,
+   "original_accepted": true
+  }
+ ],
+ "PASS": true
+}

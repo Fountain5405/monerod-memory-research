@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 01:00
+Last updated: 2026-11-03 03:00
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -12,18 +12,22 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
   - E004d: -8%.
   - E005: rejected.
   - E006: profile.
-  - **E004e: CONFIRMED -44.6% peak RssAnon (5,309 → 2,943 MB), -88% post-idle (4,794 → 574 MB), -5.5% wall, hashes OK.**
-- **Chain e007** (scripts/chain_build_ab.sh v2): builds ~/work/monero-fcmp-e007 (streaming verifier only, on top of beta31) into build/beta31-e007, then runs a 3-round A/B vs base with the governor pinned. Log: ~/work/research-artifacts/e007.chain, ending CHAIN_E007_COMPLETE; build log e007.build.log.
-- **Chain combo**: queued; waits for CHAIN_E007_COMPLETE. Tree ~/work/monero-fcmp-combo, branch combo-e001-e004ce-e007: E004c + E004e + E001 fix (90921e2b3) + E007 cargo patch (1c15cefd6). Then a 3-round A/B vs base. Log ~/work/research-artifacts/combo.chain.
+  - E004e: -44.6% peak, -88% idle.
+  - **E007: -59% peak, -50% wall.**
+  - **E008 combo: -66.9% peak (5,289 → 1,751 MB), -79.5% post-idle, -46.8% wall.**
+  - **Negative test PASS for base and combo** (24/24 tampered rejected at the FCMP++ check, 3/3 originals accepted).
+- **profile_combo** (scripts/profile_window.sh): perf profile of the combo build over the window, to confirm why E007 is 2x faster. Output ~/work/research-artifacts/profile_combo/ (summary.txt ends PROFILE_COMPLETE; perf_symbols.txt).
+- **minmem chain** (scripts/run_minmem.sh): waits for PROFILE_COMPLETE, then runs min_mem.sh for combo (ref 117 s, lo 750, hi 4000, tol 125) and base (ref 220 s, lo 2000, hi 8000, tol 250). Governor pinned for the chain. Log ~/work/research-artifacts/minmem.chain, ending CHAIN_MINMEM_COMPLETE; per-label csv/summary in ~/work/research-artifacts/minmem/.
 - Snapshots: stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
 ## Queue (do the first item that is unblocked)
-A. When chain e007 is done: write up E007 results (experiments/E007-streaming-verifier), run scripts/ab_stats.py, ping the owner.
-B. When chain combo is done: write it up and ping the owner. Then run **min_mem.sh** (quiet box) for base (ref wall = its A/B median, ~219 s) and for the best build (E004e or combo; ref = its own median wall). Bounds lo 1500, hi 8000, tol 250. This is the cgroup "real memory" metric.
-C. Longer resync with the best build: from the wedge snapshot (3,105,401) to the tip, default settings (exercises the E001 fix in combo), hash check, peak/post-idle.
-D. Write reports/SUMMARY.md: the owner-facing report of results, negative results, side findings, and caveats (128-input worst case, glibc-only trim).
-E. Fix the perf_classify.py regex and the stack_attrib.py owning-frame view (low priority).
-F. Later: wallet (tree_cache), stagenet/master comparison, monerosim scenarios.
+A. When profile_combo is done: compare with E006 (evidence/E006) and check that `ArithmeticCircuitStatement::verify`'s ~52% share is gone. Write the result into experiments/E007-streaming-verifier.
+B. When the minmem chain is done: write experiments/E009-min-mem (base vs combo minimum MemoryMax, cgroup peak, OOM kills), update FINDINGS, ping the owner.
+C. Longer resync with combo: from the wedge snapshot (3,105,401) to the tip, DEFAULT settings (no --block-sync-size, so the E001 fix is exercised), hash check, peak and post-idle. Ideally base too for comparison, but base with default settings wedges (E001), so base must use --block-sync-size 5. Consider ~3,105,401 → 3,123,270 (the pristine snapshot height) so the end hash can be checked against .22.
+D. Write reports/SUMMARY.md: an owner-facing summary of results, negative results, side findings, caveats (128-input worst case; glibc-only trim; E007 is unaudited crypto code; small-input CPU cost of the double build), and what would be upstreamable.
+E. Small-input regression check for E007: a window or microbench with 1-2-input proofs only (e.g. the agent's measure harness at inputs = 1, 2), to price the double-build CPU cost honestly.
+F. Fix the perf_classify.py regex and the stack_attrib.py owning-frame view (low priority).
+G. Later: wallet (tree_cache), stagenet/master comparison, monerosim scenarios.
 
 ## Watch (read-only)
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.

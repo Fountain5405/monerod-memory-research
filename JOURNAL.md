@@ -147,3 +147,14 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Owner pinged (terminal notification).
 - Chain e007 started building as soon as CHAIN_E004E_COMPLETE landed. The combo chain is queued behind it (tree monero-fcmp-combo = E004c + E004e + E001 fix + E007).
 - New tool scripts/ab_stats.py prints a per-arm medians/ranges table and the deltas vs base.
+
+## 2026-11-03 02:47-03:00 Check-in: E007 -59% peak / -50% wall; combo -67% peak; negative test PASS
+- Box: no shadow lanes, idle, 53 GB free.
+- Both chains finished while I was away (e007 at 01:18, combo at 01:44), all hashes matching:
+  - **E007** (streaming verifier only): peak 5,582 → 2,291 MB (-59%), wall 218 → 108 s (-50%).
+  - **E008 combo** (E004c + E004e + E007 + E001 fix): peak 5,289 → 1,751 MB (-67%), post-idle 4,850 → 993 MB (-80%), wall 220 → 117 s (-47%).
+- The 2x speed-up contradicts the agent's +40% micro-benchmark. Explanation: the old verify's CG fold is O(c·q). That is cheap for 1-8 inputs and dominant for 128 inputs (the window is 82% 128-input txs). A profile of the combo build is running to confirm.
+- Because a 2x speed-up on crypto code is the classic sign of skipped work, I ran a **monerod-level negative test** (scripts/negtest.sh): bit-flipped FCMP++ proofs submitted to our own offline node. Base and combo each rejected 24/24 at "Failed to verify input FCMP++ signatures" and accepted 3/3 originals (128-, 8- and 2-input txs).
+- Harness bug found and fixed: the peak awk compared strings (F18). One RSS value was corrected; all anon peaks re-verified.
+- Owner pinged with the combo headline.
+- Queued: the combo CPU profile, then the min_mem chain (combo, then base) with the governor pinned.

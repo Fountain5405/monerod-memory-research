@@ -1,0 +1,12 @@
+ab_window start 2026-11-03T00:56:24+00:00 end=3105441 timeout=900 rounds=3 arms=2
+arm base: /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod --block-sync-size 5 | 2d1e3e9c17518b12
+arm e007: /home/optimizer/work/monero-fcmp-e007/build/beta31-e007/bin/monerod --block-sync-size 5 | ab3038be4bebeef8
+ 00:56:24 up 13:28,  3 users,  load average: 3.89, 7.65, 8.77
+no shadow processes
+[r1_base] --block-sync-size 5 -> h=3105441 wall=219s peak_anon=5592MB post_idle_anon=5022MB tip=3105446 yes
+[r1_e007] --block-sync-size 5 -> h=3105441 wall=108s peak_anon=2108MB post_idle_anon=2050MB tip=3105446 yes
+[r2_e007] --block-sync-size 5 -> h=3105441 wall=115s peak_anon=2297MB post_idle_anon=2093MB tip=3105446 yes
+[r2_base] --block-sync-size 5 -> h=3105441 wall=218s peak_anon=5088MB post_idle_anon=3969MB tip=3105446 yes
+[r3_base] --block-sync-size 5 -> h=3105441 wall=218s peak_anon=5582MB post_idle_anon=4699MB tip=3105446 yes
+[r3_e007] --block-sync-size 5 -> h=3105441 wall=108s peak_anon=2291MB post_idle_anon=2253MB tip=3105446 yes
+AB_COMPLETE
