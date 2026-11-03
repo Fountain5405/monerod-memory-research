@@ -353,5 +353,5 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 
 ## 2026-11-03 12:47-12:48 Check-in: E014 6/18; E017 tests passing on box81; E018 armed
 - hydrogen: no shadow lanes, 34 GB free, load ~1.4 (E014 at --max-concurrency 1). E014 round 1: base 1,351/1,348/1,260 MB at c4/c2/c1 (the stock peak barely moves with thread count below 4), adapt 1,064/884 at c4/c2 (-21%/-34%); adapt_c1 running.
-- box81: E017 tampered-proof test PASS after the harness fix (random_params(4)); error-path test PASS. GBP integration tests failed to build without the crate feature  (pre-existing requirement, not E017); will rerun with --features tests after the memory benchmark finishes (one heavy job at a time on the shared box).
+- box81: E017 tampered-proof test PASS after the harness fix (random_params(4)); error-path test PASS. GBP integration tests failed to build without the crate feature tests (pre-existing requirement, not E017); will rerun with --features tests after the memory benchmark finishes (one heavy job at a time on the shared box).
 - E018 chain written and armed on hydrogen (see STATE): node-level measurement of E017 against base and adapt, gated on E014 completion and a go-marker.
