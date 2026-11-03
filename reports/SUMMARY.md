@@ -1,4 +1,4 @@
-# monerod memory research: summary (draft, updated 2026-11-03 after E013)
+# monerod memory research: summary (draft, updated 2026-11-03 after E019)
 
 **Bottom line:** on the FCMP++ stressnet sync workload, three separable changes cut the memory monerod needs by about **two thirds to 70%**, and sync is about as fast or faster:
 - -68% peak in a 40-block worst-case window (3 A/B rounds);
@@ -53,6 +53,7 @@ A critical re-check of the raw data and source is in reports/REVIEW-70pct.md. Sh
   - E008: -67%
   - E010: -73%
   - E012/E013: -68% / -70%
+- It reproduces on a second, different machine (E019, box81, Ryzen 5 5600G 6c/12t, 14 GB, binaries built there): -61.5% peak / -71% post-idle / -43% wall on the heavy window, -33% peak on small-tx blocks, 18/18 hashes. The stock peak is smaller there (3.4 GB at 12 threads) so the percentage is smaller; the absolute saving is 2.1 GB vs 3.8 GB.
 - Every A/B has tight, disjoint ranges.
 - Two independent metrics agree: peak anon memory, and the minimum cgroup limit (which includes page cache, and whose failures are OOM kills, not slowdowns).
 - The guardrails held in every run. The mechanisms (below) are understood and confirmed by heaptrack and perf, not just observed.
@@ -70,7 +71,7 @@ A critical re-check of the raw data and source is in reports/REVIEW-70pct.md. Sh
 Two explanations of the mechanism, written at the owner's request: reports/HOW-IT-WORKS.md (technical: where the memory went, the streaming verifier's design and fail-closed properties, the cap and the trim, where to look in the code) and reports/HOW-IT-WORKS-plain.md (plain language).
 
 ## Setup
-- **Machine:** hydrogen, a Ryzen 9 3900X (12 cores / 24 threads) with 16 GB of RAM.
+- **Machines:** hydrogen, a Ryzen 9 3900X (12 cores / 24 threads) with 16 GB of RAM, for every experiment unless stated. box81, a Ryzen 5 5600G (6 cores / 12 threads) with 14 GB of RAM, for the independent reproduction (E019: base vs adapt vs e017 on the heavy and small-tx windows) and the E017 crate work. Each box builds its own binaries (ARCH=native); timings are never compared across boxes, only percentages.
 - **Baseline:** seraphis-migration/monero v0.19.0.0-beta.3.1 (d80596ad1). This is the FCMP++ beta that stressnet runs.
 - **Workload:** stressnet (testnet nettype), synced from the owner's node at 192.168.1.22.
   - Heavy A/B window: 3,105,401 → 3,105,441, 40 blocks, 1,044 txs, 109,408 inputs (851 txs have 128 inputs).
@@ -159,7 +160,7 @@ Two explanations of the mechanism, written at the owner's request: reports/HOW-I
 - The RPC server stops responding while 24 threads verify heavily.
 
 ## Caveats
-- One machine (12c/24t). The headline is one 40-block window with 3 A/B rounds; the 18,000-block resyncs (E010, E013) are 1 run per arm.
+- The headline numbers are from hydrogen (12c/24t). E019 reproduced the A/B on a second machine, box81 (6c/12t, 14 GB): -61.5% peak, -71% post-idle, -43% wall on the heavy window, -33% peak on small-tx blocks, 18/18 hashes, no swap. The headline is one 40-block window with 3 A/B rounds; the 18,000-block resyncs (E010, E013, E018) are 1 run per arm, on hydrogen only.
 - adapt's threshold of 16 inputs and its trim interval of 10 s are judgment calls; neither was swept. adapt holds ~0.1-0.4 GB more than the non-adaptive combo during light-block sync and at idle, because it trims less often.
 - Post-sync idle memory varies run to run by a few hundred MB: a trim cannot release fragmented arenas completely.
 - E007 is security-critical cryptographic code and **not audited**. Upstream use needs review by the FCMP++ authors.

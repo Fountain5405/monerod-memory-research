@@ -387,3 +387,6 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 
 ## 2026-11-03 18:07 HOW-IT-WORKS: v2 / E017 explained
 - Owner asked for an explanation of the reduced line count of the v2 (E017) verifier in the HOW-IT-WORKS files. Added section 2.1b to reports/HOW-IT-WORKS.md (the one-constraint identity, the three builds, why the diff is +513/-88 with +25 additive lines in the audited verifier against v1 +1,004/-134 with +570 inside it, the four reviewer checks, measured memory and CPU cost from E017/E018/E019, the two-build follow-up idea), a v2 row in the section 3 table and v2 pointers in section 4; and part 1b to reports/HOW-IT-WORKS-plain.md plus the two-machine caveat.
+
+## 2026-11-03 18:15 Docs: second box recorded in SUMMARY and REVIEW-70pct
+- Owner (18:2x) pointed out SUMMARY.md still said "Machine: hydrogen" and asked that the docs record the second box. SUMMARY: header date, Machines line (hydrogen + box81, native builds, percentages only across boxes), a "Solid" bullet for E019, the caveat line; REVIEW-70pct: status updates on weakness 2 and the verdict (second machine done, external review remains). HOW-IT-WORKS-plain already says two machines (73d9d26).
