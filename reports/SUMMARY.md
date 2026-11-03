@@ -63,6 +63,9 @@ A critical re-check of the raw data and source is in reports/REVIEW-70pct.md. Sh
 - **About two thirds of the win is unaudited cryptographic code** (E007, ~1,000 lines in monero-oxide). It was reviewed and tested by me, not by cryptographers. Without it, the ~15-line cap + trim changes give about -45%, and the zero-code `--max-concurrency 12` gives -40%.
 - `malloc_trim` is glibc-only. FCMP++ itself is still a beta (stressnet), not mainnet.
 
+## How it works
+Two explanations of the mechanism, written at the owner's request: reports/HOW-IT-WORKS.md (technical: where the memory went, the streaming verifier's design and fail-closed properties, the cap and the trim, where to look in the code) and reports/HOW-IT-WORKS-plain.md (plain language).
+
 ## Setup
 - **Machine:** hydrogen, a Ryzen 9 3900X (12 cores / 24 threads) with 16 GB of RAM.
 - **Baseline:** seraphis-migration/monero v0.19.0.0-beta.3.1 (d80596ad1). This is the FCMP++ beta that stressnet runs.

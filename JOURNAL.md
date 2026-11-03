@@ -335,3 +335,4 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
   - Decomposition: ~40 points from halving concurrency; the verifier change gives the rest and the 2x speed.
   - Open: unaudited crypto by the same author, one machine, the remaining 1.7 GB is unattributed.
 - The owner asked for a dive into the ~1,000-line monero-oxide change with a Fable agent. Launched (see In flight).
+- 11:51 Owner asked for an explanation of the optimization in the repo, technical and plain-language: reports/HOW-IT-WORKS.md and reports/HOW-IT-WORKS-plain.md, linked from SUMMARY and README.
