@@ -7,7 +7,7 @@ Found on stressnet. The same logic is present in upstream `master`.
 
 ## Environment
 - monerod `v0.19.0.0-beta.3.1` (seraphis-migration/monero `d80596ad1`), Release build, Ubuntu 24.04, x86_64.
-- Network: stressnet (testnet nettype). The syncing node had a single peer at the tip (`--add-exclusive-node`), and that peer ran the same version.
+- Network: stressnet (testnet nettype). The syncing node had a single peer at the tip (`--add-exclusive-node`), and that peer ran the same version. The single peer is a method, not a condition of the bug: it was chosen to make the wedge deterministic. The first occurrence was a normal multi-peer initial sync (see "Actual"), where the node stalled for ~20 minutes until it was restarted with `--block-sync-size`.
 - Upstream `monero-project/monero` master (`3fd0f88c2`) has the same `core::get_block_sync_size` logic (only an overflow-safe rewrite of one comparison), the same `LEVIN_DEFAULT_MAX_PACKET_SIZE`, and the same count-only cap on the responder.
 
 ## Steps to reproduce
@@ -46,7 +46,7 @@ Sampled FCMP++ blocks serialize to ~0.82-0.84 bytes per unit of weight (block 3,
 1. **Requester:** `core::get_block_sync_size` (`src/cryptonote_core/cryptonote_core.cpp:930`) projects from `max(max weight of last BLOCKS_MAX_WINDOW=100 blocks, average block size in the queue)`. When `projected * 100 < batch_max_weight` (10 MB default), it requests 100 blocks. It only looks backward, so an empty-to-full transition is invisible to it.
 2. **Responder:** `handle_request_get_objects` limits requests only by count (`CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT`, `cryptonote_protocol_handler.inl:1177`), not by bytes, so it builds and sends the whole ~134 MB response.
 3. **Transport:** `LEVIN_DEFAULT_MAX_PACKET_SIZE` = 100,000,000 (`contrib/epee/include/net/levin_base.h:64`) is enforced from the packet header (`levin_protocol_handler_async.h:619`), and the connection is closed.
-4. **No backoff:** after the drop, the node reconnects, computes the same estimate from the same tip, and sends the same request. With one peer it is wedged indefinitely. (With several peers, other spans may land and raise the queue-average term; I have not tested this.)
+4. **No backoff:** after the drop, the node reconnects, computes the same estimate from the same tip, and sends the same request. To advance, the node needs the block immediately after its tip, which is the first block of the oversize span; whichever peer is asked for it builds the same >100 MB response and is dropped. So the request fails against every peer, not just one. With a single peer this is a permanent wedge: every retry is identical, so the node never advances. With several peers the node churns through them and stalls (the ~20-minute real-world sighting), rather than wedging cleanly. The one escape would be another peer's spans landing ahead of the tip and raising the queue-average term (`max_average_of_blocksize_in_queue`), which would shrink the next request. That looks unlikely — the term only rises if a span of the large blocks actually lands, and any span starting at the transition is the oversize one that can't — but I have not tested the multi-peer case.
 5. **Hidden by default:** the error is logged in category `net` at ERROR, which the default log categories (`net:FATAL`) suppress.
 
 ## Who is affected
