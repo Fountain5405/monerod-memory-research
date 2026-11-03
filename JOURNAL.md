@@ -165,3 +165,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - All 7 fails are memcg OOM kills (kernel log), with anon at about the limit. Base near its limit first slowed as page cache was squeezed, then was killed. The A/B anon-peak metric and the cgroup metric agree (-67%).
 - Harness bug F20: oom_kills was always 0, because memory.events was read after the scope vanished. Fixed in min_mem.sh v2.
 - Owner asked (03:00) to be pinged when min_mem results were in. They were at the terminal, so PushNotification was suppressed as redundant and the result was reported in the chat.
+
+## 2026-11-03 03:31-03:40 E010 long resync started
+- Chain density from .22's headers (read-only): 3,105,401..3,113,400 holds 190k txs (1.9 GB of weight), after which blocks are nearly empty up to the tip (3,123,5xx). This is long enough to validate the result on a mixed, mostly small-tx workload.
+- ab_window.sh v3 adds REWIND_SNAPSHOT: the DB is restored from snapshots/stressnet_wedge_h3105401 (a 1-2 min copy) instead of popping 18k blocks, and pop_to.sh then verifies the hash at 3,105,400 (RESULT OK).
+- Arms: combo_default, base_bss5, combo_bss5. combo_default is syncing in 4-block batches from the start, which is the E001 cap at work. At log level 0 the cap message itself is not printed; the 4-block Synced increments are the evidence.
+- Owner was told the min_mem result in chat (03:30).

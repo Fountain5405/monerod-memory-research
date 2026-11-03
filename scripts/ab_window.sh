@@ -46,6 +46,10 @@ for r in $(seq 1 $ROUNDS); do
   for k in $idxs; do
     IFS='|' read -r L BIN EXTRA <<< "${ARMS[$k]}"
     tag=r${r}_$L
+    if [ -n "${REWIND_SNAPSHOT:-}" ]; then  # v3: restore from snapshot (fast for long resyncs), then pop_to verifies
+      rm -f $DD/testnet/lmdb/lock.mdb; cp $REWIND_SNAPSHOT/testnet/lmdb/data.mdb $DD/testnet/lmdb/data.mdb
+      echo "[$tag] restored DB from $REWIND_SNAPSHOT $(date -Is)" >> $S
+    fi
     ~/work/research/scripts/pop_to.sh $POPBIN $DD 3105401 $OUT/$tag.rewind.log
     if ! tail -1 $OUT/$tag.rewind.log | grep -q "RESULT OK"; then echo "[$tag] rewind FAILED" >> $S; continue; fi
     LOG=$OUT/$tag.log

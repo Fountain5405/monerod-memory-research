@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 03:35
+Last updated: 2026-11-03 03:40
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -18,12 +18,13 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
   - **Negative test PASS for base and combo** (24/24 tampered rejected at the FCMP++ check, 3/3 originals accepted).
 - **profile_combo** (scripts/profile_window.sh): perf profile of the combo build over the window, to confirm why E007 is 2x faster. Output ~/work/research-artifacts/profile_combo/ (summary.txt ends PROFILE_COMPLETE; perf_symbols.txt).
 - minmem chain DONE 03:23 (E009: base 5,750 MB vs combo 1,866 MB minimum MemoryMax, -67.5%). Was: (scripts/run_minmem.sh): waits for PROFILE_COMPLETE, then runs min_mem.sh for combo (ref 117 s, lo 750, hi 4000, tol 125) and base (ref 220 s, lo 2000, hi 8000, tol 250). Governor pinned for the chain. Log ~/work/research-artifacts/minmem.chain, ending CHAIN_MINMEM_COMPLETE; per-label csv/summary in ~/work/research-artifacts/minmem/.
+- **E010 long resync RUNNING** (started 03:31; scripts/run_e010.sh): 3,105,401 → 3,123,400, arms combo_default, base_bss5, combo_bss5 (1 run each, DB restored from the wedge snapshot each run). Log ~/work/research-artifacts/e010.chain (ends CHAIN_E010_COMPLETE); data in ~/work/research-artifacts/e010/. Est. 2-5 h in total.
 - Snapshots: stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
 ## Queue (do the first item that is unblocked)
 A. (DONE 02:56: the 50% verify hotspot is gone from the combo profile; recorded in E007.)
 B. (DONE 03:30: E009 written up; owner informed.)
-C. Longer resync with combo: from the wedge snapshot (3,105,401) to the tip, DEFAULT settings (no --block-sync-size, so the E001 fix is exercised), hash check, peak and post-idle. Ideally base too for comparison, but base with default settings wedges (E001), so base must use --block-sync-size 5. Consider ~3,105,401 → 3,123,270 (the pristine snapshot height) so the end hash can be checked against .22.
+C. (RUNNING as E010; see Currently running.) When done: write experiments/E010-long-resync results (peak, post-idle, wall per arm, hash; per-segment block rate from the Synced log lines, to compare the small-tx stretch), then ping the owner.
 D. Write reports/SUMMARY.md: an owner-facing summary of results, negative results, side findings, caveats (128-input worst case; glibc-only trim; E007 is unaudited crypto code; small-input CPU cost of the double build), and what would be upstreamable.
 E. Small-input regression check for E007: a window or microbench with 1-2-input proofs only (e.g. the agent's measure harness at inputs = 1, 2), to price the double-build CPU cost honestly.
 F. Fix the perf_classify.py regex and the stack_attrib.py owning-frame view (low priority).
