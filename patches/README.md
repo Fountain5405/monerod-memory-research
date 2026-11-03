@@ -61,8 +61,8 @@ Same monerod changes as v1. In monero-oxide the audited `ArithmeticCircuitStatem
 
 | patch | what | measured as |
 |---|---|---|
-| `v2-E017-minimal/monero-oxide/0001-fcmps-extract-verifier_layout-and-build_verifier_circuits.patch` | refactor only, no behaviour change: the verifier's layout computation and circuit construction become functions so the circuits can be built more than once (review with `git diff --color-moved`) | |
-| `v2-E017-minimal/monero-oxide/0002-E017-verify-FCMPs-with-the-constraints-folded-into-one.patch` | generalized-bulletproofs: `#[derive(Clone)]` on `VerifierTranscript` and the additive `peek_z` (+25 lines, nothing removed); circuit-abstraction: Discarded/Folded constraint modes, the folding accumulator, `CircuitStatementError`; fcmps: three builds (discard; fold c1 with its peeked z; fold c2), replay checks, `#[cfg(test)] verify_stored`; tests | crate: equivalence with the unchanged stock verifier PASS, tampered PASS, peak heap -80% per verify at 1-16 inputs |
+| `v2-E017-minimal/monero-oxide/0001-fcmps-extract-verifier_layout-and-build_verifier_cir.patch` | refactor only, no behaviour change: the verifier's layout computation and circuit construction become functions so the circuits can be built more than once (review with `git diff --color-moved`) | |
+| `v2-E017-minimal/monero-oxide/0002-E017-verify-FCMPs-with-the-constraints-folded-into-o.patch` | generalized-bulletproofs: `#[derive(Clone)]` on `VerifierTranscript` and the additive `peek_z` (+25 lines, nothing removed); circuit-abstraction: Discarded/Folded constraint modes, the folding accumulator, `CircuitStatementError`; fcmps: three builds (discard; fold c1 with its peeked z; fold c2), replay checks, `#[cfg(test)] verify_stored`; tests | crate: equivalence with the unchanged stock verifier PASS, tampered PASS, peak heap -80% per verify at 1-16 inputs |
 
 Sizes vs 31c26d9: code +513 / -88 (refactor commit 92/33 of it is motion), tests +228 plus a benchmark. v1 for comparison: code +1,004 / -134, with +570 inside the audited verifier.
 
