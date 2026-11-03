@@ -1,0 +1,36 @@
+== r1_arena1_c12.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r1_arena1.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r1_arena2.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r1_default.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r2_arena1_c12.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r2_arena1.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r2_arena2.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r2_default.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r3_arena1_c12.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r3_arena1.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r3_arena2.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r3_default.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270

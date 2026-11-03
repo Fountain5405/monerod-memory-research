@@ -1,0 +1,47 @@
+w003 start 2026-11-03T23:10:39+00:00 restore_height=3105000 rounds=3 arms=c24| c12|--max-concurrency 12 c4|--max-concurrency 4 c1|--max-concurrency 1
+d6f93d0664604726aeafbaf99982f181adc5bb8f31480f4902660bb686fa3ae8  /home/optimizer/work/monero-fcmp-adapt/build/beta31-adapt/bin/monerod
+7ab1dd30f4eefc6d5a70d7bac0a9338dcb83da13acd0943ee39e2da6db34d4e4  /home/optimizer/work/monero-fcmp/build/beta31/bin/monero-wallet-cli
+no shadow processes
+node up height=3123270 pid=685044 2026-11-03T23:10:41+00:00
+governor schedutil -> performance
+[r1_c24] started 2026-11-03T23:10:45+00:00 pid=685266 arm=c24 extra=
+[r1_c24] done wall=15 exit=0 vmhwm=1100MB anon=1057MB threads=25 blocks=18270
+[r1_c12] started 2026-11-03T23:11:05+00:00 pid=685983 arm=c12 extra=--max-concurrency 12
+[r1_c12] done wall=23 exit=0 vmhwm=909MB anon=875MB threads=13 blocks=18270
+[r1_c4] started 2026-11-03T23:11:32+00:00 pid=686775 arm=c4 extra=--max-concurrency 4
+[r1_c4] done wall=56 exit=0 vmhwm=510MB anon=475MB threads=5 blocks=18270
+[r1_c1] started 2026-11-03T23:12:34+00:00 pid=688731 arm=c1 extra=--max-concurrency 1
+[r1_c1] done wall=106 exit=0 vmhwm=357MB anon=294MB threads=2 blocks=18270
+[r2_c24] started 2026-11-03T23:14:25+00:00 pid=692416 arm=c24 extra=
+[r2_c24] done wall=16 exit=0 vmhwm=1033MB anon=999MB threads=25 blocks=18270
+[r2_c12] started 2026-11-03T23:14:45+00:00 pid=692977 arm=c12 extra=--max-concurrency 12
+[r2_c12] done wall=23 exit=0 vmhwm=869MB anon=834MB threads=13 blocks=18270
+[r2_c4] started 2026-11-03T23:15:14+00:00 pid=693788 arm=c4 extra=--max-concurrency 4
+[r2_c4] done wall=55 exit=0 vmhwm=474MB anon=439MB threads=5 blocks=18270
+[r2_c1] started 2026-11-03T23:16:14+00:00 pid=695576 arm=c1 extra=--max-concurrency 1
+[r2_c1] done wall=105 exit=0 vmhwm=357MB anon=325MB threads=2 blocks=18270
+[r3_c24] started 2026-11-03T23:18:05+00:00 pid=698943 arm=c24 extra=
+[r3_c24] done wall=16 exit=0 vmhwm=1120MB anon=1085MB threads=25 blocks=18270
+[r3_c12] started 2026-11-03T23:18:27+00:00 pid=699541 arm=c12 extra=--max-concurrency 12
+[r3_c12] done wall=22 exit=0 vmhwm=920MB anon=886MB threads=13 blocks=18270
+[r3_c4] started 2026-11-03T23:18:54+00:00 pid=700336 arm=c4 extra=--max-concurrency 4
+[r3_c4] done wall=55 exit=0 vmhwm=515MB anon=481MB threads=5 blocks=18270
+[r3_c1] started 2026-11-03T23:19:55+00:00 pid=702135 arm=c1 extra=--max-concurrency 1
+[r3_c1] done wall=104 exit=0 vmhwm=356MB anon=294MB threads=2 blocks=18270
+governor restored to schedutil
+== results
+round,arm,restore_height,wall_s,peak_anon_MB,peak_rss_MB,vmhwm_MB,peak_privdirty_MB,threads_max,exit,blocks_received,cpu_s
+r1_c24,c24,3105000,15,1057,1092,1100,1057,25,0,18270,179.79
+r1_c12,c12,3105000,23,875,909,909,875,13,0,18270,110.93
+r1_c4,c4,3105000,56,475,510,510,475,5,0,18270,106.73
+r1_c1,c1,3105000,106,294,328,357,294,2,0,18270,105
+r2_c24,c24,3105000,16,999,1033,1033,999,25,0,18270,184.56
+r2_c12,c12,3105000,23,834,869,869,834,13,0,18270,109.35
+r2_c4,c4,3105000,55,439,474,474,439,5,0,18270,107.17
+r2_c1,c1,3105000,105,325,348,357,325,2,0,18270,103.99
+r3_c24,c24,3105000,16,1085,1120,1120,1085,25,0,18270,184.48
+r3_c12,c12,3105000,22,886,920,920,886,13,0,18270,108.57
+r3_c4,c4,3105000,55,481,515,515,481,5,0,18270,106.79
+r3_c1,c1,3105000,104,294,328,356,294,2,0,18270,103
+done 2026-11-03T23:21:42+00:00
+W003_COMPLETE

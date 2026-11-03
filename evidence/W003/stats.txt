@@ -1,0 +1,10 @@
+| arm | n | wall s median (min-max) | VmHWM MB median (min-max) | peak anon MB (1 s samples) median (min-max) | peak Private_Dirty MB median (min-max) | CPU s median (min-max) | threads median (min-max) | blocks ok | exit 0 |
+|---|---|---|---|---|---|---|---|---|---|
+| c24 | 3 | 16 (15-16) | 1,100 (1,033-1,120) | 1,057 (999-1,085) | 1,057 (999-1,085) | 184 (180-185) | 25 (25-25) | 3/3 | 3/3 |
+| c12 | 3 | 23 (22-23) | 909 (869-920) | 875 (834-886) | 875 (834-886) | 109 (109-111) | 13 (13-13) | 3/3 | 3/3 |
+| c4 | 3 | 55 (55-56) | 510 (474-515) | 475 (439-481) | 475 (439-481) | 107 (107-107) | 5 (5-5) | 3/3 | 3/3 |
+| c1 | 3 | 105 (104-106) | 357 (356-357) | 294 (294-325) | 294 (294-325) | 104 (103-105) | 2 (2-2) | 3/3 | 3/3 |
+
+c12 vs c24 (medians): wall s +43.8%; VmHWM MB -17.4%; peak anon MB (1 s samples) -17.2%; peak Private_Dirty MB -17.2%; CPU s -40.7%; threads -48.0%
+c4 vs c24 (medians): wall s +243.8%; VmHWM MB -53.6%; peak anon MB (1 s samples) -55.1%; peak Private_Dirty MB -55.1%; CPU s -42.1%; threads -80.0%
+c1 vs c24 (medians): wall s +556.2%; VmHWM MB -67.5%; peak anon MB (1 s samples) -72.2%; peak Private_Dirty MB -72.2%; CPU s -43.6%; threads -92.0%

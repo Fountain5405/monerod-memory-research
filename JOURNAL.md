@@ -432,3 +432,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 ## 2026-11-03 23:12 W002 done and written up; W003 running, W004 armed
 - W002 (attempt 3, 23:07-23:09): fresh wallet refresh 3,105,000 -> 3,123,270 in 14-16 s, VmHWM 1,037 / 1,173 / 1,260 MB, ~175 CPU s, 25 threads; heaptrack: peak heap 349 MB vs peak RSS 1.20 GB, top outputs_to_leaves 115 MB (tree extension on threadpool threads), strings ~70 MB, Rb_tree copies 22 MB. Node 396-408 MB while serving. Evidence sanitized (no wallet stdout/logs in the repo: they print the seed; refresh_lines.txt excerpt instead).
 - W003 launched 23:10 (concurrency 24/12/4/1 x 3). First points: c24 1,100 MB VmHWM / 15 s; c12 909 MB / 23 s. W004 armed (MALLOC_ARENA_MAX 1 / 2, arena1+c12 x 3) and starts when W003 completes.
+
+## 2026-11-03 23:30 W003 and W004 done: wallet refresh peak is arena retention; MALLOC_ARENA_MAX=2 gives -67% at +7% wall
+- W003 (23:10-23:21, --max-concurrency 24/12/4/1 x 3): VmHWM 1,100 / 909 / 510 / 357 MB, wall 16 / 23 / 55 / 105 s, CPU 184 / 109 / 107 / 104 s; 12/12 full refreshes. Linear in threads, 1-thread peak = live heap.
+- W004 (23:21-23:28, env arms x 3): default 1,132 MB / 15 s; MALLOC_ARENA_MAX=1 352 MB / 17 s / CPU +17%; =2 370 MB / 16 s / CPU +4%; =1 + c12 352 MB / 24 s. 12/12 full refreshes. Spread 1 MB at arena 1 vs ~190 MB default.
+- Recorded F35, F36, SUMMARY wallet + zero-code lines, READMEs, sanitized evidence (no wallet stdout/logs). Box free, governor schedutil. Owner not pinged (no named milestone; they were active in chat at 23:0x).

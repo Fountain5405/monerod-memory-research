@@ -1,0 +1,36 @@
+== r1_c12.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r1_c1.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r1_c24.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r1_c4.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r2_c12.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r2_c1.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r2_c24.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r2_c4.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r3_c12.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r3_c1.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r3_c24.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270
+== r3_c4.wallet.log
+Refresh starting from block 3105000
+Refresh done, blocks received: 18270, current sync height: 3123270

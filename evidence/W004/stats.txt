@@ -1,0 +1,10 @@
+| arm | n | wall s median (min-max) | VmHWM MB median (min-max) | peak anon MB (1 s samples) median (min-max) | peak Private_Dirty MB median (min-max) | CPU s median (min-max) | threads median (min-max) | blocks ok | exit 0 |
+|---|---|---|---|---|---|---|---|---|---|
+| default | 3 | 15 (15-16) | 1,132 (1,053-1,239) | 1,097 (1,008-1,205) | 1,097 (1,008-1,205) | 184 (180-184) | 25 (25-25) | 3/3 | 3/3 |
+| arena1 | 3 | 17 (17-19) | 352 (352-353) | 300 (294-325) | 300 (294-331) | 216 (212-217) | 25 (25-25) | 3/3 | 3/3 |
+| arena2 | 3 | 16 (16-16) | 370 (364-433) | 335 (329-398) | 335 (329-398) | 191 (187-192) | 25 (25-25) | 3/3 | 3/3 |
+| arena1_c12 | 3 | 24 (24-26) | 352 (352-353) | 291 (290-294) | 291 (290-294) | 129 (127-130) | 13 (13-13) | 3/3 | 3/3 |
+
+arena1 vs default (medians): wall s +13.3%; VmHWM MB -68.9%; peak anon MB (1 s samples) -72.7%; peak Private_Dirty MB -72.7%; CPU s +17.3%; threads +0.0%
+arena2 vs default (medians): wall s +6.7%; VmHWM MB -67.3%; peak anon MB (1 s samples) -69.5%; peak Private_Dirty MB -69.5%; CPU s +3.9%; threads +0.0%
+arena1_c12 vs default (medians): wall s +60.0%; VmHWM MB -68.9%; peak anon MB (1 s samples) -73.5%; peak Private_Dirty MB -73.5%; CPU s -29.8%; threads -48.0%
