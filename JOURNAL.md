@@ -134,3 +134,16 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - The agent's micro-measurement showed stored constraints at only ~2 MB per input, which looked too small to explain ~200 MB per thread. scripts/window_inputs.py resolves it: 851 of the window's 1,044 txs have 128 inputs (mean 104.8). One proof covers all inputs, so a proof stores about 250 MB. Report caveat: this window is a worst case (max-input txs).
 - The E004e A/B started at 00:25 (scripts/run_e004e.sh), with the governor pinned to performance and restored afterwards. **Hygiene note:** the E003-E004d macro runs used the default schedutil governor. Their A/B comparisons are internal, since both arms ran under the same governor and alternated, but wall times are not comparable across governor settings. chain_build_ab.sh v2 now pins the governor too.
 - Chain e007 is queued (build ~/work/monero-fcmp-e007, then a 3-round A/B vs base) and waits for CHAIN_E004E_COMPLETE.
+
+## 2026-11-03 00:25-01:00 E004e CONFIRMED: -44.6% peak, -88% idle (check-in 00:47)
+- Check-in 00:47: no shadow lanes. Load ~19 came from our own A/B node (24 verifier threads). 54 GB disk free.
+- E004e A/B, 3 rounds, governor pinned:
+  - peak RssAnon median 5,309 → 2,943 MB (-44.6%; ranges 5,154-5,347 vs 2,941-2,965, disjoint)
+  - Private_Dirty -44.7%
+  - post-idle RssAnon 4,794 → 574 MB (-88%)
+  - wall 219 → 207 s (-5.5%)
+  - writes unchanged, 6/6 hashes match
+  - All three predictions held. The glibc retention hypothesis is confirmed: the arena-count cap (E004d) failed, while an explicit trim once per block works.
+- Owner pinged (terminal notification).
+- Chain e007 started building as soon as CHAIN_E004E_COMPLETE landed. The combo chain is queued behind it (tree monero-fcmp-combo = E004c + E004e + E001 fix + E007).
+- New tool scripts/ab_stats.py prints a per-arm medians/ranges table and the deltas vs base.

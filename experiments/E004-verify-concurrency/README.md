@@ -69,3 +69,37 @@ Median peak RssAnon: base 5,601 vs e004d 5,146 MB (-8%; ranges partly overlap: b
 - Harness v2 (scripts/ab_window.sh) adds post_idle_anon_MB: at END the peer is temporarily banned on OUR node (local RPC; the ban is lifted before stopping), and RssAnon is sampled after 45 s idle.
 - Predictions: (1) peak ≈ 12 concurrent working sets + base ≈ 3.4-3.8 GB; (2) post-idle anon ≈ restart level (~0.3-0.6 GB) instead of multi-GB; (3) wall time within a few % of e004c (the trim costs madvise + re-faulting).
 - The A/B runs once the box is quiet (after the E007 agent's cargo builds/tests).
+
+**Results E004e (2026-11-03 00:25-00:53, 3 alternating rounds, governor pinned to performance, every end hash = .22):**
+
+| round | arm | peak RssAnon MB | post-idle RssAnon MB | wall s |
+|---|---|---|---|---|
+| 1 | base | 5,154 | 4,794 | 219 |
+| 1 | e004e | 2,941 | 574 | 207 |
+| 2 | e004e | 2,943 | 539 | 207 |
+| 2 | base | 5,309 | 4,441 | 218 |
+| 3 | base | 5,347 | 5,201 | 222 |
+| 3 | e004e | 2,965 | 630 | 205 |
+
+Medians and ranges (scripts/ab_stats.py, evidence/E004e/stats.md):
+- **peak RssAnon 5,309 → 2,943 MB (-44.6%)**. The ranges don't overlap: base 5,154-5,347, e004e 2,941-2,965.
+- **peak Private_Dirty 5,321 → 2,944 MB (-44.7%)**
+- peak RSS 6,209 → 3,858 MB (-37.9%; RSS includes mmap'd LMDB pages, which don't count)
+- **post-idle RssAnon 4,794 → 574 MB (-88.0%)**
+- wall 219 → 207 s (-5.5%)
+- bytes written to disk unchanged at 466 MB, and bytes read 0 for both arms, since the DB was in page cache. No cost was shifted to disk or swap; swap is off on the box.
+
+**All 3 predictions held:**
+- (1) Peak lands at about 12 concurrent working sets plus base. It came in 2.94 GB, even below E004a's 3.39 GB, because E004a still retained memory.
+- (2) Post-idle memory drops to near the level after a restart: 0.57 GB vs 0.32 GB after a restart (E002a).
+- (3) Wall time is within a few percent of E004c. The trim costs about 4 points of E004c's 9% speedup. Net, it is still 5.5% faster than base.
+
+**Interpretation:** most of the baseline's peak "memory" on this workload is freed heap that glibc never returned to the OS. With 24 verifier threads, each thread's arena keeps its high-water mark of a ~200 MB transient FCMP++ working set. E004d showed that capping the arena count doesn't help. Trimming once per block after the batch verify does. The batch cap (E004c) bounds how many working sets are live at once; the trim stops freed ones from accumulating.
+
+**Caveats:**
+- glibc-specific: `malloc_trim` is guarded by `__GLIBC__`. musl and macOS/Windows allocators behave differently and are untested.
+- The window is a worst case: 851 of 1,044 txs have 128 inputs (evidence/window_inputs_3105401-3105440.txt).
+- One 40-block window. Still to come: min cgroup memory (min_mem.sh), the combined build, and a longer resync.
+
+Verdict: **CONFIRMED.** This is the first single build to pass the owner's 40% target on peak anon/private-dirty, with all guardrails held (hash, wall time, disk). Superseded only if E007 or the combined build does better.
+

@@ -1,0 +1,9 @@
+chain e004e start 2026-11-03T00:25:55+00:00
+81257eb5814d8dbd037459e9b96fd2090308519d8a735cc269415a1292577760  /home/optimizer/work/monero-fcmp-e004e/build/beta31-e004e/bin/monerod
+3ffb58c77 rctSigs: malloc_trim after FCMP++ batch verification (on top of the batch cap)
+2e80c0685 rctSigs: cap FCMP++ batch verification at physical cores
+d80596ad1 Merge pull request #506 from xmrack/fix-tx-request-queue-cap-stressnet-v3
+governor schedutil -> performance
+governor restored to schedutil
+A/B done 2026-11-03T00:52:54+00:00
+CHAIN_E004E_COMPLETE
