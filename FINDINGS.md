@@ -1,6 +1,6 @@
 # Findings (living summary)
 
-Status: **TARGET EXCEEDED.** Combined build (E008): peak anon -67%, post-sync idle -80%, minimum cgroup memory -67.5% (5,750 → 1,866 MB), sync 47% faster, all guardrails held. See reports/SUMMARY.md (in progress).
+Status: **TARGET EXCEEDED.** Combined build (E008): peak anon -67%, post-sync idle -80%, minimum cgroup memory -67.5% (5,750 → 1,866 MB), sync 47% faster, all guardrails held. Long run (E010, 18,000-block resync): peak -73%, post-idle -75%, no growth, but **wall +3.6% overall**: 2x faster on max-input blocks, ~15% slower on small-tx blocks (attribution: E011). See reports/SUMMARY.md.
 
 | # | Finding / candidate | Evidence | Est. saving | Status |
 |---|---|---|---|---|
@@ -24,3 +24,5 @@ Status: **TARGET EXCEEDED.** Combined build (E008): peak anon -67%, post-sync id
 | F18 | Harness bug: ab_window.sh peak awk compared strings, so a short sampler row ('...,,log') could win. Only r1_e007's RSS was affected (0 → 3,083 MB). Fixed with numeric comparisons. | experiments/E007-streaming-verifier | harness | fixed |
 | F19 | **E009 minimum cgroup MemoryMax (swap off, window must finish within 1.1x wall and match .22's hash): base 5,750 MB (largest fail 5,562) vs combo 1,866 MB (largest fail 1,765): -67.5% (bracket -66.5% to -69.3%).** Every fail is a memcg OOM kill with anon at about the limit, so the needed RAM is about peak anon + 100-200 MB; page cache is evictable at no wall-time cost. | experiments/E009-min-mem, evidence/E009/ | **large** | CONFIRMED |
 | F20 | Harness bug: min_mem.sh v1 read memory.events after the monerod process died; systemd removes the empty scope at once, so oom_kills was always 0. The kernel log confirmed all 7 OOM kills. Fixed in v2 (polled in the loop). | experiments/E009-min-mem | harness | fixed |
+| F21 | **E010 18,000-block resync (3,105,401 → 3,123,400; 1 run per arm): combo peak RssAnon -73.2% (5,603 → 1,503 MB), post-idle -75.2% (4,376 → 1,085 MB), every hash matches.** Peaks are in the window. After it, combo plateaus at 0.8-1.3 GB with no trend: no leak from the trim or the accumulator. The E001 fix syncs all 18k blocks with default settings (+2.3% wall, +6.7% writes vs explicit bss5). | experiments/E010-long-resync, evidence/E010/ | confirms F16 | CONFIRMED |
+| F22 | **Regression: combo is +14.8% slower on small-tx blocks** (3,105,441..3,113,400: 1,071 → 1,230 s; each of the 8 segments +13-19%), so the full resync is +3.6% slower (1,365 → 1,414 s) despite 2x in the window. The near-empty tail is unchanged. Suspects: E007 double build, E004c thread cap, E004e per-block trim. | experiments/E010-long-resync, evidence/E010/segments.txt | CPU cost | E011 attributing |

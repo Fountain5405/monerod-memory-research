@@ -187,3 +187,26 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
   - combo_default vs combo_bss5 differ by only ~2%, so the batch size is not the cause.
 - Candidates: E007's double circuit build (Discard pass + Accumulate pass; the old fold was cheap at low input counts), E004c's thread cap (SMT may help small proofs), or E004e's per-block malloc_trim (fixed cost × many blocks). The 40-block window could not see any of these, since it is 82% 128-input txs.
 - E011 queued to separate them (see STATE). ab_window.sh v4 is applied only after E010 finishes, because editing a running bash script is unsafe.
+
+## 2026-11-03 04:58-05:05 E010 DONE: memory holds over 18k blocks; wall +3.6% (small-tx +15%)
+- combo_bss5 finished at 04:58. All three arms match .22's hash.
+- Combo vs base (both bss5):
+  - peak 5,603 → 1,503 MB (-73.2%)
+  - post-idle 4,376 → 1,085 MB (-75.2%)
+  - writes unchanged
+  - wall 1,365 → 1,414 s (+3.6%)
+  - combo_default (no bss flag) synced all 18,125 blocks: peak 1,588, wall 1,446.
+- Per segment:
+  - window 217 → 108 s
+  - dense small-tx stretch 1,071 → 1,230 s (+14.8%; all 8 segments +13-19%)
+  - near-empty tail 73 → 73 s
+- No memory growth after the window: combo stays flat at 0.8-1.1 GB.
+- My wall prediction (combo < base) was falsified. The small-input cost is real. E011 (5 arms, one change each) is running to attribute it.
+- E011 hiccup:
+  - The first start (04:58) died at the v4 patch: my comment anchor did not exist, because v3's comment replace had silently not matched.
+  - All writes come after the assertions, so ab_window.sh was untouched (md5 checked).
+  - I fixed the anchor (insert after the usage line), dry-ran the patch on a copy (diff + bash -n), and restarted at 04:59. The old chain log is kept as e011.chain.failed-v4patch.
+- New scripts:
+  - segment_rates.py: per-segment seconds from Synced lines.
+  - mem_segments.py: RssAnon per height segment.
+- Owner pinged with the E010 result (as requested).

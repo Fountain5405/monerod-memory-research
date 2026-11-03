@@ -16,9 +16,8 @@ s = s.replace(old, old + "    cpu=$(awk -v hz=$(getconf CLK_TCK) '{print int(($1
 old = ",${tip#* },${post:-}\" >> $R"
 assert s.count(old) == 1
 s = s.replace(old, ",${tip#* },${post:-},${cpu:-}\" >> $R", 1)
-old = "# Completion marker: last line of <outdir>/summary.txt is AB_COMPLETE.\n"
-assert s.count(old) == 1
-s = s.replace(old, old + "# v4 (2026-11-03): env START_H=<height> (default 3105401) for pop_to.sh; results.csv gains cpu_s (utime+stime at sync end).\n", 1)
+i = s.index("\n", s.index("# usage: ab_window.sh")) + 1  # comment goes right after the usage line
+s = s[:i] + "# v4 (2026-11-03): env START_H=<height> (default 3105401) for pop_to.sh; results.csv gains cpu_s (utime+stime at sync end).\n" + s[i:]
 open(p, "w").write(s)
 q = "scripts/ab_stats.py"
 t = open(q).read()

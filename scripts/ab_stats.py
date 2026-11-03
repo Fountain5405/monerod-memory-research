@@ -9,6 +9,7 @@ for r in rows:
     arms.setdefault(r["arm"], []).append(r)
 cols = [("peak_anon_MB", "peak RssAnon MB"), ("peak_privdirty_MB", "peak Private_Dirty MB"), ("peak_rss_MB", "peak RSS MB"),
         ("wall_s", "wall s"), ("post_idle_anon_MB", "post-idle RssAnon MB"), ("read_MB", "read MB"), ("write_MB", "write MB")]
+if rows and "cpu_s" in rows[0]: cols.append(("cpu_s", "CPU s"))
 med = {}
 print("| arm | n | " + " | ".join(c[1] + " median (min-max)" for c in cols) + " | hashes match |")
 print("|---|---|" + "---|" * len(cols) + "---|")

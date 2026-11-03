@@ -1,6 +1,7 @@
 #!/bin/bash
 # A/B harness over a fixed sync window on stressnet.
 # usage: ab_window.sh <outdir> <END height> <TIMEOUT s> <ROUNDS> "<label>|<monerod>|<extra args>" ["<label>|..."]
+# v4 (2026-11-03): env START_H=<height> (default 3105401) for pop_to.sh; results.csv gains cpu_s (utime+stime at sync end).
 # Each round runs every arm once, in alternating order (ABAB.. / BABA..). Each run: rewind the working DB to
 # 3,105,401 (pop_to.sh), sync from the exclusive peer .22 until the log height reaches END (or TIMEOUT),
 # stop, then check our top block hash against .22 from an idle --offline restart.
@@ -17,7 +18,7 @@ S=$OUT/summary.txt; R=$OUT/results.csv
 echo "ab_window start $(date -Is) end=$END timeout=$TO rounds=$ROUNDS arms=${#ARMS[@]}" > $S
 for a in "${ARMS[@]}"; do IFS='|' read -r l b x <<< "$a"; echo "arm $l: $b $x | $(sha256sum $b | cut -c1-16)" >> $S; done
 uptime >> $S; pgrep -fa shadow | grep -v pgrep >> $S || echo "no shadow processes" >> $S
-echo "round,arm,start_h,end_h,blocks,wall_s,peak_anon_MB,peak_privdirty_MB,peak_rss_MB,read_MB,write_MB,tip_height,hash_match,post_idle_anon_MB" > $R
+echo "round,arm,start_h,end_h,blocks,wall_s,peak_anon_MB,peak_privdirty_MB,peak_rss_MB,read_MB,write_MB,tip_height,hash_match,post_idle_anon_MB,cpu_s" > $R
 
 wait_rpc() { for i in $(seq 1 120); do curl -s -m 3 http://127.0.0.1:$PORT/get_height | grep -q '"height"' && return 0; sleep 1; done; return 1; }
 log_height() { grep -oE "Synced [0-9]+/[0-9]+" "$1" | tail -1 | cut -d' ' -f2 | cut -d/ -f1; }
@@ -50,7 +51,7 @@ for r in $(seq 1 $ROUNDS); do
       rm -f $DD/testnet/lmdb/lock.mdb; cp $REWIND_SNAPSHOT/testnet/lmdb/data.mdb $DD/testnet/lmdb/data.mdb
       echo "[$tag] restored DB from $REWIND_SNAPSHOT $(date -Is)" >> $S
     fi
-    ~/work/research/scripts/pop_to.sh $POPBIN $DD 3105401 $OUT/$tag.rewind.log
+    ~/work/research/scripts/pop_to.sh $POPBIN $DD ${START_H:-3105401} $OUT/$tag.rewind.log
     if ! tail -1 $OUT/$tag.rewind.log | grep -q "RESULT OK"; then echo "[$tag] rewind FAILED" >> $S; continue; fi
     LOG=$OUT/$tag.log
     $BIN --testnet --data-dir $DD --add-exclusive-node 192.168.1.22:28080 --non-interactive --no-igd \
@@ -68,6 +69,7 @@ for r in $(seq 1 $ROUNDS); do
       sleep 2
     done
     t1=$(date +%s)
+    cpu=$(awk -v hz=$(getconf CLK_TCK) '{print int(($14+$15)/hz)}' /proc/$MP/stat 2>/dev/null)  # v4
     io_r=$(awk '/^read_bytes/{print int($2/1048576)}' /proc/$MP/io 2>/dev/null); io_w=$(awk '/^write_bytes/{print int($2/1048576)}' /proc/$MP/io 2>/dev/null)
     # v2: post-window idle memory. Temporarily ban the peer on OUR node (local RPC only) so it stops
     # receiving blocks, let in-flight blocks finish, sample RssAnon, then lift the ban before stopping.
@@ -81,7 +83,7 @@ for r in $(seq 1 $ROUNDS); do
     pd=$(awk -F, 'NR>1 && ($11+0)>m {m=$11+0} END {print int(m/1024)}' $OUT/$tag.mem.csv)
     pr=$(awk -F, 'NR>1 && ($5+0)>m {m=$5+0} END {print int(m/1024)}' $OUT/$tag.mem.csv)
     tip=$(check_tip $BIN)
-    echo "$r,$L,$h0,$h,$(( h - ${h0:-0} )),$(( t1 - t0 )),$pa,$pd,$pr,${io_r:-},${io_w:-},${tip% *},${tip#* },${post:-}" >> $R
+    echo "$r,$L,$h0,$h,$(( h - ${h0:-0} )),$(( t1 - t0 )),$pa,$pd,$pr,${io_r:-},${io_w:-},${tip% *},${tip#* },${post:-},${cpu:-}" >> $R
     echo "[$tag] $EXTRA -> h=$h wall=$((t1 - t0))s peak_anon=${pa}MB post_idle_anon=${post:-?}MB tip=$tip" >> $S
   done
 done

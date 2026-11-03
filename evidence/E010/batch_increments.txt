@@ -1,0 +1,6 @@
+== r1_combo_default: count of each Synced-height increment (window <= 3105441 | after)
+window: 1:12 4:6 | after: 1:103 2:49 4:4471
+== r1_combo_bss5: count of each Synced-height increment (window <= 3105441 | after)
+window: 5:7 | after: 4:1 5:3621
+== r1_base_bss5: count of each Synced-height increment (window <= 3105441 | after)
+window: 5:7 | after: 4:1 5:3604

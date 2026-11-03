@@ -1,6 +1,8 @@
 # monerod memory research: summary (draft, 2026-11-03)
 
-**Bottom line:** on the FCMP++ stressnet sync workload, three small, separable changes cut monerod's memory needs by about two thirds and also make sync about 2x faster. All guardrails held: same chain state as the reference node, invalid proofs still rejected, no cost shifted to disk or swap.
+**Bottom line:** on the FCMP++ stressnet sync workload, three small, separable changes cut monerod's memory needs by about two thirds: -67% peak in a 40-block worst-case window, -73% over an 18,000-block resync. All guardrails held: same chain state as the reference node, invalid proofs still rejected, no cost shifted to disk or swap.
+
+**Speed is mixed.** Sync is about 2x faster on blocks full of max-input txs, but ~15% slower on blocks of small txs. The 18,000-block resync therefore takes 3.6% longer overall. Which change costs the time is being measured (E011).
 
 | metric (40-block FCMP++ window, 3 alternating A/B rounds, medians) | baseline v0.19.0.0-beta.3.1 | combined build (E008) | change |
 |---|---|---|---|
@@ -12,6 +14,21 @@
 | bytes written to disk | 465 MB | 467 MB | unchanged |
 | end block hash = reference node (.22) | 3/3 | 3/3 | same |
 | tampered FCMP++ proofs rejected (monerod-level negative test) | 24/24 | 24/24 | same |
+
+**Long run (E010: 3,105,401 → 3,123,400, 18,000 blocks, 1 run per arm, both with `--block-sync-size 5`):**
+
+| metric | baseline | combined build | change |
+|---|---|---|---|
+| peak RssAnon | 5,603 MB | 1,503 MB | **-73.2%** |
+| idle after sync (RssAnon) | 4,376 MB | 1,085 MB | **-75.2%** |
+| wall, whole resync | 1,365 s | 1,414 s | **+3.6%** |
+| wall, 40-block heavy window | 217 s | 108 s | -50% |
+| wall, 7,959 dense small-tx blocks | 1,071 s | 1,230 s | **+14.8%** |
+| wall, 10,000 near-empty blocks | 73 s | 73 s | 0% |
+| bytes written | 9,394 MB | 9,405 MB | unchanged |
+| end hash = .22 | yes | yes | same |
+
+Memory does not grow over the run: after the window the combined build stays at 0.8-1.1 GB. The combined build with DEFAULT settings (no `--block-sync-size`; base wedges there, see E001) also synced all 18,000 blocks: peak 1,588 MB, wall +5.9%.
 
 The owner's target was 40%. The minimum-cgroup number is the "real RAM a node needs" metric, because it counts heap, page cache, and everything else charged to the process.
 
@@ -49,7 +66,7 @@ The owner's target was 40%. The minimum-cgroup number is the "real RAM a node ne
    - Result: -59% peak on its own.
    - **It is also 2x faster.** The old verify folds each vector commitment's weights in a separate pass over all constraints. That costs O(commitments × constraints), roughly quadratic in the input count, and was **~52% of all sync CPU** (E006). The combined build's profile no longer contains that function.
 
-**Combined (E008 = Fix 1 + 2 + 3, plus the E001 sync fix below): -67% peak, -80% idle, -67.5% minimum cgroup memory, 47% faster.**
+**Combined (E008 = Fix 1 + 2 + 3, plus the E001 sync fix below): -67% peak, -80% idle, -67.5% minimum cgroup memory, 47% faster on the heavy window.** Over the 18,000-block resync (E010): -73% peak, -75% idle, but +3.6% wall (small-tx blocks +15%).
 
 ## Guardrails: how we know nothing was weakened
 - Every run ends on the same block hash as the reference node (E004-E010).
@@ -84,10 +101,10 @@ The owner's target was 40%. The minimum-cgroup number is the "real RAM a node ne
 - The stressnet window is a worst case: max-input txs. With mainnet-like 1-2-input txs the per-proof circuit is a few MB, so the absolute savings are smaller. The worst case still sets the RAM a node must have, since anyone can fill blocks with max-input txs.
 
 ## Caveats
-- One machine (12c/24t) and one 40-block window for the headline. E010 (an 18,000-block resync) is the long-run validation: **pending**.
+- One machine (12c/24t). The headline is one 40-block window with 3 A/B rounds. The 18,000-block resync (E010, 1 run per arm) confirms the memory result over a long, mixed workload.
 - `malloc_trim` is glibc-only. musl, macOS and Windows allocators are untested.
 - E007 is security-critical cryptographic code. It was reviewed by me and heavily tested, but **not audited**. Upstream use needs review by the FCMP++ authors.
-- E007's double circuit build should cost some CPU on small-input txs, where the old fold was not quadratic. E010's small-tx stretch prices this.
+- **Small-tx slowdown (measured in E010):** the combined build is ~15% slower on blocks of small txs (1,071 → 1,230 s over 7,959 dense blocks). Suspects: E007's double circuit build (the old fold is not quadratic at low input counts), E004c's thread cap, or E004e's per-block trim. E011 attributes it, one change at a time.
 - Post-sync idle memory of the combined build varies run to run (673-1,181 MB), because a trim cannot release fragmented arenas completely.
 
 ## Upstreamability (if the owner wants it)
@@ -99,5 +116,6 @@ The owner's target was 40%. The minimum-cgroup number is the "real RAM a node ne
 | E007 streaming verifier | ~1,000 lines + tests (monero-oxide) | biggest win; needs crypto review; alternatively, propose only the O(c·q) fold fix for CPU |
 
 ## Results still pending
-- E010 long resync (base vs combo, plus combo with default settings): pending.
-- Wallet (tree_cache): not started.
+- E010 long resync: DONE (above).
+- E011 small-tx slowdown attribution: running.
+- Wallet: W001 code map done (the tree cache is bounded by reorg depth); W002 measurement next.

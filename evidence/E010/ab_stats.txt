@@ -1,0 +1,10 @@
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|
+| combo_default | 1 | 1,588 (1,588-1,588) | 1,637 (1,637-1,637) | 5,476 (5,476-5,476) | 1,446 (1,446-1,446) | 1,301 (1,301-1,301) | 88 (88-88) | 10,027 (10,027-10,027) | all yes |
+| base_bss5 | 1 | 5,603 (5,603-5,603) | 5,603 (5,603-5,603) | 8,368 (8,368-8,368) | 1,365 (1,365-1,365) | 4,376 (4,376-4,376) | 129 (129-129) | 9,394 (9,394-9,394) | all yes |
+| combo_bss5 | 1 | 1,503 (1,503-1,503) | 1,530 (1,530-1,530) | 5,218 (5,218-5,218) | 1,414 (1,414-1,414) | 1,085 (1,085-1,085) | 66 (66-66) | 9,405 (9,405-9,405) | all yes |
+
+combo_default vs base_bss5 (medians): peak RssAnon MB -71.7%; peak Private_Dirty MB -70.8%; peak RSS MB -34.6%; wall s +5.9%; post-idle RssAnon MB -70.3%; read MB -31.8%; write MB +6.7%
+  peak anon ranges overlap: no (base 5,603-5,603, combo_default 1,588-1,588)
+combo_bss5 vs base_bss5 (medians): peak RssAnon MB -73.2%; peak Private_Dirty MB -72.7%; peak RSS MB -37.6%; wall s +3.6%; post-idle RssAnon MB -75.2%; read MB -48.8%; write MB +0.1%
+  peak anon ranges overlap: no (base 5,603-5,603, combo_bss5 1,503-1,503)
