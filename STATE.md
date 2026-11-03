@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 11:32
+Last updated: 2026-11-03 11:47
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -22,7 +22,7 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 - E011 DONE 07:08 (experiments/E011-small-tx-attribution): small-tx wall vs base: cap +7.3%, cap+trim +13.3%, E007 +2.7%, combo +14.7% (F23).
 - E012 DONE 09:15 (experiments/E012-adaptive-cap-trim, F24): adapt small-tx +4.0% vs base (combo +15.2%); heavy window adapt 109 s / 1,639 MB vs combo 110 s / 1,861 MB; e007 2,338 MB.
 - E013 DONE 11:29 (experiments/E013-validate-adapt, F25): adapt is the RECOMMENDED build. Heavy A/B -68.2% peak, -50% wall; negtest PASS; min_mem 1,866 MB; long resync -70.5% peak, -4.6% wall. SUMMARY rewritten around adapt; owner pinged.
-- **E015 + E014 RUNNING** (scripts/run_e015_e014.sh; E015 started 11:29; log e015_e014.chain, ends CHAIN_E015_E014_COMPLETE). The owner asked (11:2x) for 'the next thing that needs doing to show this works and is safe'.
+- E015 DONE 11:45: DIFF PASS at both heights (F26). **E014 RUNNING** (scripts/run_e015_e014.sh; log e015_e014.chain, ends CHAIN_E015_E014_COMPLETE). The owner asked (11:2x) for 'the next thing that needs doing to show this works and is safe'.
   - E015 differential negtest (safety): negdiff.sh + negtest2.py + negdiff_compare.py at H=3,105,401 (heavy txs) and H=3,106,400 (small/mid txs). Up to 4 big, 3 mid and 3 small real txs; 32 spread single-bit flips per proof, proof swaps between equal-length txs, then the originals. Oracle = base; adapt must give an identical (status, flags) per case, with all tampered rejected and all originals accepted. Output in e015/h*/ (summary ends NEGDIFF_COMPLETE with DIFF PASS/FAIL).
   - E014 thread sweep (does it hold on small machines?): heavy window, base vs adapt at --max-concurrency 4/2/1, 3 rounds, TO 1800 -> e014/. Caveat: the adapt cap is inert at pools <= 12 here.
 - Snapshots: stressnet_h3106400 (WORKING copy for E011/E012, deletable when done), stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
@@ -40,7 +40,7 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
 
 ## In flight (agents)
-- None. (The E007 agent finished at 00:20; its diff was reviewed by me; see experiments/E007-streaming-verifier.)
+- **Fable-tier (frugal:sage) code review of the E007 monero-oxide change** (owner's request 11:47): soundness vs the stored verifier, fail-closed paths, panic/DoS surface at the FFI, test gaps. Code bundle on the control box in the session scratchpad (e007review/). Result goes to reports/E007-crypto-review.md. (The E007 agent finished at 00:20; its diff was reviewed by me; see experiments/E007-streaming-verifier.)
 
 ## Needs owner (do not act on these alone)
 - E001 upstream filing: READY (tested fix included, 2026-11-02 21:10). The owner will paste reports/E001-sync-wedge-ISSUE.md into the upstream repo themselves, once the prototype fix has been tested (E001-fix in queue). Never post it ourselves.

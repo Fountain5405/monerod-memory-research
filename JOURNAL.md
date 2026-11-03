@@ -326,3 +326,12 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
   - min_mem 1,866 MB
 - Written up in experiments/E013-validate-adapt (F25). reports/SUMMARY.md is rewritten around adapt (headline table, long run, a 'How real is this?' section, build history, the owner's E001 correction).
 - Owner pinged. E015 (the differential negtest) started at 11:29:47.
+
+## 2026-11-03 11:45-11:47 E015 PASS; review of the 70% finding; owner asks for a Fable review of E007
+- E015 DIFF PASS: 236 cases, 0 disagreements between base and adapt; 4 of 229 rejections were at parsing (offset 51,679 bit 4 in each 128-input proof), the rest at the FCMP++ check. Written up (F26).
+- Review (reports/REVIEW-70pct.md, F27):
+  - The 2 s sampler sees adapt's peak only briefly (3-5 samples ≥ 90% of peak vs 18-24 for base); the cgroup test bounds the true peak to [1,816, 1,866] MB, so the headline is -66.8% to -68.4% either way.
+  - O(c·q) confirmed in the base source. Equivalence tests run on real proofs and compare full verifier state.
+  - Decomposition: ~40 points from halving concurrency; the verifier change gives the rest and the 2x speed.
+  - Open: unaudited crypto by the same author, one machine, the remaining 1.7 GB is unattributed.
+- The owner asked for a dive into the ~1,000-line monero-oxide change with a Fable agent. Launched (see In flight).

@@ -5,7 +5,7 @@
 - -70% over an 18,000-block resync;
 - -67.5% in the minimum cgroup memory a sync can run under.
 
-Over the 18,000-block resync the recommended build is 4.6% faster overall: 2x faster on heavy blocks, 4.6% slower on small-tx blocks. All guardrails held: the same chain state as the reference node, invalid proofs still rejected (24/24, and the bigger differential test E015 is running), and no cost shifted to disk or swap.
+Over the 18,000-block resync the recommended build is 4.6% faster overall: 2x faster on heavy blocks, 4.6% slower on small-tx blocks. All guardrails held: the same chain state as the reference node, invalid proofs still rejected (24/24 in E013; 236/236 identical decisions to base in the differential test E015), and no cost shifted to disk or swap.
 
 **Recommended build ("adapt", E012/E013)** = beta.3.1 plus:
 1. The streaming FCMP++ verifier (E007).
@@ -46,6 +46,8 @@ Over the 18,000-block resync the recommended build is 4.6% faster overall: 2x fa
 The owner's target was 40%. The minimum-cgroup number is the "real RAM a node needs" metric, because it counts heap, page cache, and everything else charged to the process.
 
 ## How real is this?
+A critical re-check of the raw data and source is in reports/REVIEW-70pct.md. Short version: the sampled peak is bounded by the independent cgroup test to within 3-5%, the 2x speed-up is confirmed to come from removing an O(c·q) pass in the stock verifier, and ~40 of the 68 points are available by halving concurrency alone; the rest needs the verifier change.
+
 **Solid:**
 - It reproduces across sessions and builds:
   - E008: -67%
@@ -115,10 +117,10 @@ The owner's target was 40%. The minimum-cgroup number is the "real RAM a node ne
   - Txs that are not yet in our chain (128-, 8- and 2-input) were submitted to our own offline node.
   - First came 8 copies of each with one bit flipped in the FCMP++ proof, then the original.
   - Every build rejected 24/24 tampered copies at "Failed to verify input FCMP++ signatures" and accepted all 3 originals.
-- **Differential negative test (E015, running):**
+- **Differential negative test (E015): PASS.**
   - Up to 10 real txs per height, at two heights, with mixed input counts.
   - 32 bit flips spread over each proof, plus proof swaps between txs (a valid proof for another statement), then the originals.
-  - The base binary is the oracle; adapt must give the identical (status, flags) for every case.
+  - The base binary is the oracle; adapt gave the identical (status, flags) on all 236 cases (224 flips, 5 swaps, 7 originals). 225 of the 229 rejections were at the FCMP++ check, 4 at parsing, identically in both builds.
 - Crate-level tests (E007):
   - All existing monero-oxide tests pass, including byte-malleation.
   - New tests: streaming vs stored verification on valid and tampered proofs; accumulator vs stored fold (bit-identical batch-verifier state); a Discard-mode circuit cannot yield a statement; an un-applied verification fails closed.
@@ -163,6 +165,6 @@ The owner's target was 40%. The minimum-cgroup number is the "real RAM a node ne
 | E007 streaming verifier | ~1,000 lines + tests (monero-oxide) | biggest win; needs crypto review; alternatively, propose only the O(c·q) fold fix for CPU |
 
 ## Still running / next
-- E015 differential negative test (safety).
+- Fable-tier code review of the E007 monero-oxide change (in flight).
 - E014 thread-count sweep (how the win scales on 1-4 thread machines).
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth); W002 measurement next.
