@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 14:48
+Last updated: 2026-11-03 15:17
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -28,6 +28,8 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
   - E014 thread sweep (does it hold on small machines?): heavy window, base vs adapt at --max-concurrency 4/2/1, 3 rounds, TO 1800 -> e014/. Caveat: the adapt cap is inert at pools <= 12 here.
 - Snapshots: stressnet_h3106400 (WORKING copy for E011/E012, deletable when done), stressnet_synced_h3123270 (pristine), stressnet_wedge_h3105401.
 
+- **E019 ARMED on box81** (owner 15:0x: box81 is the second machine the review asked for; they freed disk to 80 GB). scripts/run_e019.sh there (copy in the repo): waits for e019.builds (base/adapt/e017 built natively on box81 from the hydrogen trees relayed 15:09; base BUILD_OK 15:15) and e019.db (the unpruned wedge snapshot streamed hydrogen -> control box -> box81 during E018's build phase by the control-box relay_snapshot.sh, then a working copy). Then idle check, governor pinned, heavy window base/adapt/e017 x3 (snapshot restore) -> e019_heavy/, prep sync to 3,106,400, small-tx window x3 (pop_to rewinds) -> e019_small/, ab_stats + max VmSwap per run (box81 keeps its 4 GB swap file). Marker e019.chain ends CHAIN_E019_COMPLETE. box81 numbers are compared only with box81 numbers. A pruned-copy plan (run_e019_prune.sh, hydrogen) was written and cancelled 15:17 when the disk was freed; the beta tree's monero-blockchain-prune does know the FCMP++ tables, so it remains an option for small disks.
+
 ## Queue (do the first item that is unblocked)
 A. (DONE 02:56: the 50% verify hotspot is gone from the combo profile; recorded in E007.)
 B. (DONE 03:30: E009 written up; owner informed.)
@@ -41,7 +43,7 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 
 ## Second work box: box81 (added by the owner 2026-11-03 ~12:30)
 - `ssh box81` (192.168.1.81), Ryzen 5 5600G 6c/12t Zen3, 14 GB, ~22 GB free SHARED disk. Rules in `~/README-FIRST.md` there: shared with `user`, `selfishmining`, `blocksize` (never touch their files/processes; no system-wide changes; stay in /home/optimizer); check idle (`uptime; who; ps`) and pin the governor before benchmarks; builds `nice -n 10`, at most `-j6`; NOT hardware-identical to hydrogen: never compare timings across boxes, never copy binaries (ARCH=native). Rust 1.97.1 via rustup (repo-pinned). Baseline monero 3fd0f88c2 built in ~/work/monero/build/baseline (step 1 verified 12:36: monerod --version OK, 233 unit tests PASS).
-- Use: crate compiles/tests and crate-level micro-benchmarks, so hydrogen timing runs are undisturbed. No room for the 18 GB stressnet DB, so monerod-level measurements stay on hydrogen.
+- Use: crate compiles/tests and micro-benchmarks, AND since 15:17 (owner freed disk: 80 GB) node-level A/B as the independent second machine (E019). Same layout as hydrogen under /home/optimizer (research repo copy, research-artifacts, chains/stressnet, the three monero-fcmp* trees and builds). box81 cannot ssh to hydrogen; transfers go through the control box. Git identity: none set there yet.
 - On it: ~/work/monero-oxide-e017 (upstream 31c26d9 + E017, final commits a0ff587 + cb3bafa; ALL tests PASS 13:05: equivalence with the unchanged stock verify, tampered, error paths, the existing fcmps suite incl. test_malleated_proofs, GBP lib + integration with --features tests; ported to hydrogen, e018.go touched 13:00) and ~/work/monero-oxide-e007 (v1 + the counting-allocator benchmark as an uncommitted test append, scratch). Idle since 13:20, nothing queued: node-level A/B must run next to the hydrogen baselines and binaries never cross boxes.
 
 ## Watch (read-only)
