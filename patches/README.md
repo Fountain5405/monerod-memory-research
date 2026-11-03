@@ -2,7 +2,7 @@
 
 Two versions of the verifier change are kept on purpose (owner, 2026-11-03):
 - **`v1-E007-full-streaming/`**: the measured, validated series (E007 streaming verifier, ~1,000 code lines in monero-oxide restructuring `ArithmeticCircuitStatement::verify`, + ~1,200 lines of tests; independent review in reports/E007-crypto-review.md). Largest saving; largest review burden.
-- **`v2-E017-minimal/`** (measured at the node in E018/E019: same memory as v1, negdiff identical to base, but heavy blocks +43-57% wall over v1 and small-tx blocks +12-17% over stock; the alternative series, not the recommended one): same idea with the stock `verify` left byte-identical; fcmps pre-folds each circuit into one constraint. Target ~150-200 code lines. See experiments/E017-minimal-streaming.
+- **`v2-E017-minimal/`** (measured at the node in E018/E019/E020: same memory as v1, negdiff identical to base, but slower than v1: with all three patches, heavy blocks +28% wall over v1 (37% under stock) and small-tx blocks +3% over v1 (+8% over stock); with 0001-0002 alone +43-57% and +12-17%; the alternative series, not the recommended one): same idea with the stock `verify` left byte-identical; fcmps pre-folds each circuit into one constraint. Target ~150-200 code lines. See experiments/E017-minimal-streaming.
 
 Both share the same monerod patches 0001-0003 and 0005; only 0004 (the cargo `[patch]` glue) points at a different monero-oxide branch.
 
@@ -57,14 +57,15 @@ To build the intermediate configurations instead: 0001 only = E004c; 0001+0002 =
 ## Crate tests
 In the patched monero-oxide: `cargo test -p full-chain-membership-proofs --release -- --skip prove_benchmark` and `cargo test -p generalized-bulletproofs --release`. The full fcmps suite including `test_malleated_proofs` takes ~45 min on a 3900X.
 
-## v2: E017 minimal streaming verifier (measured in E018/E019; alternative to v1, which stays recommended on speed)
+## v2: E017 minimal streaming verifier (measured in E018/E019/E020; alternative to v1, which stays recommended on speed)
 Same monerod changes as v1. In monero-oxide the audited `ArithmeticCircuitStatement::verify` is left byte-identical; instead fcmps hands it ONE pre-folded constraint `sum(z^k c_k)`, which `verify` weights by `z`, giving the same `sum(z^(k+1) c_k)` it computed from the stored constraints. Design and results: experiments/E017-minimal-streaming/README.md.
 
 | patch | what | measured as |
 |---|---|---|
 | `v2-E017-minimal/monero-oxide/0001-fcmps-extract-verifier_layout-and-build_verifier_cir.patch` | refactor only, no behaviour change: the verifier's layout computation and circuit construction become functions so the circuits can be built more than once (review with `git diff --color-moved`) | |
 | `v2-E017-minimal/monero-oxide/0002-E017-verify-FCMPs-with-the-constraints-folded-into-o.patch` | generalized-bulletproofs: `#[derive(Clone)]` on `VerifierTranscript` and the additive `peek_z` (+25 lines, nothing removed); circuit-abstraction: Discarded/Folded constraint modes, the folding accumulator, `CircuitStatementError`; fcmps: three builds (discard; fold c1 with its peeked z; fold c2), replay checks, `#[cfg(test)] verify_stored`; tests | crate: equivalence with the unchanged stock verifier PASS, tampered PASS, peak heap -80% per verify at 1-16 inputs |
+| `v2-E017-minimal/monero-oxide/0003-E020-fold-both-circuits-in-one-rebuild-peeking-the-s.patch` | generalized-bulletproofs: the additive `skip_verify_transcript` (+57 lines: replays the stock `verify`'s transcript reads and challenges for a statement of `n` generators and `c` vector commitments) plus an assertion in the fuzz test that it lands where `verify` lands; fcmps (26/26 lines in `Fcmp::verify`): the second proof's `z` is peeked on a transcript clone skipped past the first proof, c1 and c2 are folded in ONE rebuild (two builds instead of three), and after the first proof's real verification the real transcript must equal the skipped clone (`InconsistentCircuitReplay`) | crate: same tests PASS; node (E020): heavy wall -12% vs 0001-0002 (+28% vs v1), small-tx -5% (+3% vs v1), memory unchanged, negdiff identical to base |
 
-Sizes vs 31c26d9: code +513 / -88 (refactor commit 92/33 of it is motion), tests +228 plus a benchmark. v1 for comparison: code +1,004 / -134, with +570 inside the audited verifier.
+Sizes vs 31c26d9: code +513 / -88 (refactor commit 92/33 of it is motion), tests +228 plus a benchmark; patch 0003 adds +83 / -26 (57 additive lines beside the audited verifier, none inside it). v1 for comparison: code +1,004 / -134, with +570 inside the audited verifier.
 
-monerod for v2: `v2-E017-minimal/monerod/0001-0005` are v1's patches unchanged, plus `0006` which repoints the cargo `[patch]` paths from the E007 tree to the E017 tree (0004 + 0006 together are the build glue; they will be squashed if v2 becomes the recommended series). Build as for v1, with `monero-oxide-e017` in the `sed`.
+monerod for v2: `v2-E017-minimal/monerod/0001-0005` are v1's patches unchanged, plus `0006` which repoints the cargo `[patch]` paths from the E007 tree to the E017 tree (0004 + 0006 together are the build glue; they will be squashed if v2 becomes the recommended series). Build as for v1, with `monero-oxide-e017` in the `sed`. Apply 0001-0003 for the measured e020 build (0001-0002 alone is the slower e017 build of E018/E019).

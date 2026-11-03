@@ -1,0 +1,36 @@
+chain e020 start 2026-11-03T19:55:19+00:00
+e020 build present; starting 2026-11-03T20:24:19+00:00
+bde81f4 E020: fold both circuits in one rebuild, peeking the second z past the first proof
+d6f93d0664604726aeafbaf99982f181adc5bb8f31480f4902660bb686fa3ae8  /home/optimizer/work/monero-fcmp-adapt/build/beta31-adapt/bin/monerod
+119b94b0345bed42859985dcc3d8217035bab8e04b890e739285a678bbd0a9c3  /home/optimizer/work/monero-fcmp-e017/build/beta31-e017/bin/monerod
+a4d8448af856960ecba7c907a39f88516987d6586acfd5855872417a9ee180fe  /home/optimizer/work/monero-fcmp-e020/build/beta31-e020/bin/monerod
+no shadow processes
+governor schedutil -> performance
+(a) heavy A/B done 2026-11-03T21:26:20+00:00
+(b) small-tx A/B done 2026-11-03T22:32:55+00:00
+governor restored to schedutil
+(c) negdiff done 2026-11-03T22:46:05+00:00: DIFF PASS / DIFF PASS
+== e020_heavy
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| adapt | 3 | 1,607 (1,456-1,662) | 1,607 (1,456-1,663) | 2,931 (2,857-2,987) | 109 (108-110) | 1,352 (1,210-1,436) | 9 (8-9) | 466 (466-466) | 907 (906-910) | all yes |
+| e017 | 3 | 1,589 (1,550-1,652) | 1,614 (1,573-1,672) | 2,787 (2,782-2,882) | 159 (156-167) | 1,050 (915-1,152) | 9 (9-9) | 466 (466-466) | 1,404 (1,404-1,431) | all yes |
+| e020 | 3 | 1,623 (1,597-1,654) | 1,642 (1,621-1,676) | 2,868 (2,821-2,883) | 140 (136-144) | 1,013 (981-1,027) | 9 (9-32) | 466 (466-466) | 1,226 (1,204-1,233) | all yes |
+
+e017 vs adapt (medians): peak RssAnon MB -1.1%; peak Private_Dirty MB +0.4%; peak RSS MB -4.9%; wall s +45.9%; post-idle RssAnon MB -22.3%; read MB +0.0%; write MB +0.0%; CPU s +54.8%
+  peak anon ranges overlap: yes (base 1,456-1,662, e017 1,550-1,652)
+e020 vs adapt (medians): peak RssAnon MB +1.0%; peak Private_Dirty MB +2.2%; peak RSS MB -2.1%; wall s +28.4%; post-idle RssAnon MB -25.1%; read MB +0.0%; write MB +0.0%; CPU s +35.2%
+  peak anon ranges overlap: yes (base 1,456-1,662, e020 1,597-1,654)
+== e020_small
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| adapt | 3 | 810 (801-819) | 968 (960-997) | 3,894 (3,889-3,921) | 156 (156-159) | 746 (743-759) | 52 (51-53) | 1,117 (1,117-1,123) | 1,432 (1,432-1,440) | all yes |
+| e017 | 3 | 801 (795-810) | 945 (943-961) | 3,917 (3,905-3,923) | 169 (167-169) | 776 (772-780) | 52 (52-52) | 1,123 (1,117-1,123) | 1,609 (1,607-1,610) | all yes |
+| e020 | 3 | 805 (800-812) | 989 (965-996) | 3,907 (3,901-3,929) | 161 (159-161) | 755 (751-764) | 52 (52-53) | 1,117 (1,117-1,123) | 1,487 (1,483-1,496) | all yes |
+
+e017 vs adapt (medians): peak RssAnon MB -1.1%; peak Private_Dirty MB -2.4%; peak RSS MB +0.6%; wall s +8.3%; post-idle RssAnon MB +4.0%; read MB +0.0%; write MB +0.5%; CPU s +12.4%
+  peak anon ranges overlap: yes (base 801-819, e017 795-810)
+e020 vs adapt (medians): peak RssAnon MB -0.6%; peak Private_Dirty MB +2.2%; peak RSS MB +0.3%; wall s +3.2%; post-idle RssAnon MB +1.2%; read MB +0.0%; write MB +0.0%; CPU s +3.8%
+  peak anon ranges overlap: yes (base 801-819, e020 800-812)
+done 2026-11-03T22:46:05+00:00
+CHAIN_E020_COMPLETE

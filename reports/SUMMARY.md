@@ -121,7 +121,8 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
 | E007 | streaming verifier | 2.3 GB (-59%) | -50% | +3% | component |
 | E008 combo | E004c + E004e + E007 + E001 | 1.75-1.86 GB (-67%) | -47% | +15% | superseded |
 | **E012 adapt** | combo with an adaptive cap and trim | **1.64-1.78 GB (-68%)** | **-50%** | **+4%** | **recommended** |
-| E017 e017 (v2) | adapt's monerod changes + the pre-folded verifier (stock `verify` untouched, ~1/3 of the diff) | 1.63 GB (-70%) | -29% | +12% | alternative (E018) |
+| E017 e017 (v2) | adapt's monerod changes + the pre-folded verifier (stock `verify` untouched, ~1/3 of the diff) | 1.63 GB (-70%) | -29% | +12% | superseded by e020 |
+| E020 e020 (v2, two builds) | e017 + patch 0003: the second proof's `z` peeked on a skipped transcript clone, one fold rebuild for both circuits | 1.62 GB (-70%) | -37% | +8% | alternative (E020) |
 
 ## Guardrails: how we know nothing was weakened
 - Every run ends on the same block hash as the reference node (E004-E013).
@@ -182,5 +183,5 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
 - E018 (hydrogen): done (experiments/E018-node-level-v2, F31). v2 keeps v1's memory (heavy peak +2.6%, idle -16%, cgroup minimum 1,765 vs 1,866 MB, long-resync peak -72%) and its correctness (negdiff identical to base, 236 cases; all hashes), but fails the pre-registered speed criterion: heavy window +43% wall over v1, small-tx +12% over base, long resync +5.1% over base where v1 is -4.6%. **v1 / adapt stays the recommended build; v2 is the small-diff alternative (reports/HOW-IT-WORKS.md 2.1b).**
 - E019 (box81): done (above).
 - E016 (done, experiments/E016-base-equivalence): the streaming verifier is now tested against verbatim copies of the 31c26d9 verifiers (8 honest shapes, ~100 region tamperings, 256 random byte mutations): identical verifier states and identical errors. Closes the crypto review's F1.
-- E020 candidate: v2 with two builds instead of three (peek z1 and z2 both from the discard build, fold c1 and c2 in one pass), to recover v1's speed with v2's diff.
+- E020 (hydrogen): done (experiments/E020-two-builds, F33). v2 with two circuit builds instead of three (the second proof's `z` is peeked on a transcript clone skipped past the first proof; one fold rebuild for both circuits; +57 additive lines in generalized-bulletproofs, 26/26 in fcmps). Same memory as v1 and e017 (heavy peak +1%, idle -25% vs adapt), negdiff identical to base, all hashes; heavy wall +28% over v1 (e017 was +46%), small-tx +3% over v1 (e017 +8%). The pre-registered rule (heavy within 10% of v1) is not met, so **v1 / adapt stays recommended; the v2 alternative is now patches 0001-0003 (e020)**. The remaining gap to v1 is unprofiled; a perf profile of e020 on the heavy window is the next step if v2 is to be pushed further.
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth); W002 measurement next.

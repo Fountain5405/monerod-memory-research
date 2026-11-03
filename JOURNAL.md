@@ -414,3 +414,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 
 ## 2026-11-03 20:47 Check-in: E020 heavy round 1 in
 - hydrogen: no shadow lanes, 37 GB free, load ~2-3 (E020 chain, r2_e020 heavy running). E020 heavy r1: adapt 110 s / 1,456 MB peak / 1,210 idle, e017 156 s / 1,550 / 915, e020 136 s / 1,654 / 1,013, 3/3 hashes. First read: the second build removed about a third of e017's wall gap to adapt (156 -> 136 vs 110) at +7% peak (both folded constraints live at once, as the crate benchmark predicted). Rounds 2-3, small-tx and negdiff follow; ETA ~22:00.
+
+## 2026-11-03 22:50 Check-in: E020 done, written up; v1 stays recommended
+- hydrogen quiet (no shadow lanes, load 0.4, 33 GB free). E020 chain finished 22:46: heavy A/B 20:24-21:26, small-tx 21:26-22:33, negdiff 22:33-22:46, all 18 hashes match, DIFF PASS at both heights.
+- Results (medians of 3): heavy adapt 109 s / 1,607 MB peak / 1,352 idle; e017 159 / 1,589 / 1,050; e020 140 / 1,623 / 1,013. Small-tx adapt 156 s / 810 MB; e017 169 / 801; e020 161 / 805. e020 vs adapt: heavy wall +28% (e017 +46%), small-tx +3% (e017 +8%), peak +1% / -1%, idle -25% / +1%. The second build removed ~40% of the heavy gap and ~60% of the small gap; the crate benchmark's +20% per-proof heap does not show at the node.
+- Decision per the pre-registered rule: heavy within 10% NOT met, so v1/adapt stays recommended; the v2 alternative is now patches 0001-0003. The remaining +28% is unprofiled (candidate: the per-constraint fold accumulator in circuit-abstraction vs v1's in-verifier fold); a perf profile is the next step only if v2 is pushed further.
+- Recorded: experiments/E020-two-builds (README, results.csv), evidence/E020 (chain, build marker, both windows' results/check/mem.csv, negdiff json+summaries), FINDINGS F33, patch 0003 (format-patch of bde81f4) + patches README rows, SUMMARY (build history, next), HOW-IT-WORKS 2.1b / 3 table / 3.1, plain "Does it cost speed?", STATE. Owner pinged (E020 in).
+- Queue next: W002 wallet refresh measurement against our node.
