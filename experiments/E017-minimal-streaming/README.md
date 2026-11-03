@@ -65,4 +65,18 @@ Compile history: round 1 failed (cloning `PointWithDlog` / `TranscriptedInput` f
 
 The memory saving per proof is larger than the E007 micro-benchmark showed (0.53 / 1.05 / 4.1 MB for 1 / 2 / 8 inputs). The CPU cost at these sizes is about 2x per verification (three circuit builds instead of one, and no quadratic fold to remove at small input counts); E007 measured +40-50%. What this means for node wall time on small-tx blocks is measured in E018 (the E007 crate-level +40-50% became +2.7% at the node).
 
+### Same-box comparison with v1 (box81, same counting allocator, 8 layers, 2026-11-03 13:20)
+The v1 (E007) tree was built on box81 from upstream 31c26d9 + its patch, with the identical benchmark test appended.
+
+| inputs | stock | v1 E007 | v2 E017 | stock ms | v1 ms | v2 ms |
+|---|---|---|---|---|---|---|
+| 1 | 1.97 MB | 0.54 MB (-73%) | 0.41 MB (-79%) | 5 | 7 | 10 |
+| 2 | 3.93 MB | 1.05 MB (-73%) | 0.78 MB (-80%) | 9 | 13 | 18 |
+| 8 | 15.7 MB | 4.10 MB (-74%) | 2.99 MB (-81%) | 31 | 47 | 66 |
+| 16 | 31.5 MB | 8.25 MB (-74%) | 6.06 MB (-81%) | 63 | 93 | 133 |
+
+- Per proof, v2 needs about 25% less heap than v1 (its folded constraint is handed to the stock verifier, which processes the per-commitment weights one commitment at a time, whereas v1 keeps all folded vectors live until apply).
+- Per proof, v2 costs about 40% more CPU than v1 at these sizes (three circuit builds vs two): v1 is +50% over stock, v2 +110%. At the node, v1's +50% became +2.7% wall on 2-input blocks (E011); E018 measures v2's.
+- The ms columns are box81 timings and must not be compared with hydrogen numbers.
+
 **Status (13:05):** every crate test passes on box81 (new tests; the existing fcmps suite including test_malleated_proofs; GBP lib and integration). Node-level measurement E018 starts on hydrogen after E014.
