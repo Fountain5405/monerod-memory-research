@@ -53,6 +53,7 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 - None. (The Fable-tier E007 review finished 12:00: reports/E007-crypto-review.md, F28.)
 
 ## Needs owner (do not act on these alone)
+- **Standing instruction (owner 16:3x 2026-11-03): keep going; ping (PushNotification) when BOTH E018 (hydrogen) and E019 (box81) are in.**
 - E001 upstream filing: READY (tested fix included, 2026-11-02 21:10). The owner will paste reports/E001-sync-wedge-ISSUE.md into the upstream repo themselves, once the prototype fix has been tested (E001-fix in queue). Never post it ourselves.
 - E001: the owner's 72a62f5 shows the proposed cap is too loose for post-FCMP++ mainnet rules (the limit can double after 51 blocks) and proposes a window-aware cap (simulated, not built). On stressnet both caps give 4 blocks, so no research build is affected. Building and testing the window-aware cap is the owner's call; I have not acted on it.
 
