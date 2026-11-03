@@ -90,6 +90,13 @@ After a heavy batch-verify call, `malloc_trim(0)` walks every arena and releases
 
 Independent cross-check: the smallest cgroup `MemoryMax` (swap off) under which the window still syncs at full speed is 5,750 MB for stock and 1,866 MB for adapt (-67.5%); below that the kernel OOM-kills the process rather than it slowing down.
 
+So the ~70% is the three changes together, not the verifier alone. Each piece on its own: the streaming verifier -59% (2.3 GB), the cap plus trim -45% (2.9 GB), and even the stock binary with `--max-concurrency 12` -40% (3.3 GB). They overlap, because each attacks the same product, number of concurrent verifications x memory per verification: the cap halves the first factor, the verifier shrinks the second by ~50x, and the trim stops the per-thread high-water marks from accumulating. That is why the three add up to -68% rather than the sum of their separate percentages. The idle-node figure (-74 to -88%) comes almost entirely from the trim. SUMMARY.md's "Build history" table gives the same progression with the small-tx wall per build.
+
+### 3.1 Does the saving cost speed?
+For the recommended build, no. The streaming verifier removes the stored circuit and, as a side effect, the quadratic O(c·q) fold that was half of all sync CPU, so adapt is both smaller and faster where it matters: 2x faster on heavy blocks, 43-50% less wall over the heavy window (E013, E018, E019), and 4.6% faster over an 18,000-block resync (E013). The one cost is on ordinary small-transaction blocks, where adapt is 5-6% slower than stock (E011/E012: the periodic trim and the second circuit build; the cap, which costs 7% there, is switched off for small proofs). That is real but small, and the net over a full resync is still positive.
+
+v2 (2.1b) does trade speed, but for review burden, not for memory. It keeps all of the memory saving (peak within 3% of v1 on hydrogen, 7% below on box81; idle lower; cgroup minimum 1,765 MB vs v1's 1,866 and stock's 5,750) and gives back part of the speed-up: heavy blocks still 29% / 10% faster than stock but 43% / 57% slower than v1, and ordinary blocks 12% / 17% slower than stock. What it buys is a third of the code and an untouched audited verifier. The choice is v1's speed against v2's smaller diff; memory is the same either way.
+
 What remains in adapt's ~1.7 GB has not been attributed yet (no heaptrack of the new build). The likely composition is the folded weight vectors, proof data and IPA generators of 12 concurrent verifications on top of a ~300 MB baseline (DB, pools, networking).
 
 ## 4. Where to look in the code

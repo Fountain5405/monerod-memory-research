@@ -36,6 +36,24 @@ On the heaviest blocks the node's memory peak went from about 5.6 GB to about 1.
 
 A second, independent measurement agrees: we limited the memory the node was allowed to use and found the smallest limit it could still sync under. Stock software needs 5.75 GB; the new build needs 1.87 GB.
 
+## Piece by piece
+The two-thirds saving is the three parts together, not the new checker alone. On the heaviest blocks, on the 24-thread machine:
+
+| build | memory peak | time for the heavy blocks |
+|---|---|---|
+| stock software | 5.3-5.6 GB | reference |
+| stock software told to use 12 threads (a setting, no code change) | 3.3 GB (-40%) | 11% faster |
+| parts 2 and 3 only (fewer checks at once, give memory back) | 2.9 GB (-45%) | 5% faster |
+| part 1 only (stop writing the list down) | 2.3 GB (-59%) | 2x faster |
+| all three parts (the recommended build) | 1.6-1.8 GB (-68%) | 2x faster |
+
+The parts overlap, which is why they do not simply add up: each one attacks the same product, how many proofs are checked at once times how much memory each check needs. Part 2 halves the first number, part 1 shrinks the second by about fifty times, and part 3 stops finished threads from hoarding. The idle-node saving, from about 5 GB to about 1 GB, comes almost entirely from part 3.
+
+## Does it cost speed?
+For the recommended build, no. The same change that stops writing the list down also removes the inefficient re-reading, so the new checker is both smaller and faster on big proofs: twice as fast on the heaviest blocks, and about 5% faster over an 18,000-block catch-up. The only cost is on blocks of ordinary small transactions, where the node is 5-6% slower than stock, mostly from handing memory back and from reading the recipe twice. That is a real cost but a small one, and the catch-up as a whole still finishes sooner.
+
+The smaller second version of part 1 (1b above) does cost speed, but it trades speed for a smaller change, not for memory. It saves exactly as much memory, is still faster than stock on the heaviest blocks but about 1.5 times slower than the first version there, and is 12-17% slower than stock on ordinary blocks. So the choice between the two versions is speed against the size of the change to audited code; the memory saving is the same either way.
+
 ## Is it safe?
 Nothing about what gets checked has changed; only how the sums are organised. We tested this several ways:
 - The new code and the old code end up with exactly the same final numbers before the last step of the check, bit for bit, in the test suite.

@@ -390,3 +390,6 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 
 ## 2026-11-03 18:15 Docs: second box recorded in SUMMARY and REVIEW-70pct
 - Owner (18:2x) pointed out SUMMARY.md still said "Machine: hydrogen" and asked that the docs record the second box. SUMMARY: header date, Machines line (hydrogen + box81, native builds, percentages only across boxes), a "Solid" bullet for E019, the caveat line; REVIEW-70pct: status updates on weakness 2 and the verdict (second machine done, external review remains). HOW-IT-WORKS-plain already says two machines (73d9d26).
+
+## 2026-11-03 18:20 HOW-IT-WORKS: speed trade-off and piece-by-piece attribution
+- Owner asked for the memory-vs-speed answer in the HOW-IT-WORKS files and whether the 70% is attributed piece by piece. Technical: section 3 now states the overlap (verifier alone -59%, cap+trim -45%, max-concurrency 12 -40%, all three -68%; idle from the trim) and section 3.1 (adapt: no trade, 2x on heavy, +5-6% small-tx, -4.6% long resync; v2 trades speed for diff size, memory equal, cgroup min 1,765 MB). Plain: new Piece by piece table and Does it cost speed section.
