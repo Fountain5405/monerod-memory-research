@@ -336,3 +336,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
   - Open: unaudited crypto by the same author, one machine, the remaining 1.7 GB is unattributed.
 - The owner asked for a dive into the ~1,000-line monero-oxide change with a Fable agent. Launched (see In flight).
 - 11:51 Owner asked for an explanation of the optimization in the repo, technical and plain-language: reports/HOW-IT-WORKS.md and reports/HOW-IT-WORKS-plain.md, linked from SUMMARY and README.
+
+## 2026-11-03 12:00 Fable-tier crypto review of E007: no defect found; one test gap
+- An independent frugal:sage (Fable 5.1) agent reviewed the E007 change statically against the unmodified crates: ~8 min, 19 tool uses, 178k tokens. Report: reports/E007-crypto-review.md (F28).
+- Verdict: the streaming path checks the same relation as the base verifier for all proofs, including malformed ones; every base structural check is reproduced with the same error precedence; all MSM terms match; no path returns Ok without a fully applied accumulator; no new attacker-reachable panic (relevant because the FFI builds with panic=abort); prover byte-identical; no unsafe.
+- Findings: F1 medium, the FCMP-level equivalence test compares against the refactored stored path, not the base verifier (base equivalence rests on legacy_verify over small random instances). F2/F3 low hardening. F4-F6 notes.
+- Corrected one claim in my E007 notes ("old stored path kept").
+- Queued E016 (STATE, F2) to close F1 with a verbatim-base equivalence test and a differential fuzz, after E014 frees the box.

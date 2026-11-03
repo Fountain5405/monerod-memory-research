@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-03 11:51
+Last updated: 2026-11-03 12:00
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -34,13 +34,14 @@ C. (DONE 05:02: E010 written up; owner pinged.)
 D. reports/SUMMARY.md: E010 filled in 05:02 (bottom line now says speed is mixed). Fill in E011 when done.
 E. DONE (E011 -> E012 -> E013; adapt recommended). NEXT after E015/E014: write experiments/E015 (negdiff summaries: DIFF PASS/FAIL, case counts, the oracle's rejection flag mix) and experiments/E014 (ab_stats per thread count; base vs adapt peak and wall at c4/c2/c1), update SUMMARY 'How real' and the guardrails, ping the owner. Then W002 (wallet) or an idle-trim refinement for adapt.
 F. Fix the perf_classify.py regex and the stack_attrib.py owning-frame view (low priority).
+F2. **E016 (after E014; needs cargo on hydrogen, so not during timing runs): close the crypto review's F1.** In ~/work/monero-oxide-e007 add, under #[cfg(test)], a VERBATIM copy of base `Fcmp::verify` (git show 31c26d9:crypto/fcmps/src/lib.rs) and base `ArithmeticCircuitStatement::verify` (31c26d9:crypto/generalized-bulletproofs/src/arithmetic_circuit_proof.rs:657-820; `legacy_verify` in acp/tests.rs is already that copy, make it reachable), extracted by line range, not retyped; a test over the 8 shapes with honest and tampered proofs comparing streaming vs base verifier state with `additional` as a multiset; and the FCMP-level differential fuzz from section 5.2 of the review. Verbatim-ness check: diff the copied bodies against the git-show extracts. Run with `cargo test -p fcmps --release -- --skip prove_benchmark` (-j10). Record in experiments/E016. Delegate the typing to a builder with this spec; review the diff in the main context.
 G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tree cache is bounded by reorg depth except registered outputs, which are tiny; peak candidates are refresh-time transients). NEXT: W002 measure refresh RSS/heaptrack of a fresh wallet over the dense stretch against OUR node, after E010. Also: stagenet/master comparison, monerosim scenarios.
 
 ## Watch (read-only)
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
 
 ## In flight (agents)
-- **Fable-tier (frugal:sage) code review of the E007 monero-oxide change** (owner's request 11:47): soundness vs the stored verifier, fail-closed paths, panic/DoS surface at the FFI, test gaps. Code bundle on the control box in the session scratchpad (e007review/). Result goes to reports/E007-crypto-review.md. (The E007 agent finished at 00:20; its diff was reviewed by me; see experiments/E007-streaming-verifier.)
+- None. (The Fable-tier E007 review finished 12:00: reports/E007-crypto-review.md, F28.)
 
 ## Needs owner (do not act on these alone)
 - E001 upstream filing: READY (tested fix included, 2026-11-02 21:10). The owner will paste reports/E001-sync-wedge-ISSUE.md into the upstream repo themselves, once the prototype fix has been tested (E001-fix in queue). Never post it ourselves.

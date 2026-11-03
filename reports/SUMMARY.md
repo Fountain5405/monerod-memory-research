@@ -60,7 +60,7 @@ A critical re-check of the raw data and source is in reports/REVIEW-70pct.md. Sh
 **Limits:**
 - **Worst-case workload.** 82% of the window's txs have 128 inputs. On 2-input blocks the saving is ~30%. The worst case does set what a node must provision, since anyone can fill blocks with max-input txs.
 - **One machine with 24 threads.** The stock node's peak scales with thread count (E003: 1.2 GB at 1 thread, 5.4 GB at 24), so part of the win is the 24-thread baseline. **E014 (running) measures base vs adapt at 4, 2 and 1 threads.**
-- **About two thirds of the win is unaudited cryptographic code** (E007, ~1,000 lines in monero-oxide). It was reviewed and tested by me, not by cryptographers. Without it, the ~15-line cap + trim changes give about -45%, and the zero-code `--max-concurrency 12` gives -40%.
+- **About two thirds of the win is cryptographic code not yet reviewed by cryptographers** (E007, ~1,000 lines in monero-oxide). It was reviewed by me and then by an independent Fable-tier agent (reports/E007-crypto-review.md: no soundness bug, no new panic, fail-closed holds; one medium test gap, being closed). That is still not an audit. Without it, the ~15-line cap + trim changes give about -45%, and the zero-code `--max-concurrency 12` gives -40%.
 - `malloc_trim` is glibc-only. FCMP++ itself is still a beta (stressnet), not mainnet.
 
 ## How it works
@@ -127,6 +127,7 @@ Two explanations of the mechanism, written at the owner's request: reports/HOW-I
 - Crate-level tests (E007):
   - All existing monero-oxide tests pass, including byte-malleation.
   - New tests: streaming vs stored verification on valid and tampered proofs; accumulator vs stored fold (bit-identical batch-verifier state); a Discard-mode circuit cannot yield a statement; an un-applied verification fails closed.
+- **Independent static review (reports/E007-crypto-review.md):** a separate Fable-tier agent walked the base verifier check by check against the streaming path: every structural check and every multiexp term is reproduced, the transcript is cloned at the right point and never sees proof bytes, every error path rejects, and no new panic is reachable from proof bytes (the FFI aborts on panic). Finding to close: the crate's FCMP-level equivalence test now compares against the refactored stored path rather than the original verifier (F1).
 - Disk writes are unchanged, and swap is off. Under the minimum cgroup limit the builds keep their unconstrained wall time; every failure below it was an OOM kill (kernel log), not slow thrashing.
 
 ## Things that did not work (kept for the record)
@@ -165,9 +166,9 @@ Two explanations of the mechanism, written at the owner's request: reports/HOW-I
 |---|---|---|
 | E001 sync-size cap | ~10 lines | stressnet-tested. For post-FCMP++ mainnet use the owner's window-aware cap (simulated, not built) |
 | adaptive batch cap + `malloc_trim` (E012) | ~25 lines in rctSigs.cpp | glibc-guarded trim; independent of E007 |
-| E007 streaming verifier | ~1,000 lines + tests (monero-oxide) | biggest win; needs crypto review; alternatively, propose only the O(c·q) fold fix for CPU |
+| E007 streaming verifier | ~1,000 lines + tests (monero-oxide) | biggest win; independent static review found no defect (reports/E007-crypto-review.md); add the base-equivalence test (F1) and the two low hardening items first; still needs review by the FCMP++ authors; alternatively, propose only the O(c·q) fold fix for CPU |
 
 ## Still running / next
-- Fable-tier code review of the E007 monero-oxide change (in flight).
+- Base-equivalence test and differential fuzz for E007 (the crypto review's F1), after E014.
 - E014 thread-count sweep (how the win scales on 1-4 thread machines).
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth); W002 measurement next.
