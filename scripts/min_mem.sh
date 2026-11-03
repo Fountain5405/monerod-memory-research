@@ -68,6 +68,8 @@ trial() {  # trial <limit_MB> -> prints PASS|FAIL, appends to CSV
   done
   local t1=$(date +%s)
   [ -f $cg/memory.events ] && ooms=$(awk '/^oom_kill /{print $2}' $cg/memory.events)
+  local kk=$(sudo journalctl -k --since @$t0 --no-pager 2>/dev/null | grep -c "oom_memcg=/system.slice/$unit.scope")  # authoritative: kernel log
+  [ "${kk:-0}" -gt "${ooms:-0}" ] && ooms=$kk
   if kill -0 $MP 2>/dev/null; then
     curl -s -m 30 http://127.0.0.1:$PORT/stop_daemon -d '{}' > /dev/null
     for i in $(seq 1 300); do kill -0 $MP 2>/dev/null || break; sleep 1; done
