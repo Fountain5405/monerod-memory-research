@@ -65,4 +65,4 @@ Compile history: round 1 failed (cloning `PointWithDlog` / `TranscriptedInput` f
 
 The memory saving per proof is larger than the E007 micro-benchmark showed (0.53 / 1.05 / 4.1 MB for 1 / 2 / 8 inputs). The CPU cost at these sizes is about 2x per verification (three circuit builds instead of one, and no quadratic fold to remove at small input counts); E007 measured +40-50%. What this means for node wall time on small-tx blocks is measured in E018 (the E007 crate-level +40-50% became +2.7% at the node).
 
-**Status:** crate tests passing on box81 12:45; GBP / circuit-abstraction suites and the existing fcmps suite running; node-level measurement E018 armed on hydrogen.
+**Status (13:05):** every crate test passes on box81 (new tests; the existing fcmps suite including test_malleated_proofs; GBP lib and integration). Node-level measurement E018 starts on hydrogen after E014.
