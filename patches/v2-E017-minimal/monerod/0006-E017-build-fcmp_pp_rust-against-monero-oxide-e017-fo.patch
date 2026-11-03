@@ -1,0 +1,32 @@
+From 92f7ac2797f69039fa48a0e0d9a875ae9310facb Mon Sep 17 00:00:00 2001
+From: optimizer <optimizer@hydrogen>
+Date: Tue, 3 Nov 2026 12:44:04 +0000
+Subject: [PATCH 6/6] E017: build fcmp_pp_rust against monero-oxide-e017
+ (folded verify) instead of e007
+
+---
+ src/fcmp_pp/fcmp_pp_rust/Cargo.toml | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/fcmp_pp/fcmp_pp_rust/Cargo.toml b/src/fcmp_pp/fcmp_pp_rust/Cargo.toml
+index 791116acd..6d6eb10c0 100644
+--- a/src/fcmp_pp/fcmp_pp_rust/Cargo.toml
++++ b/src/fcmp_pp/fcmp_pp_rust/Cargo.toml
+@@ -61,9 +61,9 @@ full-chain-membership-proofs = { opt-level = 3 }
+ monero-fcmp-plus-plus = { opt-level = 3 }
+ 
+ [patch."https://github.com/monero-oxide/monero-oxide"]
+-generalized-bulletproofs = { path = "/home/optimizer/work/monero-oxide-e007/crypto/generalized-bulletproofs" }
+-generalized-bulletproofs-circuit-abstraction = { path = "/home/optimizer/work/monero-oxide-e007/crypto/fcmps/circuit-abstraction" }
+-full-chain-membership-proofs = { path = "/home/optimizer/work/monero-oxide-e007/crypto/fcmps" }
++generalized-bulletproofs = { path = "/home/optimizer/work/monero-oxide-e017/crypto/generalized-bulletproofs" }
++generalized-bulletproofs-circuit-abstraction = { path = "/home/optimizer/work/monero-oxide-e017/crypto/fcmps/circuit-abstraction" }
++full-chain-membership-proofs = { path = "/home/optimizer/work/monero-oxide-e017/crypto/fcmps" }
+ # Path dependencies of the above, which must resolve to the same packages as the other crates use
+-generalized-bulletproofs-ec-gadgets = { path = "/home/optimizer/work/monero-oxide-e007/crypto/fcmps/ec-gadgets" }
+-ec-divisors = { path = "/home/optimizer/work/monero-oxide-e007/crypto/divisors" }
++generalized-bulletproofs-ec-gadgets = { path = "/home/optimizer/work/monero-oxide-e017/crypto/fcmps/ec-gadgets" }
++ec-divisors = { path = "/home/optimizer/work/monero-oxide-e017/crypto/divisors" }
+-- 
+2.43.0
+
