@@ -1,0 +1,14 @@
+chain e013 start 2026-11-03T08:48:24+00:00
+e012 complete; starting 2026-11-03T09:15:55+00:00
+heavy peak adapt 1639 vs combo 1861 MB (-11.9%); small wall adapt 157 vs base 151 s (+4.0%); n=3
+GATE PASS
+no shadow processes
+governor schedutil -> performance
+(a) A/B done 2026-11-03T09:59:39+00:00
+(b) negtest done 2026-11-03T10:00:02+00:00: PASS / PASS
+min_mem ref wall 109 s
+(c) min_mem done 2026-11-03T10:10:01+00:00: RESULT: minimum passing MemoryMax for adapt = 1866 MB (largest failing = 1765 MB, tol 125 MB)
+(d) long resync done 2026-11-03T11:29:19+00:00
+governor restored to schedutil
+done 2026-11-03T11:29:19+00:00
+CHAIN_E013_COMPLETE

@@ -1,0 +1,18 @@
+== base_bss5 (499 samples)
+  segment                    max MB   median MB   last MB
+  3105401..3105441              5613        5217      5610
+  3105441..3113400              5506        4681      4681
+  3113400..3123800              4681        4642      4534
+  overall peak 5613 MB at height 3105436
+== adapt_default (534 samples)
+  segment                    max MB   median MB   last MB
+  3105401..3105441              1664        1050      1029
+  3105441..3113400              1378        1300      1343
+  3113400..3123800              1296        1267      1267
+  overall peak 1664 MB at height 3105429
+== adapt_bss5 (510 samples)
+  segment                    max MB   median MB   last MB
+  3105401..3105441              1658        1338      1658
+  3105441..3113400              1587        1455      1555
+  3113400..3123800              1493        1438      1380
+  overall peak 1658 MB at height 3105436

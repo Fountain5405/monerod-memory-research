@@ -1,45 +1,75 @@
-# monerod memory research: summary (draft, 2026-11-03)
+# monerod memory research: summary (draft, updated 2026-11-03 after E013)
 
-**Bottom line:** on the FCMP++ stressnet sync workload, three small, separable changes cut monerod's memory needs by about two thirds: -67% peak in a 40-block worst-case window, -73% over an 18,000-block resync. All guardrails held: same chain state as the reference node, invalid proofs still rejected, no cost shifted to disk or swap.
+**Bottom line:** on the FCMP++ stressnet sync workload, three separable changes cut the memory monerod needs by about **two thirds to 70%**, and sync is about as fast or faster:
+- -68% peak in a 40-block worst-case window (3 A/B rounds);
+- -70% over an 18,000-block resync;
+- -67.5% in the minimum cgroup memory a sync can run under.
 
-**Speed is mixed.** Sync is about 2x faster on blocks full of max-input txs, but ~15% slower on blocks of small txs. The 18,000-block resync therefore takes 3.6% longer overall. E011 found that most of that cost comes from the two cheap fixes, not from the streaming verifier. On 2-input txs the thread cap costs +7% and the per-block trim +6%, while the streaming verifier costs +3%. E012 made the cap and the trim adaptive to proof size ("adapt"): small-tx blocks are then only +4% vs base, while heavy-window memory and speed stay at the combined build's level. adapt is being validated as the recommended build (E013).
+Over the 18,000-block resync the recommended build is 4.6% faster overall: 2x faster on heavy blocks, 4.6% slower on small-tx blocks. All guardrails held: the same chain state as the reference node, invalid proofs still rejected (24/24, and the bigger differential test E015 is running), and no cost shifted to disk or swap.
 
-| metric (40-block FCMP++ window, 3 alternating A/B rounds, medians) | baseline v0.19.0.0-beta.3.1 | combined build (E008) | change |
+**Recommended build ("adapt", E012/E013)** = beta.3.1 plus:
+1. The streaming FCMP++ verifier (E007).
+2. For FCMP++ batch calls whose largest proof has ≥ 16 inputs: a cap on the batch count at physical cores, and `malloc_trim(0)` afterwards. Otherwise no cap, and a trim at most every 10 s.
+3. The E001 sync-size cap.
+
+### Headline: 40-block heavy window 3,105,401 → 3,105,441, 3 alternating A/B rounds, medians (E013)
+
+| metric | baseline v0.19.0.0-beta.3.1 | adapt | change |
 |---|---|---|---|
-| peak anonymous memory (RssAnon) | 5,289 MB | 1,751 MB | **-66.9%** |
-| peak private dirty memory | 5,289 MB | 1,763 MB | **-66.7%** |
-| memory held after sync, idle (RssAnon) | 4,850 MB | 993 MB | **-79.5%** |
-| minimum cgroup MemoryMax that still syncs within 1.1x the wall time, swap off (E009) | 5,750 MB | 1,866 MB | **-67.5%** |
-| wall time for the window | 220 s | 117 s | **-46.8%** |
-| bytes written to disk | 465 MB | 467 MB | unchanged |
+| peak anonymous memory (RssAnon) | 5,600 MB (5,403-5,617) | 1,780 MB (1,762-1,816) | **-68.2%** |
+| peak private dirty memory | 5,601 MB | 1,804 MB | **-67.8%** |
+| memory held after the window, idle (RssAnon) | 4,993 MB | 1,368 MB | **-72.6%** |
+| minimum cgroup MemoryMax that still syncs within 1.1x the wall time, swap off (E009, E013) | 5,750 MB | 1,866 MB | **-67.5%** |
+| wall time | 222 s | 111 s | **-50.0%** |
+| CPU time (utime + stime) | 4,258 s | 904 s | -78.8% |
+| bytes written to disk | 466 MB | 466 MB | unchanged |
 | end block hash = reference node (.22) | 3/3 | 3/3 | same |
-| tampered FCMP++ proofs rejected (monerod-level negative test) | 24/24 | 24/24 | same |
+| tampered FCMP++ proofs rejected (monerod-level negtest) | 24/24 | 24/24 | same |
 
-**Long run (E010: 3,105,401 → 3,123,400, 18,000 blocks, 1 run per arm, both with `--block-sync-size 5`):**
+### Long run: 18,000-block resync 3,105,401 → 3,123,400, 1 run per arm, `--block-sync-size 5` (E013)
 
-| metric | baseline | combined build | change |
+| metric | baseline | adapt | change |
 |---|---|---|---|
-| peak RssAnon | 5,603 MB | 1,503 MB | **-73.2%** |
-| idle after sync (RssAnon) | 4,376 MB | 1,085 MB | **-75.2%** |
-| wall, whole resync | 1,365 s | 1,414 s | **+3.6%** |
-| wall, 40-block heavy window | 217 s | 108 s | -50% |
-| wall, 7,959 dense small-tx blocks | 1,071 s | 1,230 s | **+14.8%** |
-| wall, 10,000 near-empty blocks | 73 s | 73 s | 0% |
-| bytes written | 9,394 MB | 9,405 MB | unchanged |
+| peak RssAnon | 5,613 MB | 1,657 MB | **-70.5%** |
+| idle after sync (RssAnon) | 4,642 MB | 1,379 MB | **-70.3%** |
+| wall, whole resync | 1,345 s | 1,283 s | **-4.6%** |
+| wall, 40-block heavy window | 219 s | 108 s | -51% |
+| wall, 7,959 dense small-tx blocks | 1,051 s | 1,099 s | +4.6% |
+| wall, 10,000 near-empty blocks | 73 s | 72 s | 0% |
+| bytes written | 9,412 MB | 9,419 MB | unchanged |
 | end hash = .22 | yes | yes | same |
 
-Memory does not grow over the run: after the window the combined build stays at 0.8-1.1 GB. The combined build with DEFAULT settings (no `--block-sync-size`; base wedges there, see E001) also synced all 18,000 blocks: peak 1,588 MB, wall +5.9%.
+- Memory does not grow over the run: after the window adapt stays at 1.3-1.6 GB.
+- With DEFAULT sync settings (no `--block-sync-size`), adapt also synced all 18,000 blocks: peak 1,663 MB, 1,305 s. Base wedges there (E001).
+- On a window of 2-input txs only (E012, 3 rounds), adapt uses 822 MB vs base's 1,167 MB (-30%), and is 4.0% slower (157 vs 151 s).
 
 The owner's target was 40%. The minimum-cgroup number is the "real RAM a node needs" metric, because it counts heap, page cache, and everything else charged to the process.
+
+## How real is this?
+**Solid:**
+- It reproduces across sessions and builds:
+  - E008: -67%
+  - E010: -73%
+  - E012/E013: -68% / -70%
+- Every A/B has tight, disjoint ranges.
+- Two independent metrics agree: peak anon memory, and the minimum cgroup limit (which includes page cache, and whose failures are OOM kills, not slowdowns).
+- The guardrails held in every run. The mechanisms (below) are understood and confirmed by heaptrack and perf, not just observed.
+
+**Limits:**
+- **Worst-case workload.** 82% of the window's txs have 128 inputs. On 2-input blocks the saving is ~30%. The worst case does set what a node must provision, since anyone can fill blocks with max-input txs.
+- **One machine with 24 threads.** The stock node's peak scales with thread count (E003: 1.2 GB at 1 thread, 5.4 GB at 24), so part of the win is the 24-thread baseline. **E014 (running) measures base vs adapt at 4, 2 and 1 threads.**
+- **About two thirds of the win is unaudited cryptographic code** (E007, ~1,000 lines in monero-oxide). It was reviewed and tested by me, not by cryptographers. Without it, the ~15-line cap + trim changes give about -45%, and the zero-code `--max-concurrency 12` gives -40%.
+- `malloc_trim` is glibc-only. FCMP++ itself is still a beta (stressnet), not mainnet.
 
 ## Setup
 - **Machine:** hydrogen, a Ryzen 9 3900X (12 cores / 24 threads) with 16 GB of RAM.
 - **Baseline:** seraphis-migration/monero v0.19.0.0-beta.3.1 (d80596ad1). This is the FCMP++ beta that stressnet runs.
-- **Workload:** stressnet (testnet nettype), synced from the owner's node at 192.168.1.22. The A/B window is 3,105,401 → 3,105,441: 40 blocks, 1,044 txs, 109,408 inputs. 851 of those txs have 128 inputs.
+- **Workload:** stressnet (testnet nettype), synced from the owner's node at 192.168.1.22.
+  - Heavy A/B window: 3,105,401 → 3,105,441, 40 blocks, 1,044 txs, 109,408 inputs (851 txs have 128 inputs).
+  - Small-tx window: 3,106,400 → 3,107,400, 28,891 txs, mean 2.01 inputs.
 - **Method:**
-  - Each run first rewinds the DB and verifies the starting hash.
-  - Runs alternate ABAB/BABA, one change per experiment.
-  - Memory is sampled from /proc every 2 s.
+  - Each run restores or rewinds the DB and verifies the starting hash.
+  - Runs alternate ABAB/BABA. Governor pinned to performance. Memory is sampled from /proc every 2 s.
   - Guardrails are listed in README.md.
 - **Notes and evidence:** every experiment (including the failures) has notes under `experiments/`, data under `evidence/`, and an entry in JOURNAL.md.
 
@@ -47,37 +77,52 @@ The owner's target was 40%. The minimum-cgroup number is the "real RAM a node ne
 1. **FCMP++ proof verification is ~87% of the peak** (E002b, heaptrack).
    - Each verification builds the whole arithmetic circuit (millions of `LinComb` constraints) and stores it before folding.
    - One FCMP++ proof covers all inputs of a tx, so a 128-input proof stores ~250 MB.
-   - Verification runs on up to 24 threads at once. The peak scales almost linearly with the thread count (E003: 1/4/12/24 threads → 1.23/2.03/3.30/5.40 GB).
-2. **Fix 1 (E004c): cap FCMP++ batch verification at the physical core count.** A one-line change in `rct::batchVerifyFcmpPpProofs`.
-   - On its own it barely moves RSS (-1.3%), because of item 3 below.
-   - It does make sync 9% faster, since SMT siblings competing for the same core did not help this math.
-3. **glibc keeps freed memory per thread arena.** Without a trim, RSS grows to (threads that ever verified) × (per-thread high-water mark) and stays there. That is why an idle node still holds ~4.8 GB after sync.
+   - Verification runs on up to 24 threads at once, and the peak scales almost linearly with the thread count (E003).
+2. **glibc keeps freed memory per thread arena.** Without a trim, RSS grows to (threads that ever verified) × (per-thread high-water mark) and stays there. That is why an idle stock node holds ~4.8 GB after sync.
    - Capping the arena count does not help (E004d: -8%), because two threads sharing an arena both peak inside it.
-   - **Fix 2 (E004e): `malloc_trim(0)` once per block, after the FCMP++ batch verify** (glibc builds only).
-   - E004c + E004e together give -44.6% peak and -88% idle, 5.5% faster.
-4. **The circuit does not need to be stored at all.** The verifier only uses the constraints as sums weighted by powers of the challenge z. The circuit is a deterministic function of challenges that come *before* z.
+   - **Fix 1 + 2 (E004c + E004e):** cap FCMP++ batches at physical cores, and `malloc_trim(0)` after each batch verify. Together: -44.6% peak, -88% idle (~15 lines in `rct::batchVerifyFcmpPpProofs`).
+3. **The circuit does not need to be stored at all.** The verifier only uses the constraints as sums weighted by powers of the challenge z, and the circuit is a deterministic function of challenges that come *before* z.
    - **Fix 3 (E007): streaming verifier.**
      - Build the circuit once on the real transcript, discarding the constraints, to reach z.
      - Process both proofs' transcripts.
      - Rebuild the circuit on a transcript clone, folding each constraint into an accumulator as it is produced.
      - Before applying, check that both builds agree (mul and constraint counts, transcript state).
-     - The proof format is unchanged, and the old stored path is kept for tests.
-   - Change size: about 1,000 lines in monero-oxide (generalized-bulletproofs, circuit-abstraction, fcmps), plus 1,182 lines of new tests, including equivalence with the old verifier (bit-identical batch-verifier state) and tampered-proof rejection per proof region.
+     - The proof format is unchanged; the old stored path is kept for tests.
+   - About 1,000 lines in monero-oxide (generalized-bulletproofs, circuit-abstraction, fcmps), plus 1,182 lines of new tests.
    - Result: -59% peak on its own.
-   - **It is also 2x faster.** The old verify folds each vector commitment's weights in a separate pass over all constraints. That costs O(commitments × constraints), roughly quadratic in the input count, and was **~52% of all sync CPU** (E006). The combined build's profile no longer contains that function.
+   - **It is also 2x faster on heavy blocks.** The old verify folds each vector commitment's weights in a separate pass over all constraints. That is O(commitments × constraints), roughly quadratic in the input count, and was **~52% of all sync CPU** (E006). It is gone from the new build's profile.
+4. **Fixes 1 and 2 had to become adaptive (E010 → E011 → E012).**
+   - The first combined build (E008) was 2x faster on heavy blocks, but 15% slower on small-tx blocks, which made the 18,000-block resync 3.6% slower.
+   - E011 attributed that cost, one change per arm, on 2-input txs:
+     - cap +7.3% (SMT siblings do help small proofs);
+     - per-block trim +6.0% (~9 ms per block);
+     - streaming verifier +2.7%.
+   - adapt (E012) applies the cap and the per-call trim only when the largest proof has ≥ 16 inputs, and otherwise trims at most every 10 s.
+   - Result: small-tx blocks are +4% instead of +15%, the heavy window is unchanged, and the long resync is 4.6% faster than base.
 
-**Combined (E008 = Fix 1 + 2 + 3, plus the E001 sync fix below): -67% peak, -80% idle, -67.5% minimum cgroup memory, 47% faster on the heavy window.** Over the 18,000-block resync (E010): -73% peak, -75% idle, but +3.6% wall (small-tx blocks +15%).
+### Build history
+| build | what | heavy-window peak | heavy wall | small-tx wall | status |
+|---|---|---|---|---|---|
+| base | v0.19.0.0-beta.3.1 | 5.3-5.6 GB | 220 s | 150 s | reference |
+| E004e | cap + trim | 2.9 GB (-45%) | -5% | +13% | superseded |
+| E007 | streaming verifier | 2.3 GB (-59%) | -50% | +3% | component |
+| E008 combo | E004c + E004e + E007 + E001 | 1.75-1.86 GB (-67%) | -47% | +15% | superseded |
+| **E012 adapt** | combo with an adaptive cap and trim | **1.64-1.78 GB (-68%)** | **-50%** | **+4%** | **recommended** |
 
 ## Guardrails: how we know nothing was weakened
-- Every run ends on the same block hash as the reference node (E004-E010).
-- **Monerod-level negative test (scripts/negtest.sh):**
+- Every run ends on the same block hash as the reference node (E004-E013).
+- **Monerod-level negative test (scripts/negtest.sh)**, run on base, combo and adapt:
   - Txs that are not yet in our chain (128-, 8- and 2-input) were submitted to our own offline node.
-  - First 8 copies of each with one bit flipped in the FCMP++ proof, then the original.
-  - Baseline and combined build both rejected 24/24 tampered copies at "Failed to verify input FCMP++ signatures", and accepted all 3 originals.
+  - First came 8 copies of each with one bit flipped in the FCMP++ proof, then the original.
+  - Every build rejected 24/24 tampered copies at "Failed to verify input FCMP++ signatures" and accepted all 3 originals.
+- **Differential negative test (E015, running):**
+  - Up to 10 real txs per height, at two heights, with mixed input counts.
+  - 32 bit flips spread over each proof, plus proof swaps between txs (a valid proof for another statement), then the originals.
+  - The base binary is the oracle; adapt must give the identical (status, flags) for every case.
 - Crate-level tests (E007):
   - All existing monero-oxide tests pass, including byte-malleation.
-  - New tests: streaming vs stored verification on valid and tampered proofs, accumulator vs stored fold, a Discard-mode circuit cannot yield a statement, an un-applied verification fails closed.
-- Disk writes are unchanged, and swap is off. Under the minimum cgroup limit both builds keep their unconstrained wall time; every failure below the limit was an OOM kill (kernel log), not slow thrashing.
+  - New tests: streaming vs stored verification on valid and tampered proofs; accumulator vs stored fold (bit-identical batch-verifier state); a Discard-mode circuit cannot yield a statement; an un-applied verification fails closed.
+- Disk writes are unchanged, and swap is off. Under the minimum cgroup limit the builds keep their unconstrained wall time; every failure below it was an OOM kill (kernel log), not slow thrashing.
 
 ## Things that did not work (kept for the record)
 | attempt | result | why |
@@ -85,39 +130,39 @@ The owner's target was 40%. The minimum-cgroup number is the "real RAM a node ne
 | E005: `shrink_to_fit` on stored constraint vectors | no effect (5,350 vs 5,380 MB) | the working set is the number of constraints, not Vec slack |
 | E004c alone (batch cap) | RSS -1.3% (wall -9%) | arena retention: freed working sets stay in every thread's arena |
 | E004d: cap glibc arenas at physical cores | -8% | two concurrently verifying threads can share an arena, and both peak in it |
+| E008 combo as the final build | +15% on small-tx blocks | non-adaptive cap and per-block trim (E011); fixed by adapt |
 
 ## Zero-code option available today
 `--max-concurrency <physical cores>` (E004a) gives **-39.6% peak and 11% faster sync** on SMT machines with the stock binary. It also shrinks the other thread pools.
 
 ## Side findings
-- **E001: sync wedge (bug, with a tested fix).**
-  - After ≥100 empty blocks, the adaptive `get_block_sync_size` asks for 100 blocks. On stressnet those serialize to ~134 MB, over the 100 MB levin packet limit, and the node retries forever.
-  - Repro: a pop + resync.
-  - Fix: cap the batch by `0.9 × levin limit / block weight limit`, which is 4 blocks on stressnet.
-  - Write-up: reports/E001-sync-wedge-ISSUE.md, ready for the owner to file upstream.
+- **E001: sync wedge (bug, with a tested fix for stressnet).**
+  - After ≥ 100 empty blocks, the adaptive `get_block_sync_size` asks for 100 blocks. On stressnet those serialize to ~134 MB, over the 100 MB levin packet limit, and the node retries forever.
+  - Write-up: reports/E001-sync-wedge-ISSUE.md.
+  - The owner's analysis (72a62f5) shows:
+    - Today's mainnet rules permit the wedge only at `--batch-max-weight` above ~33.
+    - The agreed post-FCMP++ rules would permit it at the default.
+    - The proposed cap is too loose there, because the limit can double after 51 blocks. A window-aware cap is simulated in that write-up.
+    - On stressnet both caps give 4 blocks.
 - **O(c·q) verify fold:** ~52% of sync CPU on large-input proofs. It is fixable on its own, without the memory change, e.g. by bucketing constraints by commitment.
+- **SMT and proof size:** SMT siblings slow 128-input proof verification (the cap is 9% faster, E004c) but speed up 2-input proofs (the cap is 7% slower, E011). A size-aware thread policy is the right default.
 - **`pop_blocks` defaults to keep_txs = true.** Popping heavy blocks then re-pools every tx (85k), and the pool prune is super-linear, so the pop stalls for a long time.
 - The RPC server stops responding while 24 threads verify heavily.
-- The stressnet window is a worst case: max-input txs. With mainnet-like 1-2-input txs the per-proof circuit is a few MB, so the absolute savings are smaller. The worst case still sets the RAM a node must have, since anyone can fill blocks with max-input txs.
 
 ## Caveats
-- One machine (12c/24t). The headline is one 40-block window with 3 A/B rounds. The 18,000-block resync (E010, 1 run per arm) confirms the memory result over a long, mixed workload.
-- `malloc_trim` is glibc-only. musl, macOS and Windows allocators are untested.
-- E007 is security-critical cryptographic code. It was reviewed by me and heavily tested, but **not audited**. Upstream use needs review by the FCMP++ authors.
-- **Small-tx slowdown (measured in E010):** the combined build is ~15% slower on blocks of small txs (1,071 → 1,230 s over 7,959 dense blocks). Suspects: E007's double circuit build (the old fold is not quadratic at low input counts), E004c's thread cap, or E004e's per-block trim. E011 (one change per arm, 1,000 blocks of 2-input txs, 3 rounds) attributes it: the cap +7.3% (SMT siblings help small proofs), the trim +6.0% (~9 ms per block), the streaming verifier +2.7%. E012 (running) applies the cap and the trim only after heavy calls.
-- Post-sync idle memory of the combined build varies run to run (673-1,181 MB), because a trim cannot release fragmented arenas completely.
+- One machine (12c/24t). The headline is one 40-block window with 3 A/B rounds; the 18,000-block resyncs (E010, E013) are 1 run per arm.
+- adapt's threshold of 16 inputs and its trim interval of 10 s are judgment calls; neither was swept. adapt holds ~0.1-0.4 GB more than the non-adaptive combo during light-block sync and at idle, because it trims less often.
+- Post-sync idle memory varies run to run by a few hundred MB: a trim cannot release fragmented arenas completely.
+- E007 is security-critical cryptographic code and **not audited**. Upstream use needs review by the FCMP++ authors.
 
 ## Upstreamability (if the owner wants it)
 | change | size | notes |
 |---|---|---|
-| E001 sync-size cap | ~10 lines | ready (reports/E001-sync-wedge-ISSUE.md) |
-| E004c batch cap at physical cores | ~5 lines | simple; 9% faster on its own |
-| E004e `malloc_trim` after FCMP++ batch verify | ~5 lines | glibc-guarded |
+| E001 sync-size cap | ~10 lines | stressnet-tested. For post-FCMP++ mainnet use the owner's window-aware cap (simulated, not built) |
+| adaptive batch cap + `malloc_trim` (E012) | ~25 lines in rctSigs.cpp | glibc-guarded trim; independent of E007 |
 | E007 streaming verifier | ~1,000 lines + tests (monero-oxide) | biggest win; needs crypto review; alternatively, propose only the O(c·q) fold fix for CPU |
 
-## Results still pending
-- E010 long resync: DONE (above).
-- E011 small-tx attribution: DONE (cap +7%, trim +6%, streaming verifier +3%).
-- E012 adaptive cap + trim: DONE (small-tx +4.0% vs base instead of +15%; heavy window = combo).
-- E013 validation of adapt (A/B vs base, negtest, min_mem, long resync): running.
+## Still running / next
+- E015 differential negative test (safety).
+- E014 thread-count sweep (how the win scales on 1-4 thread machines).
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth); W002 measurement next.

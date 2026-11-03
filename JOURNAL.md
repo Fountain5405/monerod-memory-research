@@ -312,3 +312,17 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
   - My proposed cap (0.9 × 100 MB / limit) ignores the doubling of the limit after 51 blocks: 116 MB worst case at v17. They propose a window-aware cap with a worst case ≤ 90 MB in their simulation.
   - On stressnet both caps give 4, so E008-E013 are unaffected.
 - Merged with --no-ff in the mirror (no rebase, no force-push), pushed to GitHub, and fast-forwarded hydrogen via a temporary owner-sync branch. All three are at bc35b9b. The sync procedure is now in STATE.
+
+## 2026-11-03 11:29-11:32 E013 DONE: adapt is the recommended build
+- (d) Long resync, 1 run each, all hashes match .22:
+  - base_bss5 1,345 s / 5,613 MB / idle 4,642
+  - **adapt_bss5 1,283 s (-4.6%) / 1,657 MB (-70.5%) / idle 1,379**
+  - adapt_default 1,305 s / 1,663 MB
+- Segments: window 219 → 108 s; dense small-tx 1,051 → 1,099 s (+4.6%; the combo was +14.8%); tail 73 → 72 s.
+- No memory growth: adapt sits at 1.3-1.6 GB after the window, ~0.3-0.4 GB above the combo (it trims less often).
+- With (a)-(c), adapt passes everything:
+  - -68.2% heavy peak, -50% wall (3 rounds)
+  - negtest PASS
+  - min_mem 1,866 MB
+- Written up in experiments/E013-validate-adapt (F25). reports/SUMMARY.md is rewritten around adapt (headline table, long run, a 'How real is this?' section, build history, the owner's E001 correction).
+- Owner pinged. E015 (the differential negtest) started at 11:29:47.

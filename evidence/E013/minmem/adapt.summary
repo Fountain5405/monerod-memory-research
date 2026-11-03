@@ -1,0 +1,11 @@
+min_mem adapt start 2026-11-03T10:00:03+00:00 bin=/home/optimizer/work/monero-fcmp-adapt/build/beta31-adapt/bin/monerod ref=109 factor=1.10 lo=750 hi=4000 tol=125 extra='--block-sync-size 5'
+d6f93d0664604726aeafbaf99982f181adc5bb8f31480f4902660bb686fa3ae8  /home/optimizer/work/monero-fcmp-adapt/build/beta31-adapt/bin/monerod
+[4000 MB] PASS wall=116s h=3105441 hash=yes cgroup_peak=1673MB oom_kills=0
+[750 MB] FAIL wall=4s h=3105421 hash=yes cgroup_peak=368MB oom_kills=1
+[2375 MB] PASS wall=105s h=3105441 hash=yes cgroup_peak=1912MB oom_kills=0
+[1562 MB] FAIL wall=51s h=3105431 hash=yes cgroup_peak=1464MB oom_kills=1
+[1968 MB] PASS wall=108s h=3105441 hash=yes cgroup_peak=1846MB oom_kills=0
+[1765 MB] FAIL wall=48s h=3105431 hash=yes cgroup_peak=1609MB oom_kills=1
+[1866 MB] PASS wall=108s h=3105441 hash=yes cgroup_peak=1856MB oom_kills=0
+RESULT: minimum passing MemoryMax for adapt = 1866 MB (largest failing = 1765 MB, tol 125 MB)
+MINMEM_COMPLETE

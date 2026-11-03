@@ -1,0 +1,5 @@
+segment                      base_bss5 adapt_default    adapt_bss5
+first..3105441                   219 s         111 s         108 s
+3105441..3113400                1051 s        1111 s        1099 s
+3113400..3123400                  73 s          80 s          72 s
+total (first..last b)           1342 s        1303 s        1279 s
