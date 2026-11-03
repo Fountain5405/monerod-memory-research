@@ -1,0 +1,2685 @@
+From c215a805a033d1202db10306a5c997e7291bfe46 Mon Sep 17 00:00:00 2001
+From: optimizer <optimizer@hydrogen>
+Date: Tue, 3 Nov 2026 00:17:02 +0000
+Subject: [PATCH] E007: verify FCMPs with streaming constraint accumulation
+
+`Fcmp::verify` stored every constraint of both circuits until the GBP
+verifier folded them with each proof's `z` challenge. The verifier only
+uses the constraints as z-power-weighted sums, so this folds each
+constraint as it's constrained and drops it.
+
+generalized-bulletproofs:
+- `VerifierTranscript: Clone`.
+- `ConstraintAccumulator` folds constraints incrementally (z**1 for the
+  first constraint), performing the checks `ArithmeticCircuitStatement::new`
+  performs, yielding `FoldedConstraints`. Per-commitment weights are
+  truncated to their highest referenced index, as `prove` truncates them.
+- `ArithmeticCircuitStatement::verify` is split into
+  `FoldedStatement::verify_transcript` (every transcript operation and every
+  BatchVerifier update not dependent on the constraints) and
+  `PendingVerification::apply` (the remainder). `verify` remains as a
+  wrapper over these. A `PendingVerification` dropped without being applied
+  corrupts its BatchVerifier, failing closed.
+- `ArithmeticCircuitStatement::fold_constraints` folds stored constraints
+  exactly as `verify` historically did.
+
+generalized-bulletproofs-circuit-abstraction:
+- `Circuit` stores, discards, or accumulates its constraints, and counts
+  them (`constraints_pushed`). Only a storing circuit may produce a
+  statement (`CircuitError::ConstraintsNotStored` otherwise).
+
+full-chain-membership-proofs:
+- `Fcmp::verify` builds the circuits twice: once on the transcript,
+  discarding constraints, then (after both proofs' transcripts are
+  processed, yielding `z`) on a clone of the transcript from before the
+  build, accumulating constraints. The builds' multiplication and
+  constraint counts and transcript states must match. The real transcript
+  sees the same operations in the same order, so the proof format is
+  unchanged.
+- The prior flow is kept as `#[cfg(test)] Fcmp::verify_stored`.
+
+Tests compare the split verifier against a verbatim copy of the original
+(BatchVerifier state equality with a deterministic RNG), the accumulator
+against the stored folding and a naive folding, streaming against stored
+verification of valid and tampered FCMPs, and the replay/mode guards.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ crypto/fcmps/circuit-abstraction/src/lib.rs   | 106 ++-
+ crypto/fcmps/src/circuit.rs                   |  24 +-
+ crypto/fcmps/src/lib.rs                       | 360 +++++++--
+ crypto/fcmps/src/tests.rs                     | 466 ++++++++++++
+ .../src/arithmetic_circuit_proof.rs           | 644 ++++++++++++++--
+ .../src/arithmetic_circuit_proof/tests.rs     | 716 ++++++++++++++++++
+ .../src/transcript.rs                         |   4 +
+ 7 files changed, 2186 insertions(+), 134 deletions(-)
+ create mode 100644 crypto/generalized-bulletproofs/src/arithmetic_circuit_proof/tests.rs
+
+diff --git a/crypto/fcmps/circuit-abstraction/src/lib.rs b/crypto/fcmps/circuit-abstraction/src/lib.rs
+index 90c9a22..6525a08 100644
+--- a/crypto/fcmps/circuit-abstraction/src/lib.rs
++++ b/crypto/fcmps/circuit-abstraction/src/lib.rs
+@@ -17,7 +17,8 @@ use generalized_bulletproofs::{
+   PedersenCommitment, PedersenVectorCommitment, ProofGenerators,
+   transcript::{Transcript as ProverTranscript, VerifierTranscript, Commitments},
+   arithmetic_circuit_proof::{
+-    AcStatementError, ArithmeticCircuitStatement, ArithmeticCircuitWitness,
++    AcStatementError, ArithmeticCircuitStatement, ArithmeticCircuitWitness, ConstraintAccumulator,
++    FoldedConstraints,
+   },
+ };
+ pub use generalized_bulletproofs::arithmetic_circuit_proof::{Variable, LinComb};
+@@ -73,12 +74,46 @@ struct ProverData<C: Ciphersuite> {
+   V: Vec<PedersenCommitment<C>>,
+ }
+ 
++/// An error from working with a circuit.
++#[derive(Clone, Copy, PartialEq, Eq, Debug)]
++pub enum CircuitError {
++  /// A statement was requested from a circuit which doesn't store its constraints.
++  ConstraintsNotStored,
++  /// Folded constraints were requested from a circuit which doesn't accumulate its constraints.
++  ConstraintsNotAccumulated,
++  /// A propagated arithmetic circuit statement error.
++  AcStatementError(AcStatementError),
++}
++impl From<AcStatementError> for CircuitError {
++  fn from(err: AcStatementError) -> Self {
++    CircuitError::AcStatementError(err)
++  }
++}
++
++/// What a circuit does with its constraints.
++#[derive(Clone, PartialEq, Eq, Debug)]
++enum Constraints<C: Ciphersuite> {
++  /// Store the constraints, so a statement may be produced from the circuit.
++  Store(Vec<LinComb<C::F>>),
++  /// Discard the constraints, solely counting them.
++  Discard,
++  /// Fold the constraints into an accumulator as they're constrained.
++  Accumulate(ConstraintAccumulator<C>),
++}
++
+ /// A struct representing a circuit.
++///
++/// Only a circuit which stores its constraints (as created by `Circuit::prove` or
++/// `Circuit::verify`) can produce a statement. A circuit which discards or accumulates its
++/// constraints will error if a statement is requested from it, as a statement without the
++/// circuit's constraints would be trivially satisfiable.
+ #[derive(Clone, PartialEq, Eq, Debug)]
+ pub struct Circuit<C: Ciphersuite> {
+   muls: usize,
+-  // A series of linear combinations which must evaluate to 0.
+-  constraints: Vec<LinComb<C::F>>,
++  // The amount of linear combinations constrained, regardless of what was done with them
++  constraints_pushed: usize,
++  // A series of linear combinations which must evaluate to 0, or what's retained of them.
++  constraints: Constraints<C>,
+   prover: Option<ProverData<C>>,
+ }
+ 
+@@ -88,6 +123,13 @@ impl<C: Ciphersuite> Circuit<C> {
+     self.muls
+   }
+ 
++  /// Returns the amount of linear combinations constrained within this circuit.
++  ///
++  /// This is counted regardless of if the constraints were stored, discarded, or accumulated.
++  pub fn constraints_pushed(&self) -> usize {
++    self.constraints_pushed
++  }
++
+   /// Create an instance to prove satisfaction of a circuit with.
+   #[allow(clippy::type_complexity)]
+   pub fn prove(
+@@ -96,14 +138,37 @@ impl<C: Ciphersuite> Circuit<C> {
+   ) -> Self {
+     Self {
+       muls: 0,
+-      constraints: vec![],
++      constraints_pushed: 0,
++      constraints: Constraints::Store(vec![]),
+       prover: Some(ProverData { aL: vec![], aR: vec![], C: vector_commitments, V: commitments }),
+     }
+   }
+ 
+   /// Create an instance to verify a proof with.
+   pub fn verify() -> Self {
+-    Self { muls: 0, constraints: vec![], prover: None }
++    Self { muls: 0, constraints_pushed: 0, constraints: Constraints::Store(vec![]), prover: None }
++  }
++
++  /// Create an instance to verify a proof with, which discards its constraints.
++  ///
++  /// This circuit can not produce a statement. It's solely useful for performing the same
++  /// operations (such as on a transcript) as constructing the circuit does.
++  pub fn verify_discarding() -> Self {
++    Self { muls: 0, constraints_pushed: 0, constraints: Constraints::Discard, prover: None }
++  }
++
++  /// Create an instance to verify a proof with, which folds its constraints into the passed
++  /// accumulator as they're constrained.
++  ///
++  /// This circuit can not produce a statement. Its folded constraints are obtained via
++  /// `Circuit::finish_accumulate`.
++  pub fn verify_accumulating(accumulator: ConstraintAccumulator<C>) -> Self {
++    Self {
++      muls: 0,
++      constraints_pushed: 0,
++      constraints: Constraints::Accumulate(accumulator),
++      prover: None,
++    }
+   }
+ 
+   /// Evaluate a linear combination.
+@@ -175,7 +240,25 @@ impl<C: Ciphersuite> Circuit<C> {
+   ///
+   /// May panic if the linear combination references non-existent terms.
+   pub fn constrain_equal_to_zero(&mut self, lincomb: LinComb<C::F>) {
+-    self.constraints.push(lincomb);
++    self.constraints_pushed += 1;
++    match &mut self.constraints {
++      Constraints::Store(constraints) => constraints.push(lincomb),
++      Constraints::Discard => {}
++      Constraints::Accumulate(accumulator) => {
++        // Upon an error, the accumulator retains it and `finish_accumulate` will return it
++        let _: Result<(), AcStatementError> = accumulator.push(lincomb);
++      }
++    }
++  }
++
++  /// Obtain the folded constraints of a circuit which accumulates its constraints.
++  ///
++  /// This performs the checks `ArithmeticCircuitStatement::new` does on the constraints.
++  pub fn finish_accumulate(self) -> Result<FoldedConstraints<C>, CircuitError> {
++    match self.constraints {
++      Constraints::Accumulate(accumulator) => Ok(accumulator.finish()?),
++      Constraints::Store(_) | Constraints::Discard => Err(CircuitError::ConstraintsNotAccumulated),
++    }
+   }
+ }
+ 
+@@ -187,6 +270,8 @@ where
+   ///
+   /// If configured as the prover, the witness to use is also returned if one was successfully
+   /// constructed.
++  ///
++  /// This errors if the circuit doesn't store its constraints.
+   #[allow(clippy::type_complexity)]
+   pub fn statement(
+     self,
+@@ -194,9 +279,14 @@ where
+     commitments: Commitments<C>,
+   ) -> Result<
+     (ArithmeticCircuitStatement<'_, C>, Option<ArithmeticCircuitWitness<C>>),
+-    AcStatementError,
++    CircuitError,
+   > {
+-    let statement = ArithmeticCircuitStatement::new(generators, self.constraints, commitments)?;
++    let constraints = match self.constraints {
++      Constraints::Store(constraints) => constraints,
++      // A statement without the circuit's constraints would be trivially satisfiable
++      Constraints::Discard | Constraints::Accumulate(_) => Err(CircuitError::ConstraintsNotStored)?,
++    };
++    let statement = ArithmeticCircuitStatement::new(generators, constraints, commitments)?;
+ 
+     let witness = self.prover.and_then(|mut prover| {
+       // We can't deconstruct the witness as it implements Drop (per ZeroizeOnDrop)
+diff --git a/crypto/fcmps/src/circuit.rs b/crypto/fcmps/src/circuit.rs
+index fed2bc2..9d9e2a7 100644
+--- a/crypto/fcmps/src/circuit.rs
++++ b/crypto/fcmps/src/circuit.rs
+@@ -6,13 +6,13 @@ use generalized_bulletproofs::{
+   PedersenVectorCommitment, ProofGenerators,
+   transcript::Commitments,
+   arithmetic_circuit_proof::{
+-    AcStatementError, ArithmeticCircuitStatement, ArithmeticCircuitWitness,
++    ArithmeticCircuitStatement, ArithmeticCircuitWitness, ConstraintAccumulator, FoldedConstraints,
+   },
+ };
+ pub(crate) use generalized_bulletproofs::arithmetic_circuit_proof::{Variable, LinComb};
+ 
+ use generalized_bulletproofs_circuit_abstraction::Circuit as UnderlyingCircuit;
+-pub(crate) use generalized_bulletproofs_circuit_abstraction::Transcript;
++pub(crate) use generalized_bulletproofs_circuit_abstraction::{Transcript, CircuitError};
+ 
+ use crate::*;
+ 
+@@ -48,15 +48,33 @@ impl<C: Ciphersuite> Circuit<C> {
+     self.0.muls()
+   }
+ 
++  pub(crate) fn constraints_pushed(&self) -> usize {
++    self.0.constraints_pushed()
++  }
++
+   #[allow(clippy::type_complexity)]
+   pub(crate) fn prove(commitments: Vec<PedersenVectorCommitment<C>>) -> Self {
+     Self(UnderlyingCircuit::prove(commitments, vec![]))
+   }
+ 
++  // Only `Fcmp::verify_stored` stores the verifier's constraints
++  #[cfg(test)]
+   pub(crate) fn verify() -> Self {
+     Self(UnderlyingCircuit::verify())
+   }
+ 
++  pub(crate) fn verify_discarding() -> Self {
++    Self(UnderlyingCircuit::verify_discarding())
++  }
++
++  pub(crate) fn verify_accumulating(accumulator: ConstraintAccumulator<C>) -> Self {
++    Self(UnderlyingCircuit::verify_accumulating(accumulator))
++  }
++
++  pub(crate) fn finish_accumulate(self) -> Result<FoldedConstraints<C>, CircuitError> {
++    self.0.finish_accumulate()
++  }
++
+   pub(crate) fn eval(&self, lincomb: &LinComb<C::F>) -> Option<C::F> {
+     self.0.eval(lincomb)
+   }
+@@ -192,7 +210,7 @@ where
+     commitments: Commitments<C>,
+   ) -> Result<
+     (ArithmeticCircuitStatement<'_, C>, Option<ArithmeticCircuitWitness<C>>),
+-    AcStatementError,
++    CircuitError,
+   > {
+     self.0.statement(generators, commitments)
+   }
+diff --git a/crypto/fcmps/src/lib.rs b/crypto/fcmps/src/lib.rs
+index a73cdc9..28d8b31 100644
+--- a/crypto/fcmps/src/lib.rs
++++ b/crypto/fcmps/src/lib.rs
+@@ -26,8 +26,8 @@ use ciphersuite::{
+ use ec_divisors::DivisorCurve;
+ use generalized_bulletproofs::{
+   BatchVerifier, PedersenVectorCommitment,
+-  transcript::{Transcript as ProverTranscript, VerifierTranscript},
+-  arithmetic_circuit_proof::{AcStatementError, AcProveError, AcVerifyError},
++  transcript::{Transcript as ProverTranscript, VerifierTranscript, Commitments},
++  arithmetic_circuit_proof::{AcStatementError, AcProveError, AcVerifyError, FoldedStatement},
+ };
+ 
+ mod gadgets;
+@@ -169,6 +169,11 @@ pub enum FcmpError {
+   AcProveError(AcProveError),
+   /// A propagated arithmetic circuit verifier error.
+   AcVerifyError(AcVerifyError),
++  /// A propagated circuit error.
++  CircuitError(CircuitError),
++  /// The replayed construction of the circuits, performed while verifying, was inconsistent with
++  /// the original construction.
++  InconsistentCircuitReplay,
+ }
+ impl From<io::Error> for FcmpError {
+   fn from(err: io::Error) -> Self {
+@@ -190,6 +195,36 @@ impl From<AcVerifyError> for FcmpError {
+     FcmpError::AcVerifyError(err)
+   }
+ }
++impl From<CircuitError> for FcmpError {
++  fn from(err: CircuitError) -> Self {
++    match err {
++      CircuitError::AcStatementError(err) => FcmpError::AcStatementError(err),
++      CircuitError::ConstraintsNotStored | CircuitError::ConstraintsNotAccumulated => {
++        FcmpError::CircuitError(err)
++      }
++    }
++  }
++}
++
++/// The layout of the circuits a verifier builds, as determined by the amount of inputs, the amount
++/// of layers, and the curve of the tree root.
++struct VerifierLayout<C: FcmpCurves>
++where
++  <C::OC as Ciphersuite>::G: DivisorCurve<FieldElement = <C::C1 as Ciphersuite>::F>,
++  <C::C1 as Ciphersuite>::G: DivisorCurve<FieldElement = <C::C2 as Ciphersuite>::F>,
++  <C::C2 as Ciphersuite>::G: DivisorCurve<FieldElement = <C::C1 as Ciphersuite>::F>,
++{
++  c1_padded_pow_2: usize,
++  c2_padded_pow_2: usize,
++  c1_commitments: usize,
++  c2_commitments: usize,
++  root: Vec<Variable>,
++  c1_branches: Vec<Vec<Variable>>,
++  c2_branches: Vec<Vec<Variable>>,
++  input_openings: Vec<TranscriptedInput<C>>,
++  commitment_blind_claims_1: Vec<PointWithDlog<C::C2Parameters>>,
++  commitment_blind_claims_2: Vec<PointWithDlog<C::C1Parameters>>,
++}
+ 
+ /// The full-chain membership proof.
+ #[derive(Clone, Debug)]
+@@ -744,54 +779,34 @@ where
+     Ok(res)
+   }
+ 
+-  /// Verify an FCMP.
+-  ///
+-  /// This MAY panic if called with invalid arguments, such as a tree root which doesn't correspond
+-  /// to the layer count.
+-  ///
+-  /// The caller must pass the correct amount of layers for this tree root. If the prover specified
+-  /// the amount of layers, the specified amount of layers must be checked to be equal to the
+-  /// actual amount of layers.
++  /// The layout of the verifier's circuits.
+   ///
+-  /// This only queues the FCMP for batch verification. The BatchVerifiers MUST also be verified.
+-  ///
+-  /// If this function returns an error, the batch verifiers are corrupted and MUST be discarded.
+-  // This may be collision resistant regardless of layer count thanks to the expected usage of a
+-  // distinct curve for the leaves, yet the layer count is cheap to check and avoids the question.
+-  #[allow(clippy::too_many_arguments)]
+-  pub fn verify<R: RngCore + CryptoRng>(
+-    &self,
+-    rng: &mut R,
+-    verifier_1: &mut BatchVerifier<C::C1>,
+-    verifier_2: &mut BatchVerifier<C::C2>,
+-    params: &FcmpParams<C>,
++  /// This is a pure function of the curve of the tree root, the amount of layers, and the amount
++  /// of inputs. This MAY panic if `layers == 0` or `inputs == 0`.
++  fn verifier_layout(
+     tree: TreeRoot<C::C1, C::C2>,
+     layers: usize,
+-    inputs: &[Input<<C::C1 as Ciphersuite>::F>],
+-  ) -> Result<(), FcmpError> {
+-    if (layers == 0) || inputs.is_empty() {
+-      Err(FcmpError::EmptyProof)?;
+-    }
+-
+-    let (c1_padded_pow_2, c2_padded_pow_2) = Self::ipa_rows(inputs.len(), layers);
++    inputs: usize,
++  ) -> VerifierLayout<C> {
++    let (c1_padded_pow_2, c2_padded_pow_2) = Self::ipa_rows(inputs, layers);
+ 
+     let mut c1_tape = VectorCommitmentTape::<<C::C1 as Ciphersuite>::F> {
+       commitment_len: c1_padded_pow_2,
+       current_j_offset: 0,
+-      commitments: Vec::with_capacity(inputs.len() * layers),
+-      branch_lengths: Vec::with_capacity(inputs.len() * layers / 2),
++      commitments: Vec::with_capacity(inputs * layers),
++      branch_lengths: Vec::with_capacity(inputs * layers / 2),
+     };
+     let mut c1_branches = Vec::with_capacity((layers / 2) + (layers % 2));
+     let mut c2_tape = VectorCommitmentTape::<<C::C2 as Ciphersuite>::F> {
+       commitment_len: c2_padded_pow_2,
+       current_j_offset: 0,
+-      commitments: Vec::with_capacity(inputs.len() * layers),
+-      branch_lengths: Vec::with_capacity(inputs.len() * layers / 2),
++      commitments: Vec::with_capacity(inputs * layers),
++      branch_lengths: Vec::with_capacity(inputs * layers / 2),
+     };
+     let mut c2_branches = Vec::with_capacity(layers / 2);
+ 
+     // Append the leaves and the non-root branches to the tape
+-    for _ in inputs {
++    for _ in 0 .. inputs {
+       for i in 0 .. (layers - 1) {
+         if (i % 2) == 0 {
+           c1_branches.push(
+@@ -815,8 +830,8 @@ where
+       c1_tape.append_claimed_point::<C::OcParameters>(None, None, None, None)
+     };
+ 
+-    let mut input_openings = Vec::with_capacity(inputs.len());
+-    for _ in inputs {
++    let mut input_openings = Vec::with_capacity(inputs);
++    for _ in 0 .. inputs {
+       // Since this is presumed over Ed25519, which has a 253-bit discrete logarithm, we have two
+       // items avilable in padding. We use this padding for all the other points we must commit to
+       // For o_blind, we use the padding for O
+@@ -863,30 +878,67 @@ where
+     } else {
+       // We unblind a C2 branch for every branch except the ones representing the leaves
+       // We also unblind a C2 branch in the root branch, if the root branch is C1
+-      (c1_branches.len() - inputs.len()) +
+-        (inputs.len() * usize::from(u8::from(matches!(tree, TreeRoot::C1(_)))))
++      (c1_branches.len() - inputs) +
++        (inputs * usize::from(u8::from(matches!(tree, TreeRoot::C1(_)))))
+     }) {
+       commitment_blind_claims_1
+         .push(c1_tape.append_claimed_point::<C::C2Parameters>(None, None, None, None).0);
+     }
+-    let commitment_blind_claims_1 = commitment_blind_claims_1.into_iter();
+ 
+     // The second circuit's tape opens the blinds from the first curve
+     let mut commitment_blind_claims_2 = vec![];
+     for _ in 0 .. (c2_branches.len() +
+-      (inputs.len() * usize::from(u8::from(matches!(tree, TreeRoot::C2(_))))))
++      (inputs * usize::from(u8::from(matches!(tree, TreeRoot::C2(_))))))
+     {
+       commitment_blind_claims_2
+         .push(c2_tape.append_claimed_point::<C::C1Parameters>(None, None, None, None).0);
+     }
+-    let commitment_blind_claims_2 = commitment_blind_claims_2.into_iter();
++
++    VerifierLayout {
++      c1_padded_pow_2,
++      c2_padded_pow_2,
++      c1_commitments: c1_tape.commitments.len(),
++      c2_commitments: c2_tape.commitments.len(),
++      root,
++      c1_branches,
++      c2_branches,
++      input_openings,
++      commitment_blind_claims_1,
++      commitment_blind_claims_2,
++    }
++  }
++
++  /// The verifier's setup: the layout of the circuits, the transcript, the commitments, and the
++  /// verification of the root blind PoK.
++  ///
++  /// This is the entirety of the verification preceding the construction of the circuits.
++  #[allow(clippy::too_many_arguments, clippy::type_complexity)]
++  fn verify_prelude<R: RngCore + CryptoRng>(
++    &self,
++    rng: &mut R,
++    verifier_1: &mut BatchVerifier<C::C1>,
++    verifier_2: &mut BatchVerifier<C::C2>,
++    params: &FcmpParams<C>,
++    tree: TreeRoot<C::C1, C::C2>,
++    layers: usize,
++    inputs: &[Input<<C::C1 as Ciphersuite>::F>],
++  ) -> Result<
++    (VerifierLayout<C>, VerifierTranscript<'_>, Commitments<C::C1>, Commitments<C::C2>),
++    FcmpError,
++  > {
++    if (layers == 0) || inputs.is_empty() {
++      Err(FcmpError::EmptyProof)?;
++    }
++
++    let layout = Self::verifier_layout(tree, layers, inputs.len());
++    let root = &layout.root;
+ 
+     let mut transcript = VerifierTranscript::new(
+       Self::transcript(tree, inputs, &self.root_blind_pok[.. 32]),
+       &self.proof,
+     );
+-    let proof_1_vcs = transcript.read_commitments::<C::C1>(c1_tape.commitments.len(), 0)?;
+-    let proof_2_vcs = transcript.read_commitments::<C::C2>(c2_tape.commitments.len(), 0)?;
++    let proof_1_vcs = transcript.read_commitments::<C::C1>(layout.c1_commitments, 0)?;
++    let proof_2_vcs = transcript.read_commitments::<C::C2>(layout.c2_commitments, 0)?;
+ 
+     // Verify the root blind PoK
+     {
+@@ -934,9 +986,39 @@ where
+       }
+     };
+ 
+-    // Create the circuits
+-    let mut c1_circuit = Circuit::<C::C1>::verify();
+-    let mut c2_circuit = Circuit::<C::C2>::verify();
++    Ok((layout, transcript, proof_1_vcs, proof_2_vcs))
++  }
++
++  /// Build the verifier's circuits.
++  ///
++  /// This is deterministic to its arguments. The transcript is solely used to sample challenges
++  /// (as `Self::input` only accepts a `Transcript`, which can't read from the proof).
++  #[allow(clippy::too_many_arguments)]
++  fn build_verifier_circuits(
++    params: &FcmpParams<C>,
++    layers: usize,
++    inputs: &[Input<<C::C1 as Ciphersuite>::F>],
++    layout: VerifierLayout<C>,
++    proof_1_vcs: &Commitments<C::C1>,
++    proof_2_vcs: &Commitments<C::C2>,
++    transcript: &mut VerifierTranscript<'_>,
++    c1_circuit: &mut Circuit<C::C1>,
++    c2_circuit: &mut Circuit<C::C2>,
++  ) -> Result<(), FcmpError> {
++    let VerifierLayout {
++      c1_padded_pow_2,
++      c2_padded_pow_2,
++      c1_commitments: _,
++      c2_commitments: _,
++      root,
++      c1_branches,
++      c2_branches,
++      input_openings,
++      commitment_blind_claims_1,
++      commitment_blind_claims_2,
++    } = layout;
++    let commitment_blind_claims_1 = commitment_blind_claims_1.into_iter();
++    let commitment_blind_claims_2 = commitment_blind_claims_2.into_iter();
+ 
+     let mut c1_dlog_challenge = None;
+     let mut c2_dlog_challenge = None;
+@@ -953,10 +1035,10 @@ where
+       Self::input(
+         params,
+         layers,
+-        &mut transcript,
+-        &mut c1_circuit,
++        transcript,
++        c1_circuit,
+         &mut c1_dlog_challenge,
+-        &mut c2_circuit,
++        c2_circuit,
+         &mut c2_dlog_challenge,
+         root.clone(),
+         &mut c1_branches,
+@@ -972,6 +1054,186 @@ where
+     debug_assert!(c1_circuit.muls() <= c1_padded_pow_2);
+     debug_assert!(c2_circuit.muls() <= c2_padded_pow_2);
+ 
++    Ok(())
++  }
++
++  /// Check a replayed construction of the circuits was consistent with the original construction.
++  ///
++  /// The circuits must have the same amount of multiplications and constraints, and the
++  /// transcripts must be in the same state (having sampled the same challenges).
++  fn check_replay(
++    original: (&Circuit<C::C1>, &Circuit<C::C2>, &VerifierTranscript<'_>),
++    replay: (&Circuit<C::C1>, &Circuit<C::C2>, &VerifierTranscript<'_>),
++  ) -> Result<(), FcmpError> {
++    let (c1_original, c2_original, transcript_original) = original;
++    let (c1_replay, c2_replay, transcript_replay) = replay;
++    if (c1_original.muls() != c1_replay.muls()) ||
++      (c1_original.constraints_pushed() != c1_replay.constraints_pushed()) ||
++      (c2_original.muls() != c2_replay.muls()) ||
++      (c2_original.constraints_pushed() != c2_replay.constraints_pushed())
++    {
++      Err(FcmpError::InconsistentCircuitReplay)?;
++    }
++    // Sample a challenge from a clone of each, which will only be equal if their states are
++    if transcript_original.clone().challenge_bytes() != transcript_replay.clone().challenge_bytes()
++    {
++      Err(FcmpError::InconsistentCircuitReplay)?;
++    }
++    Ok(())
++  }
++
++  /// Verify an FCMP.
++  ///
++  /// This MAY panic if called with invalid arguments, such as a tree root which doesn't correspond
++  /// to the layer count.
++  ///
++  /// The caller must pass the correct amount of layers for this tree root. If the prover specified
++  /// the amount of layers, the specified amount of layers must be checked to be equal to the
++  /// actual amount of layers.
++  ///
++  /// This only queues the FCMP for batch verification. The BatchVerifiers MUST also be verified.
++  ///
++  /// If this function returns an error, the batch verifiers are corrupted and MUST be discarded.
++  // This may be collision resistant regardless of layer count thanks to the expected usage of a
++  // distinct curve for the leaves, yet the layer count is cheap to check and avoids the question.
++  #[allow(clippy::too_many_arguments)]
++  pub fn verify<R: RngCore + CryptoRng>(
++    &self,
++    rng: &mut R,
++    verifier_1: &mut BatchVerifier<C::C1>,
++    verifier_2: &mut BatchVerifier<C::C2>,
++    params: &FcmpParams<C>,
++    tree: TreeRoot<C::C1, C::C2>,
++    layers: usize,
++    inputs: &[Input<<C::C1 as Ciphersuite>::F>],
++  ) -> Result<(), FcmpError> {
++    let (layout, mut transcript, proof_1_vcs, proof_2_vcs) =
++      self.verify_prelude(rng, verifier_1, verifier_2, params, tree, layers, inputs)?;
++
++    let c1_generators = params
++      .curve_1_generators
++      .reduce(layout.c1_padded_pow_2)
++      .ok_or(FcmpError::NotEnoughGenerators)?;
++    let c2_generators = params
++      .curve_2_generators
++      .reduce(layout.c2_padded_pow_2)
++      .ok_or(FcmpError::NotEnoughGenerators)?;
++    // The layout is consumed when building the circuits, so we recompute it for the replay
++    let replay_layout = Self::verifier_layout(tree, layers, inputs.len());
++
++    /*
++      The verifier only uses the circuits' constraints after folding them with each proof's `z`
++      challenge, which is only available after the circuits are built (as it's sampled after the
++      challenges the circuits sample). Instead of storing the constraints until `z` is available,
++      we build the circuits twice:
++
++      1) On the transcript, discarding the constraints. This performs the exact same transcript
++         operations as building the circuits with their constraints stored would.
++      2) After the proofs' transcripts are processed (yielding `z`), on a copy of the transcript
++         as it was prior to building the circuits, folding the constraints as they're produced.
++
++      As building the circuits is deterministic to the same arguments and transcript state, both
++      constructions produce the same constraints, which we check (to the extent we're able to)
++      before using the folded constraints.
++    */
++    let mut replay_transcript = transcript.clone();
++
++    let mut c1_circuit = Circuit::<C::C1>::verify_discarding();
++    let mut c2_circuit = Circuit::<C::C2>::verify_discarding();
++    Self::build_verifier_circuits(
++      params,
++      layers,
++      inputs,
++      layout,
++      &proof_1_vcs,
++      &proof_2_vcs,
++      &mut transcript,
++      &mut c1_circuit,
++      &mut c2_circuit,
++    )?;
++    let transcript_after_build = transcript.clone();
++
++    // Process the proofs' transcripts, which queues everything not dependent on the constraints
++    let c1_pending = FoldedStatement::new(c1_generators, proof_1_vcs.clone())?.verify_transcript(
++      rng,
++      verifier_1,
++      &mut transcript,
++    )?;
++    let c2_pending = FoldedStatement::new(c2_generators, proof_2_vcs.clone())?.verify_transcript(
++      rng,
++      verifier_2,
++      &mut transcript,
++    )?;
++
++    // Rebuild the circuits, folding their constraints with each proof's `z` challenge
++    let mut c1_replay = Circuit::<C::C1>::verify_accumulating(c1_pending.accumulator()?);
++    let mut c2_replay = Circuit::<C::C2>::verify_accumulating(c2_pending.accumulator()?);
++    Self::build_verifier_circuits(
++      params,
++      layers,
++      inputs,
++      replay_layout,
++      &proof_1_vcs,
++      &proof_2_vcs,
++      &mut replay_transcript,
++      &mut c1_replay,
++      &mut c2_replay,
++    )?;
++    Self::check_replay(
++      (&c1_circuit, &c2_circuit, &transcript_after_build),
++      (&c1_replay, &c2_replay, &replay_transcript),
++    )?;
++
++    let c1_folded = c1_replay.finish_accumulate()?;
++    let c2_folded = c2_replay.finish_accumulate()?;
++    if (c1_folded.q() != c1_circuit.constraints_pushed()) ||
++      (c2_folded.q() != c2_circuit.constraints_pushed())
++    {
++      Err(FcmpError::InconsistentCircuitReplay)?;
++    }
++
++    // If either of these aren't reached, the pending verification will corrupt its verifier
++    c1_pending.apply(c1_folded)?;
++    c2_pending.apply(c2_folded)?;
++
++    Ok(())
++  }
++
++  /// Verify an FCMP while storing the circuits' constraints, as `Fcmp::verify` historically did.
++  ///
++  /// This performs the exact same transcript operations, and samples the same randomness, as
++  /// `Fcmp::verify`.
++  #[cfg(test)]
++  #[allow(clippy::too_many_arguments)]
++  pub(crate) fn verify_stored<R: RngCore + CryptoRng>(
++    &self,
++    rng: &mut R,
++    verifier_1: &mut BatchVerifier<C::C1>,
++    verifier_2: &mut BatchVerifier<C::C2>,
++    params: &FcmpParams<C>,
++    tree: TreeRoot<C::C1, C::C2>,
++    layers: usize,
++    inputs: &[Input<<C::C1 as Ciphersuite>::F>],
++  ) -> Result<(), FcmpError> {
++    let (layout, mut transcript, proof_1_vcs, proof_2_vcs) =
++      self.verify_prelude(rng, verifier_1, verifier_2, params, tree, layers, inputs)?;
++    let (c1_padded_pow_2, c2_padded_pow_2) = (layout.c1_padded_pow_2, layout.c2_padded_pow_2);
++
++    // Create the circuits
++    let mut c1_circuit = Circuit::<C::C1>::verify();
++    let mut c2_circuit = Circuit::<C::C2>::verify();
++    Self::build_verifier_circuits(
++      params,
++      layers,
++      inputs,
++      layout,
++      &proof_1_vcs,
++      &proof_2_vcs,
++      &mut transcript,
++      &mut c1_circuit,
++      &mut c2_circuit,
++    )?;
++
+     let (c1_statement, _witness) = c1_circuit.statement(
+       params.curve_1_generators.reduce(c1_padded_pow_2).ok_or(FcmpError::NotEnoughGenerators)?,
+       proof_1_vcs,
+diff --git a/crypto/fcmps/src/tests.rs b/crypto/fcmps/src/tests.rs
+index db827c5..6397222 100644
+--- a/crypto/fcmps/src/tests.rs
++++ b/crypto/fcmps/src/tests.rs
+@@ -724,3 +724,469 @@ fn proof_sizes() {
+     );
+   }
+ }
++
++/// A deterministic RNG, so two verifiers may sample identical weights.
++///
++/// This is solely for these tests and is not secure for any other purpose.
++#[derive(Clone)]
++struct DeterministicRng {
++  seed: [u8; 32],
++  counter: u64,
++}
++impl DeterministicRng {
++  fn new() -> Self {
++    let mut seed = [0; 32];
++    OsRng.fill_bytes(&mut seed);
++    Self { seed, counter: 0 }
++  }
++}
++impl RngCore for DeterministicRng {
++  fn next_u32(&mut self) -> u32 {
++    rand_core::impls::next_u32_via_fill(self)
++  }
++  fn next_u64(&mut self) -> u64 {
++    rand_core::impls::next_u64_via_fill(self)
++  }
++  fn fill_bytes(&mut self, dest: &mut [u8]) {
++    use blake2::{Digest as _, Blake2b512};
++    for chunk in dest.chunks_mut(64) {
++      let block = Blake2b512::new()
++        .chain_update(self.seed)
++        .chain_update(self.counter.to_le_bytes())
++        .finalize();
++      self.counter += 1;
++      chunk.copy_from_slice(&block[.. chunk.len()]);
++    }
++  }
++  fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), rand_core::Error> {
++    self.fill_bytes(dest);
++    Ok(())
++  }
++}
++impl CryptoRng for DeterministicRng {}
++
++fn assert_verifiers_eq<C: Ciphersuite>(
++  a: &generalized_bulletproofs::BatchVerifier<C>,
++  b: &generalized_bulletproofs::BatchVerifier<C>,
++) {
++  assert_eq!(a.g, b.g);
++  assert_eq!(a.h, b.h);
++  assert_eq!(a.g_bold, b.g_bold);
++  assert_eq!(a.h_bold, b.h_bold);
++  assert_eq!(a.h_sum, b.h_sum);
++  // As these circuits don't use Pedersen commitments, the order is identical as well
++  assert_eq!(a.additional, b.additional);
++}
++
++#[allow(clippy::type_complexity)]
++fn random_proof(
++  params: &FcmpParams<MoneroCurves>,
++  (G, T, U, V): (
++    <Ed25519 as Ciphersuite>::G,
++    <Ed25519 as Ciphersuite>::G,
++    <Ed25519 as Ciphersuite>::G,
++    <Ed25519 as Ciphersuite>::G,
++  ),
++  paths: usize,
++  layers: usize,
++) -> (Fcmp<MoneroCurves>, TreeRoot<Selene, Helios>, Vec<Input<<Selene as Ciphersuite>::F>>) {
++  let (paths, root) = random_paths(params, layers, paths);
++
++  let mut output_blinds = vec![];
++  for _ in 0 .. paths.len() {
++    output_blinds.push(random_output_blinds(G, T, U, V));
++  }
++
++  let mut inputs = vec![];
++  for (path, output_blinds) in paths.iter().zip(&output_blinds) {
++    inputs.push(output_blinds.blind(&path.output).unwrap());
++  }
++
++  let branches = Branches::new(paths).unwrap();
++  let proof =
++    Fcmp::prove(&mut OsRng, params, blind_branches(params, branches, output_blinds)).unwrap();
++  (proof, root, inputs)
++}
++
++/// The result of a verification, and the batch verifiers after it.
++type VerificationResult = (
++  Result<(), FcmpError>,
++  generalized_bulletproofs::BatchVerifier<Selene>,
++  generalized_bulletproofs::BatchVerifier<Helios>,
++);
++
++/// Verify a proof with both the streaming verifier (`Fcmp::verify`) and the stored verifier
++/// (`Fcmp::verify_stored`), using the same randomness.
++fn verify_both(
++  proof: &Fcmp<MoneroCurves>,
++  params: &FcmpParams<MoneroCurves>,
++  root: TreeRoot<Selene, Helios>,
++  layers: usize,
++  inputs: &[Input<<Selene as Ciphersuite>::F>],
++) -> (VerificationResult, VerificationResult) {
++  let rng = DeterministicRng::new();
++
++  let mut streaming_1 = generalized_bulletproofs::Generators::batch_verifier();
++  let mut streaming_2 = generalized_bulletproofs::Generators::batch_verifier();
++  let streaming = proof.verify(
++    &mut rng.clone(),
++    &mut streaming_1,
++    &mut streaming_2,
++    params,
++    root,
++    layers,
++    inputs,
++  );
++
++  let mut stored_1 = generalized_bulletproofs::Generators::batch_verifier();
++  let mut stored_2 = generalized_bulletproofs::Generators::batch_verifier();
++  let stored = proof.verify_stored(
++    &mut rng.clone(),
++    &mut stored_1,
++    &mut stored_2,
++    params,
++    root,
++    layers,
++    inputs,
++  );
++
++  ((streaming, streaming_1, streaming_2), (stored, stored_1, stored_2))
++}
++
++fn batch_verifies(
++  params: &FcmpParams<MoneroCurves>,
++  verifier_1: &generalized_bulletproofs::BatchVerifier<Selene>,
++  verifier_2: &generalized_bulletproofs::BatchVerifier<Helios>,
++) -> bool {
++  params.curve_1_generators.verify(verifier_1.clone()) &&
++    params.curve_2_generators.verify(verifier_2.clone())
++}
++
++#[test]
++fn test_streaming_verify_matches_stored() {
++  let (G, T, U, V, params) = random_params(4);
++
++  // Both C1 and C2 roots, with and without branches on either curve
++  for (paths, layers) in [(1, 1), (1, 2), (1, 3), (1, 5), (2, 1), (2, 4), (3, 2), (3, 3)] {
++    println!("Comparing verifiers for a proof with {paths} inputs and {layers} layers");
++    let (proof, root, inputs) = random_proof(&params, (G, T, U, V), paths, layers);
++
++    let ((streaming, streaming_1, streaming_2), (stored, stored_1, stored_2)) =
++      verify_both(&proof, &params, root, layers, &inputs);
++    streaming.unwrap();
++    stored.unwrap();
++    assert_verifiers_eq(&streaming_1, &stored_1);
++    assert_verifiers_eq(&streaming_2, &stored_2);
++    assert!(batch_verifies(&params, &streaming_1, &streaming_2));
++    assert!(batch_verifies(&params, &stored_1, &stored_2));
++  }
++}
++
++#[test]
++fn test_streaming_verify_rejects_tampered_proofs() {
++  let (G, T, U, V, params) = random_params(2);
++
++  // A C1 root (with branches on both curves) and a C2 root
++  for (paths, layers) in [(2, 3), (1, 2)] {
++    let (proof, root, inputs) = random_proof(&params, (G, T, U, V), paths, layers);
++    let mut buf = vec![];
++    proof.write(&mut buf).unwrap();
++
++    // Find the commitments' quantities
++    let (c1_commitments, c2_commitments) = {
++      let layout = Fcmp::<MoneroCurves>::verifier_layout(root, layers, paths);
++      (layout.c1_commitments, layout.c2_commitments)
++    };
++    let (c1_rows, c2_rows) = Fcmp::<MoneroCurves>::ipa_rows(paths, layers);
++
++    #[derive(Clone, Copy, Debug)]
++    enum Element {
++      C1Point,
++      C1Scalar,
++      C2Point,
++      C2Scalar,
++    }
++
++    // The offsets of a variety of elements within the serialized proof
++    let mut regions = vec![];
++    regions.push(("C1 vector commitment", 0, Element::C1Point));
++    if c2_commitments != 0 {
++      regions.push(("C2 vector commitment", 32 * c1_commitments, Element::C2Point));
++    }
++    let mut offset = 32 * (c1_commitments + c2_commitments);
++    for (name, c, rows, point, scalar) in [
++      ("C1", c1_commitments, c1_rows, Element::C1Point, Element::C1Scalar),
++      ("C2", c2_commitments, c2_rows, Element::C2Point, Element::C2Scalar),
++    ] {
++      let lr_len = usize::try_from(rows.ilog2()).unwrap();
++      let t_commitments = 3 * c + 5;
++      regions.push((name, offset, point)); // AI
++      regions.push((name, offset + 32, point)); // AO
++      regions.push((name, offset + 64, point)); // S
++      offset += 96;
++      regions.push((name, offset, point)); // The first T
++      regions.push((name, offset + (32 * (t_commitments - 1)), point)); // The last T
++      offset += 32 * t_commitments;
++      regions.push((name, offset, scalar)); // tau_x
++      regions.push((name, offset + 32, scalar)); // mu
++      regions.push((name, offset + 64, scalar)); // t_caret
++      offset += 96;
++      regions.push((name, offset, point)); // The first L
++      regions.push((name, offset + (32 * ((2 * lr_len) - 1)), point)); // The last R
++      offset += 64 * lr_len;
++      regions.push((name, offset, scalar)); // a
++      regions.push((name, offset + 32, scalar)); // b
++      offset += 64;
++    }
++    // Sanity check our offsets by checking we've reached the root blind PoK
++    assert_eq!(offset + 64, buf.len());
++    let (pok_point, pok_scalar) = match root {
++      TreeRoot::C1(_) => (Element::C1Point, Element::C1Scalar),
++      TreeRoot::C2(_) => (Element::C2Point, Element::C2Scalar),
++    };
++    regions.push(("root blind PoK", offset, pok_point));
++    regions.push(("root blind PoK", offset + 32, pok_scalar));
++
++    for (name, offset, element) in regions {
++      // Replace the element with another valid element, and flip a bit within it
++      let replacement = match element {
++        Element::C1Point => <Selene as Ciphersuite>::G::random(&mut OsRng).to_bytes(),
++        Element::C1Scalar => <Selene as Ciphersuite>::F::random(&mut OsRng).to_repr(),
++        Element::C2Point => <Helios as Ciphersuite>::G::random(&mut OsRng).to_bytes(),
++        Element::C2Scalar => <Helios as Ciphersuite>::F::random(&mut OsRng).to_repr(),
++      };
++      let mut replaced = buf.clone();
++      replaced[offset .. (offset + 32)].copy_from_slice(&replacement);
++      let mut flipped = buf.clone();
++      flipped[offset + 1] ^= 1;
++
++      for tampered in [replaced, flipped] {
++        assert_ne!(tampered, buf);
++        let tampered = Fcmp::<MoneroCurves>::read(&mut tampered.as_slice(), paths, layers).unwrap();
++        let ((streaming, streaming_1, streaming_2), (stored, stored_1, stored_2)) =
++          verify_both(&tampered, &params, root, layers, &inputs);
++        // The same transcript operations are performed, so the same proofs are well-formed
++        assert_eq!(streaming.is_ok(), stored.is_ok(), "{name} {element:?}");
++        if streaming.is_ok() {
++          assert_verifiers_eq(&streaming_1, &stored_1);
++          assert_verifiers_eq(&streaming_2, &stored_2);
++          assert!(!batch_verifies(&params, &streaming_1, &streaming_2), "{name} {element:?}");
++          assert!(!batch_verifies(&params, &stored_1, &stored_2), "{name} {element:?}");
++        }
++      }
++    }
++  }
++}
++
++#[test]
++fn test_accumulated_constraints_match_stored() {
++  use generalized_bulletproofs::arithmetic_circuit_proof::{ConstraintAccumulator, FoldedStatement};
++
++  let (G, T, U, V, params) = random_params(2);
++
++  for (paths, layers) in [(2, 3), (1, 4)] {
++    let (proof, root, inputs) = random_proof(&params, (G, T, U, V), paths, layers);
++
++    let mut verifier_1 = generalized_bulletproofs::Generators::batch_verifier();
++    let mut verifier_2 = generalized_bulletproofs::Generators::batch_verifier();
++    let (layout, transcript, proof_1_vcs, proof_2_vcs) = proof
++      .verify_prelude(&mut OsRng, &mut verifier_1, &mut verifier_2, &params, root, layers, &inputs)
++      .unwrap();
++    let c1_generators = params.curve_1_generators.reduce(layout.c1_padded_pow_2).unwrap();
++    let c2_generators = params.curve_2_generators.reduce(layout.c2_padded_pow_2).unwrap();
++    let replay_layout = Fcmp::<MoneroCurves>::verifier_layout(root, layers, inputs.len());
++    let c1_n = FoldedStatement::new(c1_generators, proof_1_vcs.clone()).unwrap().n();
++    let c2_n = FoldedStatement::new(c2_generators, proof_2_vcs.clone()).unwrap().n();
++
++    // Build the circuits, storing their constraints
++    let mut stored_transcript = transcript.clone();
++    let mut c1_stored = Circuit::<Selene>::verify();
++    let mut c2_stored = Circuit::<Helios>::verify();
++    Fcmp::<MoneroCurves>::build_verifier_circuits(
++      &params,
++      layers,
++      &inputs,
++      layout,
++      &proof_1_vcs,
++      &proof_2_vcs,
++      &mut stored_transcript,
++      &mut c1_stored,
++      &mut c2_stored,
++    )
++    .unwrap();
++
++    // Build the circuits, accumulating their constraints
++    let z_1 = <Selene as Ciphersuite>::F::random(&mut OsRng);
++    let z_2 = <Helios as Ciphersuite>::F::random(&mut OsRng);
++    let mut accumulated_transcript = transcript.clone();
++    let mut c1_accumulated = Circuit::<Selene>::verify_accumulating(
++      ConstraintAccumulator::new(c1_n, proof_1_vcs.C().len(), 0, z_1).unwrap(),
++    );
++    let mut c2_accumulated = Circuit::<Helios>::verify_accumulating(
++      ConstraintAccumulator::new(c2_n, proof_2_vcs.C().len(), 0, z_2).unwrap(),
++    );
++    Fcmp::<MoneroCurves>::build_verifier_circuits(
++      &params,
++      layers,
++      &inputs,
++      replay_layout,
++      &proof_1_vcs,
++      &proof_2_vcs,
++      &mut accumulated_transcript,
++      &mut c1_accumulated,
++      &mut c2_accumulated,
++    )
++    .unwrap();
++
++    Fcmp::<MoneroCurves>::check_replay(
++      (&c1_stored, &c2_stored, &stored_transcript),
++      (&c1_accumulated, &c2_accumulated, &accumulated_transcript),
++    )
++    .unwrap();
++    let c1_constraints = c1_stored.constraints_pushed();
++    let c2_constraints = c2_stored.constraints_pushed();
++    assert!(c1_constraints != 0);
++    assert_eq!(c2_constraints != 0, layers > 1);
++
++    let c1_accumulated = c1_accumulated.finish_accumulate().unwrap();
++    let c2_accumulated = c2_accumulated.finish_accumulate().unwrap();
++    let (c1_statement, _witness) = c1_stored.statement(c1_generators, proof_1_vcs.clone()).unwrap();
++    let (c2_statement, _witness) = c2_stored.statement(c2_generators, proof_2_vcs.clone()).unwrap();
++    let c1_stored = c1_statement.fold_constraints(z_1);
++    let c2_stored = c2_statement.fold_constraints(z_2);
++
++    assert_eq!(c1_accumulated.q(), c1_constraints);
++    assert_eq!(c1_accumulated.l_weights(), c1_stored.l_weights());
++    assert_eq!(c1_accumulated.r_weights(), c1_stored.r_weights());
++    assert_eq!(c1_accumulated.o_weights(), c1_stored.o_weights());
++    for i in 0 .. proof_1_vcs.C().len() {
++      assert_eq!(c1_accumulated.cg_weights(i).unwrap(), c1_stored.cg_weights(i).unwrap());
++    }
++    assert_eq!(c1_accumulated.v_weights(), c1_stored.v_weights());
++    assert_eq!(c1_accumulated.c_sum(), c1_stored.c_sum());
++    assert_eq!(c1_accumulated, c1_stored);
++
++    assert_eq!(c2_accumulated.q(), c2_constraints);
++    assert_eq!(c2_accumulated.l_weights(), c2_stored.l_weights());
++    assert_eq!(c2_accumulated.r_weights(), c2_stored.r_weights());
++    assert_eq!(c2_accumulated.o_weights(), c2_stored.o_weights());
++    for i in 0 .. proof_2_vcs.C().len() {
++      assert_eq!(c2_accumulated.cg_weights(i).unwrap(), c2_stored.cg_weights(i).unwrap());
++    }
++    assert_eq!(c2_accumulated.v_weights(), c2_stored.v_weights());
++    assert_eq!(c2_accumulated.c_sum(), c2_stored.c_sum());
++    assert_eq!(c2_accumulated, c2_stored);
++  }
++}
++
++// `Circuit` has a single type for all modes, as the gadgets are written against it, so the
++// inability of a discarding or accumulating circuit to produce a statement is enforced at runtime
++#[test]
++fn test_only_storing_circuits_produce_statements() {
++  use generalized_bulletproofs::arithmetic_circuit_proof::ConstraintAccumulator;
++  use generalized_bulletproofs_circuit_abstraction::{Circuit, CircuitError};
++
++  let generators =
++    generalized_bulletproofs::tests::insecure_test_generators::<_, Selene>(&mut OsRng, 2).unwrap();
++  let commitments = ProverTranscript::new([0; 32]).write_commitments::<Selene>(vec![], vec![]);
++
++  let populate = |circuit: &mut Circuit<Selene>| {
++    let (l, r, _o) = circuit.mul(Some(LinComb::empty()), Some(LinComb::empty()), None);
++    circuit.constrain_equal_to_zero(LinComb::from(l) - &LinComb::from(r));
++  };
++
++  let mut storing = Circuit::<Selene>::verify();
++  populate(&mut storing);
++  assert_eq!(storing.muls(), 1);
++  assert_eq!(storing.constraints_pushed(), 3);
++  storing.clone().statement(generators.reduce(2).unwrap(), commitments.clone()).unwrap();
++  assert_eq!(storing.finish_accumulate(), Err(CircuitError::ConstraintsNotAccumulated));
++
++  let mut discarding = Circuit::<Selene>::verify_discarding();
++  populate(&mut discarding);
++  assert_eq!(discarding.muls(), 1);
++  assert_eq!(discarding.constraints_pushed(), 3);
++  assert_eq!(
++    discarding.clone().statement(generators.reduce(2).unwrap(), commitments.clone()).map(|_| ()),
++    Err(CircuitError::ConstraintsNotStored)
++  );
++  assert_eq!(discarding.finish_accumulate(), Err(CircuitError::ConstraintsNotAccumulated));
++
++  let z = <Selene as Ciphersuite>::F::random(&mut OsRng);
++  let mut accumulating =
++    Circuit::<Selene>::verify_accumulating(ConstraintAccumulator::new(2, 0, 0, z).unwrap());
++  populate(&mut accumulating);
++  assert_eq!(accumulating.muls(), 1);
++  assert_eq!(accumulating.constraints_pushed(), 3);
++  assert_eq!(
++    accumulating.clone().statement(generators.reduce(2).unwrap(), commitments.clone()).map(|_| ()),
++    Err(CircuitError::ConstraintsNotStored)
++  );
++  assert_eq!(accumulating.finish_accumulate().unwrap().q(), 3);
++
++  // A constraint referencing a non-existent term poisons the accumulator
++  let mut accumulating =
++    Circuit::<Selene>::verify_accumulating(ConstraintAccumulator::new(2, 0, 0, z).unwrap());
++  accumulating.constrain_equal_to_zero(LinComb::from(Variable::aL(2)));
++  populate(&mut accumulating);
++  assert_eq!(
++    accumulating.finish_accumulate(),
++    Err(CircuitError::AcStatementError(AcStatementError::ConstrainedNonExistentTerm))
++  );
++
++  assert!(matches!(
++    FcmpError::from(CircuitError::ConstraintsNotStored),
++    FcmpError::CircuitError(CircuitError::ConstraintsNotStored)
++  ));
++  assert!(matches!(
++    FcmpError::from(CircuitError::AcStatementError(AcStatementError::TooManyCommitments)),
++    FcmpError::AcStatementError(AcStatementError::TooManyCommitments)
++  ));
++}
++
++#[test]
++fn test_replay_check_detects_divergence() {
++  let proof = [0; 64];
++  let transcript = VerifierTranscript::new([0; 32], &proof);
++
++  let build = |extra_c1_constraint: bool, extra_c2_mul: bool, extra_challenge: bool| {
++    let mut transcript = transcript.clone();
++    let mut c1 = Circuit::<Selene>::verify_discarding();
++    let mut c2 = Circuit::<Helios>::verify_discarding();
++    let _ = transcript.challenge::<Selene>();
++    c1.mul(None, None, None);
++    c1.constrain_equal_to_zero(LinComb::empty());
++    c2.mul(None, None, None);
++    if extra_c1_constraint {
++      c1.constrain_equal_to_zero(LinComb::empty());
++    }
++    if extra_c2_mul {
++      c2.mul(None, None, None);
++    }
++    if extra_challenge {
++      let _ = transcript.challenge_bytes();
++    }
++    (c1, c2, transcript)
++  };
++
++  let (c1, c2, transcript) = build(false, false, false);
++  for (extra_c1_constraint, extra_c2_mul, extra_challenge) in [
++    (false, false, false),
++    (true, false, false),
++    (false, true, false),
++    (false, false, true),
++    (true, true, true),
++  ] {
++    let (replay_c1, replay_c2, replay_transcript) =
++      build(extra_c1_constraint, extra_c2_mul, extra_challenge);
++    let res = Fcmp::<MoneroCurves>::check_replay(
++      (&c1, &c2, &transcript),
++      (&replay_c1, &replay_c2, &replay_transcript),
++    );
++    if extra_c1_constraint || extra_c2_mul || extra_challenge {
++      assert!(matches!(res, Err(FcmpError::InconsistentCircuitReplay)));
++    } else {
++      res.unwrap();
++    }
++  }
++}
+diff --git a/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof.rs b/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof.rs
+index 4fea0fe..cfb7468 100644
+--- a/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof.rs
++++ b/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof.rs
+@@ -190,6 +190,339 @@ where
+   fn m(&self) -> usize {
+     self.V.len()
+   }
++
++  /// Fold this statement's constraints with the challenge `z`, as the verifier does.
++  ///
++  /// This is the reference for what a `ConstraintAccumulator` produces when it's pushed the same
++  /// constraints with the same `z`.
++  pub fn fold_constraints(&self, z: C::F) -> FoldedConstraints<C> {
++    fold_stored_constraints(&self.constraints, self.n(), self.c(), self.m(), z)
++  }
++}
++
++/// Fold stored constraints with the challenge `z_1`.
++///
++/// This performs the exact folding `ArithmeticCircuitStatement::verify` has historically performed
++/// over its stored constraints, with the vector commitments' weights truncated as
++/// `ArithmeticCircuitStatement::prove` truncates them.
++fn fold_stored_constraints<C: Ciphersuite>(
++  constraints: &[LinComb<C::F>],
++  n: usize,
++  c: usize,
++  m: usize,
++  z_1: C::F,
++) -> FoldedConstraints<C> {
++  // Powers of z *starting with z**1*, exactly as `yz_challenges` calculates them
++  let q = constraints.len();
++  let mut z = ScalarVector(Vec::with_capacity(q));
++  z.0.push(z_1);
++  for _ in 1 .. q {
++    z.0.push(*z.0.last().expect("always non-empty Vec didn't have a last element") * z_1);
++  }
++  z.0.truncate(q);
++
++  let mut l_weights = ScalarVector::new(n);
++  let mut r_weights = ScalarVector::new(n);
++  let mut o_weights = ScalarVector::new(n);
++  for (constraint, z) in constraints.iter().zip(&z.0) {
++    accumulate_vector(&mut l_weights, &constraint.WL, *z);
++    accumulate_vector(&mut r_weights, &constraint.WR, *z);
++    accumulate_vector(&mut o_weights, &constraint.WO, *z);
++  }
++
++  let c_sum = z.inner_product(constraints.iter().map(|constraint| &constraint.c));
++
++  let mut v_weights = ScalarVector::new(m);
++  for (constraint, z) in constraints.iter().zip(&z.0) {
++    accumulate_vector(&mut v_weights, &constraint.WV, *z);
++  }
++
++  let mut cg_weights = Vec::with_capacity(c);
++  for i in 0 .. c {
++    let mut cg = ScalarVector::new(n);
++    let mut cg_hi = 0;
++    for (constraint, z) in constraints.iter().zip(&z.0) {
++      if let Some(WCG) = constraint.WCG().get(&i) {
++        cg_hi = cg_hi.max(accumulate_vector(&mut cg, WCG, *z));
++      }
++    }
++    cg.0.truncate(cg_hi + 1);
++    // Release the truncated capacity, as we retain all of these vectors at once
++    cg.0.shrink_to_fit();
++    cg_weights.push(cg);
++  }
++
++  FoldedConstraints { n, z: z_1, q, l_weights, r_weights, o_weights, cg_weights, v_weights, c_sum }
++}
++
++/// The constraints of an arithmetic circuit, folded into the weighted sums used for verification.
++///
++/// For the statement's challenge `z`, the `k`-th constraint (zero-indexed) is weighted by
++/// `z**(k + 1)` and the weighted constraints are summed. This is all the verifier uses of the
++/// constraints.
++///
++/// This is only obtainable via `ConstraintAccumulator::finish` or
++/// `ArithmeticCircuitStatement::fold_constraints`.
++#[derive(Clone, PartialEq, Eq, Debug)]
++pub struct FoldedConstraints<C: Ciphersuite> {
++  n: usize,
++  z: C::F,
++  q: usize,
++  // These have length `n`
++  l_weights: ScalarVector<C::F>,
++  r_weights: ScalarVector<C::F>,
++  o_weights: ScalarVector<C::F>,
++  /*
++    One per vector commitment, each truncated after the highest index any constraint referenced
++    for that commitment (yet never to a length less than one), as `prove` truncates them. All
++    elided values are zero. As the vector commitments for the branches of a tree only use a few
++    of their indexes, this saves a notable amount of memory.
++  */
++  cg_weights: Vec<ScalarVector<C::F>>,
++  // This has length `m`
++  v_weights: ScalarVector<C::F>,
++  c_sum: C::F,
++}
++
++impl<C: Ciphersuite> FoldedConstraints<C> {
++  /// The amount of rows (generators) these constraints were folded for.
++  pub fn n(&self) -> usize {
++    self.n
++  }
++  /// The amount of Pedersen vector commitments these constraints were folded for.
++  pub fn c(&self) -> usize {
++    self.cg_weights.len()
++  }
++  /// The amount of Pedersen commitments these constraints were folded for.
++  pub fn m(&self) -> usize {
++    self.v_weights.len()
++  }
++  /// The challenge `z` these constraints were folded with.
++  pub fn z(&self) -> C::F {
++    self.z
++  }
++  /// The amount of constraints folded.
++  pub fn q(&self) -> usize {
++    self.q
++  }
++  /// The folded weights for `aL`, of length `n`.
++  pub fn l_weights(&self) -> &[C::F] {
++    &self.l_weights.0
++  }
++  /// The folded weights for `aR`, of length `n`.
++  pub fn r_weights(&self) -> &[C::F] {
++    &self.r_weights.0
++  }
++  /// The folded weights for `aO`, of length `n`.
++  pub fn o_weights(&self) -> &[C::F] {
++    &self.o_weights.0
++  }
++  /// The folded weights for the `i`-th Pedersen vector commitment.
++  ///
++  /// These are truncated after the highest index any constraint referenced for this commitment
++  /// (yet are never of length less than one). All elided values are zero.
++  pub fn cg_weights(&self, i: usize) -> Option<&[C::F]> {
++    self.cg_weights.get(i).map(|cg| cg.0.as_slice())
++  }
++  /// The folded weights for the Pedersen commitments, of length `m`.
++  pub fn v_weights(&self) -> &[C::F] {
++    &self.v_weights.0
++  }
++  /// The folded constants.
++  pub fn c_sum(&self) -> C::F {
++    self.c_sum
++  }
++}
++
++/// An accumulator which folds constraints, as they're produced, into the weighted sums used for
++/// verification.
++///
++/// This allows verifying an arithmetic circuit proof without ever storing its constraints. Pushing
++/// a list of constraints into an accumulator created with the challenge `z` yields the same
++/// `FoldedConstraints` `ArithmeticCircuitStatement::fold_constraints` does for a statement with
++/// those constraints. The same checks `ArithmeticCircuitStatement::new` performs on the
++/// constraints are performed by `push` and `finish`.
++///
++/// Upon an error, the accumulator retains the error and solely returns it from then on.
++#[derive(Clone, PartialEq, Eq, Debug)]
++pub struct ConstraintAccumulator<C: Ciphersuite> {
++  n: usize,
++  z: C::F,
++  // `z**(q + 1)`, the weight for the next constraint
++  next_weight: C::F,
++  q: usize,
++  error: Option<AcStatementError>,
++  individually_constrained: Vec<bool>,
++  l_weights: ScalarVector<C::F>,
++  r_weights: ScalarVector<C::F>,
++  o_weights: ScalarVector<C::F>,
++  cg_weights: Vec<ScalarVector<C::F>>,
++  v_weights: ScalarVector<C::F>,
++  c_sum: C::F,
++}
++
++impl<C: Ciphersuite> ConstraintAccumulator<C> {
++  /// Create a new accumulator.
++  ///
++  /// `n` is the amount of rows (generators), `c` the amount of Pedersen vector commitments, `m`
++  /// the amount of Pedersen commitments, and `z` the statement's `z` challenge. For accumulating
++  /// the constraints of a proof being verified, use `PendingVerification::accumulator`.
++  pub fn new(n: usize, c: usize, m: usize, z: C::F) -> Result<Self, AcStatementError> {
++    // The check `ArithmeticCircuitStatement::new` performs, performed here prior to allocating
++    if c >= (usize::MAX >> 4) {
++      Err(AcStatementError::TooManyCommitments)?;
++    }
++
++    Ok(Self {
++      n,
++      z,
++      next_weight: z,
++      q: 0,
++      error: None,
++      individually_constrained: vec![false; m],
++      l_weights: ScalarVector::new(n),
++      r_weights: ScalarVector::new(n),
++      o_weights: ScalarVector::new(n),
++      // These grow as needed, starting at the minimum length `prove`'s truncation leaves
++      cg_weights: (0 .. c).map(|_| ScalarVector::new(1)).collect(),
++      v_weights: ScalarVector::new(m),
++      c_sum: C::F::ZERO,
++    })
++  }
++
++  /// The amount of constraints successfully pushed.
++  pub fn q(&self) -> usize {
++    self.q
++  }
++
++  /// Fold a constraint into this accumulator.
++  ///
++  /// The constraint is bound to evaluate to `0`, as with `ArithmeticCircuitStatement::new`.
++  // This takes the constraint by value so it's dropped once folded, as it's no longer needed
++  #[allow(clippy::needless_pass_by_value)]
++  pub fn push(&mut self, constraint: LinComb<C::F>) -> Result<(), AcStatementError> {
++    if let Some(err) = self.error {
++      Err(err)?;
++    }
++
++    // The checks `ArithmeticCircuitStatement::new` performs on each constraint, in the same order
++    let check = if Some(self.n) <= constraint.highest_a_index {
++      Err(AcStatementError::ConstrainedNonExistentTerm)
++    } else if Some(self.cg_weights.len()) <= constraint.highest_c_index {
++      Err(AcStatementError::ConstrainedNonExistentVectorCommitment)
++    } else if Some(self.v_weights.len()) <= constraint.highest_v_index {
++      Err(AcStatementError::ConstrainedNonExistentCommitment)
++    } else {
++      Ok(())
++    };
++    if let Err(err) = check {
++      self.error = Some(err);
++      Err(err)?;
++    }
++    if (constraint.WV.len() == 1) && bool::from(!constraint.WV[0].1.is_zero()) {
++      self.individually_constrained[constraint.WV[0].0] = true;
++    }
++
++    // All indexes are now known to be in-bounds
++    let z = self.next_weight;
++    accumulate_vector(&mut self.l_weights, &constraint.WL, z);
++    accumulate_vector(&mut self.r_weights, &constraint.WR, z);
++    accumulate_vector(&mut self.o_weights, &constraint.WO, z);
++    for (i, WCG) in constraint.WCG() {
++      let cg = &mut self.cg_weights[*i];
++      // Grow to include the highest index referenced, matching `prove`'s truncation
++      if let Some(hi) = WCG.iter().map(|(j, _)| *j).max() {
++        if cg.len() <= hi {
++          cg.0.resize(hi + 1, C::F::ZERO);
++        }
++      }
++      accumulate_vector(cg, WCG, z);
++    }
++    accumulate_vector(&mut self.v_weights, &constraint.WV, z);
++    self.c_sum += z * constraint.c;
++
++    self.q += 1;
++    self.next_weight *= self.z;
++    Ok(())
++  }
++
++  /// Finish accumulating, performing the checks `ArithmeticCircuitStatement::new` performs after
++  /// iterating over the constraints.
++  pub fn finish(self) -> Result<FoldedConstraints<C>, AcStatementError> {
++    if let Some(err) = self.error {
++      Err(err)?;
++    }
++    if self.individually_constrained.iter().any(|constrained| !constrained) {
++      Err(AcStatementError::DidNotConstrainCommitment)?;
++    }
++
++    let ConstraintAccumulator {
++      n,
++      z,
++      next_weight: _,
++      q,
++      error: _,
++      individually_constrained: _,
++      l_weights,
++      r_weights,
++      o_weights,
++      cg_weights,
++      v_weights,
++      c_sum,
++    } = self;
++    Ok(FoldedConstraints { n, z, q, l_weights, r_weights, o_weights, cg_weights, v_weights, c_sum })
++  }
++}
++
++/// An arithmetic circuit statement whose constraints are provided folded, after the proof's
++/// transcript has been processed.
++///
++/// This enables verifying a proof without storing the statement's constraints. The transcript is
++/// processed (`FoldedStatement::verify_transcript`), yielding the challenge `z`. Then, the
++/// constraints are folded with `z` as they're produced (`PendingVerification::accumulator`), and
++/// the folded constraints are applied (`PendingVerification::apply`).
++///
++/// The caller is responsible for folding exactly the constraints of the intended relation. If
++/// other constraints are folded (such as no constraints at all), the proof is verified for that
++/// other relation (which may be trivially satisfiable).
++#[derive(Clone, Debug)]
++pub struct FoldedStatement<'a, C: Ciphersuite> {
++  generators: ProofGenerators<'a, C>,
++  C: PointVector<C>,
++  V: PointVector<C>,
++}
++
++impl<'a, C: Ciphersuite> FoldedStatement<'a, C> {
++  /// Create a new `FoldedStatement`.
++  ///
++  /// The same context as for `ArithmeticCircuitStatement::new` applies, except the constraints
++  /// are checked as they're folded (by `ConstraintAccumulator`).
++  pub fn new(
++    generators: ProofGenerators<'a, C>,
++    commitments: Commitments<C>,
++  ) -> Result<Self, AcStatementError> {
++    let Commitments { C, V } = commitments;
++    // The check `ArithmeticCircuitStatement::new` performs on the commitments
++    if C.len() >= (usize::MAX >> 4) {
++      Err(AcStatementError::TooManyCommitments)?;
++    }
++    Ok(Self { generators, C, V })
++  }
++
++  /// The amount of rows within the resulting inner-product argument.
++  pub fn n(&self) -> usize {
++    self.generators.len()
++  }
++
++  /// The amount of Pedersen vector commitments.
++  pub fn c(&self) -> usize {
++    self.C.len()
++  }
++
++  /// The amount of Pedersen commitments.
++  pub fn m(&self) -> usize {
++    self.V.len()
++  }
+ }
+ 
+ struct YzChallenges<C: Ciphersuite> {
+@@ -641,6 +974,9 @@ pub enum AcVerifyError {
+   IncorrectAmountOfGenerators,
+   /// The proof wasn't complete and the necessary values could not be read from the transcript.
+   IncompleteProof,
++  /// The folded constraints provided weren't folded for this statement (as their dimensions or
++  /// challenge differ from the statement's).
++  InconsistentFoldedConstraints,
+ }
+ 
+ impl<C: Ciphersuite> ArithmeticCircuitStatement<'_, C>
+@@ -660,28 +996,100 @@ where
+     verifier: &mut BatchVerifier<C>,
+     transcript: &mut VerifierTranscript,
+   ) -> Result<(), AcVerifyError> {
+-    if verifier.g_bold.len() < self.generators.len() {
+-      verifier.g_bold.resize(self.generators.len(), C::F::ZERO);
+-      verifier.h_bold.resize(self.generators.len(), C::F::ZERO);
+-      verifier.h_sum.resize(self.generators.len(), C::F::ZERO);
++    let ArithmeticCircuitStatement { generators, constraints, C, V } = self;
++    let (n, c, m) = (generators.len(), C.len(), V.len());
++
++    // `ArithmeticCircuitStatement::new` performed all checks `FoldedStatement::new` does
++    let pending =
++      FoldedStatement { generators, C, V }.verify_transcript(rng, verifier, transcript)?;
++    let folded = fold_stored_constraints(&constraints, n, c, m, pending.z());
++    pending.apply(folded)
++  }
++}
++
++/// A proof whose transcript has been processed, pending the application of the statement's folded
++/// constraints.
++///
++/// This holds the `BatchVerifier` the proof is being queued into. If this is dropped without
++/// `PendingVerification::apply` having succeeded, the `BatchVerifier` is corrupted so that it
++/// fails to verify. Else, it'd check the proof against an empty set of constraints (which is
++/// trivially satisfiable).
++#[must_use]
++pub struct PendingVerification<'v, C: Ciphersuite> {
++  verifier: &'v mut BatchVerifier<C>,
++  applied: bool,
++
++  n: usize,
++  c: usize,
++  m: usize,
++
++  z: C::F,
++  y_inv: ScalarVector<C::F>,
++  // `x**n'`
++  x_ni: C::F,
++  // The verifier weight for the verifier's final Step 4 in the 'fixed' paper
++  t_verifier_weight: C::F,
++  // The powers of `x`, multiplied by the verifier weight for the verifier's final Steps 3, 5 in
++  // the 'fixed' paper
++  weighted_x: ScalarVector<C::F>,
++
++  V: PointVector<C>,
++}
++
++impl<C: Ciphersuite> Drop for PendingVerification<'_, C> {
++  fn drop(&mut self) {
++    if !self.applied {
++      // Fail closed by adding a term for `g` no honest proof will cancel out
++      self.verifier.g += C::F::ONE;
+     }
++  }
++}
+ 
+-    let n = self.n();
+-    let c = self.c();
++impl<C: Ciphersuite> FoldedStatement<'_, C>
++where
++  C::F: FromUniformBytes<64>,
++  C::G: ConditionallySelectable,
++{
++  /// Process the transcript of a proof for this statement, yielding a `PendingVerification`.
++  ///
++  /// This reads the entire proof from the transcript and queues everything not dependent on the
++  /// constraints for batch verification. The verification is only complete once
++  /// `PendingVerification::apply` is called with the statement's folded constraints.
++  ///
++  /// If this function returns an error, the BatchVerifier MUST be assumed corrupted and discarded.
++  pub fn verify_transcript<'v, R: RngCore + CryptoRng>(
++    self,
++    rng: &mut R,
++    verifier: &'v mut BatchVerifier<C>,
++    transcript: &mut VerifierTranscript,
++  ) -> Result<PendingVerification<'v, C>, AcVerifyError> {
++    let FoldedStatement { generators, C, V } = self;
++
++    if verifier.g_bold.len() < generators.len() {
++      verifier.g_bold.resize(generators.len(), C::F::ZERO);
++      verifier.h_bold.resize(generators.len(), C::F::ZERO);
++      verifier.h_sum.resize(generators.len(), C::F::ZERO);
++    }
++
++    let n = generators.len();
++    let c = C.len();
++    let m = V.len();
+ 
+     let ni = (2 * c) + 2;
+ 
+     let ilr = ni / 2;
+     let io = ni;
+     let is = ni + 1;
+-    let jo = 0;
+ 
+     let AI = transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
+     let AO = transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
+     let S = transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
+     let y = transcript.challenge::<C>();
+     let z = transcript.challenge::<C>();
+-    let YzChallenges { y_inv, z } = self.yz_challenges(y, z);
++    // This is `yz_challenges` without the powers of `z`, which are applied as the constraints are
++    // folded
++    let y_inv = y.invert().expect("y challenge was zero");
++    let y_inv = ScalarVector::powers(y_inv, n);
+ 
+     // The fixed GBP paper writes this as `2 * (ni + 1)` (inclusive), but this is exclusive
+     let t_poly_len = (2 * (ni + 1)) + 1;
+@@ -695,52 +1103,22 @@ where
+     }
+     let x: ScalarVector<C::F> = ScalarVector::powers(transcript.challenge::<C>(), t_poly_len);
+ 
+-    let mut l_weights = ScalarVector::new(n);
+-    let mut r_weights = ScalarVector::new(n);
+-    let mut o_weights = ScalarVector::new(n);
+-    for (constraint, z) in self.constraints.iter().zip(&z.0) {
+-      accumulate_vector(&mut l_weights, &constraint.WL, *z);
+-      accumulate_vector(&mut r_weights, &constraint.WR, *z);
+-      accumulate_vector(&mut o_weights, &constraint.WO, *z);
+-    }
+-    let r_weights = r_weights * &y_inv;
+-
+-    let delta = r_weights.inner_product(l_weights.0.iter());
+-
+     let tau_x = transcript.read_scalar::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
+     let mu = transcript.read_scalar::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
+     let t_caret = transcript.read_scalar::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
+ 
+     // Lines 88-90, modified per Generalized Bulletproofs as needed w.r.t. `t`
+     // This corresponds to the verifier's final Step 4 in the 'fixed' paper
++    let t_verifier_weight = C::F::random(&mut *rng);
++    let x_ni = x[ni];
+     {
+-      let verifier_weight = C::F::random(&mut *rng);
++      let verifier_weight = t_verifier_weight;
+       // lhs of the equation, weighted to enable batch verification
+       verifier.g += t_caret * verifier_weight;
+       verifier.h += tau_x * verifier_weight;
+ 
+       // rhs of the equation, negated to cause a sum to zero
+-
+-      /*
+-        `delta - z...`, instead of `delta + z...`, is because we write our constraint as
+-        `+ c = 0`, not `= c`, so we have to subtract it from both sides, which this effects.
+-      */
+-      verifier.g -= verifier_weight *
+-        x[ni] *
+-        (delta - z.inner_product(self.constraints.iter().map(|constraint| &constraint.c)));
+-      let mut V_weights = ScalarVector::new(self.V.len());
+-      for (constraint, z) in self.constraints.iter().zip(&z.0) {
+-        accumulate_vector(&mut V_weights, &constraint.WV, *z);
+-      }
+-      V_weights = V_weights * x[ni];
+-      for pair in V_weights.0.into_iter().zip(self.V.0) {
+-        /*
+-          We actually don't negate `verifier_weight` here as we write our constraint as
+-          `... + WV V = 0` not `= WV V + ..`. This means we need to subtract it from both sides,
+-          which this effects.
+-        */
+-        verifier.additional.push((verifier_weight * pair.0, pair.1));
+-      }
++      // The terms for `delta`, the constants, and `V` are added by `PendingVerification::apply`
+       for (i, T) in T_before_ni.into_iter().enumerate() {
+         verifier.additional.push((-verifier_weight * x[(ni / 2) + i], T));
+       }
+@@ -769,37 +1147,15 @@ where
+       verifier.additional.push((x[is], S));
+ 
+       // Lines 85-87 calculate `WL`, `WR`, `WO`
+-      // We preserve them in terms of `g_bold` and `h_bold` for a more efficient multiexp
+-      let mut h_bold_scalars = l_weights * x[ilr];
+-      for (i, wr) in (r_weights * x[ilr]).0.into_iter().enumerate() {
+-        verifier.g_bold[i] += wr;
+-      }
+-      h_bold_scalars = h_bold_scalars + &(o_weights * x[jo]);
++      // These are added in terms of `g_bold` and `h_bold` by `PendingVerification::apply`
+ 
+-      for i in 0 .. self.C.len() {
+-        let mut cg = ScalarVector::new(n);
+-        for (constraint, z) in self.constraints.iter().zip(&z.0) {
+-          if let Some(WCG) = constraint.WCG().get(&i) {
+-            accumulate_vector(&mut cg, WCG, *z);
+-          }
+-        }
+-
+-        // Push the terms for `C`, which increment from `0`, and the terms for `WC`, which
+-        // decrement from `n'`
+-        {
+-          let C = self.C.0[i];
+-          let WCG = cg;
+-          let i = 1 + i;
+-          let j = ni - i;
+-          verifier.additional.push((x[j], C));
+-          h_bold_scalars = h_bold_scalars + &(WCG * x[i]);
+-        }
+-      }
+-
+-      // All terms for `h_bold` here have actually been for `h_bold'`, `h_bold * y^{-1}`
+-      h_bold_scalars = h_bold_scalars * &y_inv;
+-      for (i, scalar) in h_bold_scalars.0.into_iter().enumerate() {
+-        verifier.h_bold[i] += scalar;
++      // Push the terms for `C`, which increment from `0`
++      // The terms for `WC`, which decrement from `n'`, are added by `PendingVerification::apply`
++      for i in 0 .. c {
++        let C = C.0[i];
++        let i = 1 + i;
++        let j = ni - i;
++        verifier.additional.push((x[j], C));
+       }
+ 
+       // Remove `mu * h` from `P`
+@@ -811,11 +1167,151 @@ where
+     let ip_x = transcript.challenge::<C>();
+     // `P` is amended with this additional term
+     verifier.g += verifier_weight * ip_x * t_caret;
+-    IpStatement::new(self.generators, y_inv, ip_x, P::Verifier { verifier_weight })
++    IpStatement::new(generators, y_inv.clone(), ip_x, P::Verifier { verifier_weight })
+       .expect("created an invalid IpStatement")
+       .verify(verifier, transcript)
+       .map_err(|e| match e {
+         IpVerifyError::IncompleteProof => AcVerifyError::IncompleteProof,
+-      })
++      })?;
++
++    Ok(PendingVerification {
++      verifier,
++      applied: false,
++      n,
++      c,
++      m,
++      z,
++      y_inv,
++      x_ni,
++      t_verifier_weight,
++      weighted_x: x,
++      V,
++    })
+   }
+ }
++
++impl<C: Ciphersuite> PendingVerification<'_, C> {
++  /// The amount of rows within the inner-product argument.
++  pub fn n(&self) -> usize {
++    self.n
++  }
++
++  /// The amount of Pedersen vector commitments.
++  pub fn c(&self) -> usize {
++    self.c
++  }
++
++  /// The amount of Pedersen commitments.
++  pub fn m(&self) -> usize {
++    self.m
++  }
++
++  /// The statement's challenge `z`, which the constraints must be folded with.
++  pub fn z(&self) -> C::F {
++    self.z
++  }
++
++  /// Create a `ConstraintAccumulator` to fold this statement's constraints with.
++  pub fn accumulator(&self) -> Result<ConstraintAccumulator<C>, AcStatementError> {
++    ConstraintAccumulator::new(self.n, self.c, self.m, self.z)
++  }
++
++  /// Apply the statement's folded constraints, completing the queueing of this proof for batch
++  /// verification.
++  ///
++  /// If this function returns an error, the BatchVerifier MUST be assumed corrupted and discarded.
++  pub fn apply(mut self, folded: FoldedConstraints<C>) -> Result<(), AcVerifyError> {
++    let n = self.n;
++    let c = self.c;
++
++    // Check these constraints were folded for this statement, so the following can't panic
++    if (folded.n != n) ||
++      (folded.l_weights.len() != n) ||
++      (folded.r_weights.len() != n) ||
++      (folded.o_weights.len() != n) ||
++      (folded.cg_weights.len() != c) ||
++      folded.cg_weights.iter().any(|cg| cg.len() > n) ||
++      (folded.v_weights.len() != self.m) ||
++      (folded.z != self.z)
++    {
++      Err(AcVerifyError::InconsistentFoldedConstraints)?;
++    }
++
++    let FoldedConstraints {
++      n: _,
++      z: _,
++      q: _,
++      l_weights,
++      r_weights,
++      o_weights,
++      cg_weights,
++      v_weights,
++      c_sum,
++    } = folded;
++    let V = core::mem::replace(&mut self.V, PointVector(vec![]));
++    let verifier = &mut *self.verifier;
++
++    let ni = (2 * c) + 2;
++
++    let ilr = ni / 2;
++    let jo = 0;
++
++    let r_weights = r_weights * &self.y_inv;
++
++    let delta = r_weights.inner_product(l_weights.0.iter());
++
++    // The remainder of the verifier's final Step 4 in the 'fixed' paper
++    {
++      let verifier_weight = self.t_verifier_weight;
++
++      /*
++        `delta - z...`, instead of `delta + z...`, is because we write our constraint as
++        `+ c = 0`, not `= c`, so we have to subtract it from both sides, which this effects.
++      */
++      verifier.g -= verifier_weight * self.x_ni * (delta - c_sum);
++      let V_weights = v_weights * self.x_ni;
++      for pair in V_weights.0.into_iter().zip(V.0) {
++        /*
++          We actually don't negate `verifier_weight` here as we write our constraint as
++          `... + WV V = 0` not `= WV V + ..`. This means we need to subtract it from both sides,
++          which this effects.
++        */
++        verifier.additional.push((verifier_weight * pair.0, pair.1));
++      }
++    }
++
++    // The remainder of the verifier's final Steps 3, 5 in the 'fixed' paper
++    {
++      let x = &self.weighted_x;
++
++      // Lines 85-87 calculate `WL`, `WR`, `WO`
++      // We preserve them in terms of `g_bold` and `h_bold` for a more efficient multiexp
++      let mut h_bold_scalars = l_weights * x[ilr];
++      for (i, wr) in (r_weights * x[ilr]).0.into_iter().enumerate() {
++        verifier.g_bold[i] += wr;
++      }
++      h_bold_scalars = h_bold_scalars + &(o_weights * x[jo]);
++
++      // The terms for `WC`, which decrement from `n'`
++      for (i, WCG) in cg_weights.into_iter().enumerate() {
++        let i = 1 + i;
++        // `WCG` may be shorter than `h_bold_scalars`, yet all elided values are zero
++        for (dest, weight) in h_bold_scalars.0.iter_mut().zip(WCG.0) {
++          *dest += weight * x[i];
++        }
++      }
++
++      // All terms for `h_bold` here have actually been for `h_bold'`, `h_bold * y^{-1}`
++      h_bold_scalars = h_bold_scalars * &self.y_inv;
++      for (i, scalar) in h_bold_scalars.0.into_iter().enumerate() {
++        verifier.h_bold[i] += scalar;
++      }
++    }
++
++    self.applied = true;
++    Ok(())
++  }
++}
++
++#[cfg(test)]
++mod tests;
+diff --git a/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof/tests.rs b/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof/tests.rs
+new file mode 100644
+index 0000000..cc5ed19
+--- /dev/null
++++ b/crypto/generalized-bulletproofs/src/arithmetic_circuit_proof/tests.rs
+@@ -0,0 +1,716 @@
++// Tests for verifying with folded constraints (`ConstraintAccumulator`, `FoldedStatement`,
++// `PendingVerification`) against the original verifier, which stored its constraints.
++
++use rand_core::OsRng;
++
++use blake2::{Digest as _, Blake2b512};
++
++use ciphersuite::{
++  group::{
++    ff::{Field as _, PrimeField as _},
++    Group as _, GroupEncoding as _,
++  },
++  Ristretto,
++};
++
++use crate::{Generators, tests::insecure_test_generators};
++
++use super::*;
++
++type F = <Ristretto as Ciphersuite>::F;
++type G = <Ristretto as Ciphersuite>::G;
++
++/// A deterministic RNG, so two verifiers may sample identical weights.
++///
++/// This is solely for these tests and is not secure for any other purpose.
++#[derive(Clone)]
++struct DeterministicRng {
++  seed: [u8; 32],
++  counter: u64,
++}
++impl DeterministicRng {
++  fn new() -> Self {
++    let mut seed = [0; 32];
++    OsRng.fill_bytes(&mut seed);
++    Self { seed, counter: 0 }
++  }
++}
++impl RngCore for DeterministicRng {
++  fn next_u32(&mut self) -> u32 {
++    rand_core::impls::next_u32_via_fill(self)
++  }
++  fn next_u64(&mut self) -> u64 {
++    rand_core::impls::next_u64_via_fill(self)
++  }
++  fn fill_bytes(&mut self, dest: &mut [u8]) {
++    for chunk in dest.chunks_mut(64) {
++      let block = Blake2b512::new()
++        .chain_update(self.seed)
++        .chain_update(self.counter.to_le_bytes())
++        .finalize();
++      self.counter += 1;
++      chunk.copy_from_slice(&block[.. chunk.len()]);
++    }
++  }
++  fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), rand_core::Error> {
++    self.fill_bytes(dest);
++    Ok(())
++  }
++}
++impl CryptoRng for DeterministicRng {}
++
++/// Assert two batch verifiers are equivalent.
++///
++/// `additional` is only ever summed (within a multiexp), so its order is irrelevant. It's
++/// compared as a multiset.
++fn assert_verifiers_equivalent(a: &BatchVerifier<Ristretto>, b: &BatchVerifier<Ristretto>) {
++  assert_eq!(a.g, b.g);
++  assert_eq!(a.h, b.h);
++  assert_eq!(a.g_bold, b.g_bold);
++  assert_eq!(a.h_bold, b.h_bold);
++  assert_eq!(a.h_sum, b.h_sum);
++  let sorted = |additional: &[(F, G)]| {
++    let mut res = additional
++      .iter()
++      .map(|(scalar, point)| (scalar.to_repr(), point.to_bytes()))
++      .collect::<Vec<_>>();
++    res.sort_unstable();
++    res
++  };
++  assert_eq!(sorted(&a.additional), sorted(&b.additional));
++}
++
++const N: usize = 16;
++
++/// A random, satisfied statement and a proof for it.
++struct Instance {
++  generators: Generators<Ristretto>,
++  constraints: Vec<LinComb<F>>,
++  commitments: Commitments<Ristretto>,
++  c: usize,
++  m: usize,
++  proof: Vec<u8>,
++}
++
++impl Instance {
++  // This is the fuzz test from `tests/arithmetic_circuit_proof.rs`, returning its instance
++  fn random() -> Self {
++    let generators = insecure_test_generators(&mut OsRng, 2 * N).unwrap();
++
++    let mut aL = vec![];
++    let mut aR = vec![];
++    while aL.len() < ((OsRng.next_u64() % 8) + 1).try_into().unwrap() {
++      aL.push(F::random(&mut OsRng));
++    }
++    while aR.len() < aL.len() {
++      aR.push(F::random(&mut OsRng));
++    }
++    let aO = aL.iter().copied().zip(&aR).map(|(l, r)| l * r).collect::<Vec<_>>();
++
++    let mut C = vec![];
++    while C.len() < (OsRng.next_u64() % 16).try_into().unwrap() {
++      let mut g_values = vec![];
++      while g_values.len() < ((OsRng.next_u64() % 8) + 1).try_into().unwrap() {
++        g_values.push(F::random(&mut OsRng));
++      }
++      C.push(PedersenVectorCommitment { g_values, mask: F::random(&mut OsRng) });
++    }
++
++    let mut constraints = vec![];
++
++    let mut V = vec![];
++    while V.len() < (OsRng.next_u64() % 4).try_into().unwrap() {
++      V.push(PedersenCommitment { value: F::random(&mut OsRng), mask: F::random(&mut OsRng) });
++
++      // Ensure this has at least one constraint constraining it
++      let mut constraint = LinComb::empty();
++      constraint = constraint.term(-F::ONE, Variable::V(V.len() - 1));
++      constraint = constraint.constant(V[V.len() - 1].value);
++      constraints.push(constraint);
++    }
++
++    for _ in 0 .. (OsRng.next_u64() % 8).try_into().unwrap() {
++      let mut eval = F::ZERO;
++      let mut constraint = LinComb::empty();
++
++      for _ in 0 .. (OsRng.next_u64() % 4) {
++        let index = usize::try_from(OsRng.next_u64()).unwrap() % aL.len();
++        let weight = F::random(&mut OsRng);
++        constraint = constraint.term(weight, Variable::aL(index));
++        eval += weight * aL[index];
++      }
++
++      for _ in 0 .. (OsRng.next_u64() % 4) {
++        let index = usize::try_from(OsRng.next_u64()).unwrap() % aR.len();
++        let weight = F::random(&mut OsRng);
++        constraint = constraint.term(weight, Variable::aR(index));
++        eval += weight * aR[index];
++      }
++
++      for _ in 0 .. (OsRng.next_u64() % 4) {
++        let index = usize::try_from(OsRng.next_u64()).unwrap() % aO.len();
++        let weight = F::random(&mut OsRng);
++        constraint = constraint.term(weight, Variable::aO(index));
++        eval += weight * aO[index];
++      }
++
++      for (commitment, C) in C.iter().enumerate() {
++        for _ in 0 .. (OsRng.next_u64() % 4) {
++          let index = usize::try_from(OsRng.next_u64()).unwrap() % C.g_values.len();
++          let weight = F::random(&mut OsRng);
++          constraint = constraint.term(weight, Variable::CG { commitment, index });
++          eval += weight * C.g_values[index];
++        }
++      }
++
++      if !V.is_empty() {
++        for _ in 0 .. (OsRng.next_u64() % 4) {
++          let index = usize::try_from(OsRng.next_u64()).unwrap() % V.len();
++          let weight = F::random(&mut OsRng);
++          constraint = constraint.term(weight, Variable::V(index));
++          eval += weight * V[index].value;
++        }
++      }
++
++      constraint = constraint.constant(-eval);
++
++      constraints.push(constraint);
++    }
++
++    let mut transcript = Transcript::new([0; 32]);
++    let commitments = transcript.write_commitments(
++      C.iter().map(|C| C.commit(generators.g_bold_slice(), generators.h()).unwrap()).collect(),
++      V.iter().map(|V| V.commit(generators.g(), generators.h())).collect(),
++    );
++
++    let statement = ArithmeticCircuitStatement::<Ristretto>::new(
++      generators.reduce(N).unwrap(),
++      constraints.clone(),
++      commitments.clone(),
++    )
++    .unwrap();
++    let c = C.len();
++    let m = V.len();
++    let witness = ArithmeticCircuitWitness::<Ristretto>::new(aL, aR, C, V).unwrap();
++    statement.prove(&mut OsRng, &mut transcript, witness).unwrap();
++    let proof = transcript.complete();
++
++    Instance { generators, constraints, commitments, c, m, proof }
++  }
++
++  fn statement(&self) -> ArithmeticCircuitStatement<'_, Ristretto> {
++    ArithmeticCircuitStatement::new(
++      self.generators.reduce(N).unwrap(),
++      self.constraints.clone(),
++      self.commitments.clone(),
++    )
++    .unwrap()
++  }
++
++  fn folded_statement(&self) -> FoldedStatement<'_, Ristretto> {
++    FoldedStatement::new(self.generators.reduce(N).unwrap(), self.commitments.clone()).unwrap()
++  }
++
++  // Run a verification function over a (potentially malleated) proof
++  fn verify_with(
++    &self,
++    rng: &DeterministicRng,
++    proof: &[u8],
++    verify: impl FnOnce(
++      &mut DeterministicRng,
++      &mut BatchVerifier<Ristretto>,
++      &mut VerifierTranscript,
++    ) -> Result<(), AcVerifyError>,
++  ) -> (Result<(), AcVerifyError>, BatchVerifier<Ristretto>) {
++    let mut rng = rng.clone();
++    let mut verifier = Generators::batch_verifier();
++    let mut transcript = VerifierTranscript::new([0; 32], proof);
++    let res = match transcript.read_commitments::<Ristretto>(self.c, self.m) {
++      Ok(_) => verify(&mut rng, &mut verifier, &mut transcript),
++      Err(_) => Err(AcVerifyError::IncompleteProof),
++    };
++    (res, verifier)
++  }
++}
++
++/// Fold constraints naively, with explicitly calculated powers of `z`.
++#[allow(clippy::type_complexity)]
++fn naive_fold(
++  constraints: &[LinComb<F>],
++  n: usize,
++  c: usize,
++  m: usize,
++  z: F,
++) -> (Vec<F>, Vec<F>, Vec<F>, Vec<Vec<F>>, Vec<F>, F) {
++  let mut l = vec![F::ZERO; n];
++  let mut r = vec![F::ZERO; n];
++  let mut o = vec![F::ZERO; n];
++  let mut cg = vec![vec![F::ZERO; n]; c];
++  let mut v = vec![F::ZERO; m];
++  let mut c_sum = F::ZERO;
++  for (k, constraint) in constraints.iter().enumerate() {
++    // The first constraint is weighted by `z**1`
++    let z = z.pow_vartime([u64::try_from(k + 1).unwrap()]);
++    for (i, weight) in constraint.WL() {
++      l[*i] += *weight * z;
++    }
++    for (i, weight) in constraint.WR() {
++      r[*i] += *weight * z;
++    }
++    for (i, weight) in constraint.WO() {
++      o[*i] += *weight * z;
++    }
++    for (i, WCG) in constraint.WCG() {
++      for (j, weight) in WCG {
++        cg[*i][*j] += *weight * z;
++      }
++    }
++    for (i, weight) in constraint.WV() {
++      v[*i] += *weight * z;
++    }
++    c_sum += constraint.c() * z;
++  }
++  (l, r, o, cg, v, c_sum)
++}
++
++#[test]
++fn test_split_verify_matches_legacy_verify() {
++  for _ in 0 .. 50 {
++    let instance = Instance::random();
++    let rng = DeterministicRng::new();
++
++    let (legacy_res, legacy_verifier) =
++      instance.verify_with(&rng, &instance.proof, |rng, verifier, transcript| {
++        instance.statement().legacy_verify(rng, verifier, transcript)
++      });
++    let (res, verifier) = instance.verify_with(&rng, &instance.proof, |rng, verifier, transcript| {
++      instance.statement().verify(rng, verifier, transcript)
++    });
++    let (folded_res, folded_verifier) =
++      instance.verify_with(&rng, &instance.proof, |rng, verifier, transcript| {
++        let pending = instance.folded_statement().verify_transcript(rng, verifier, transcript)?;
++        let mut accumulator = pending.accumulator().unwrap();
++        for constraint in instance.constraints.clone() {
++          accumulator.push(constraint).unwrap();
++        }
++        pending.apply(accumulator.finish().unwrap())
++      });
++
++    legacy_res.unwrap();
++    res.unwrap();
++    folded_res.unwrap();
++    assert_verifiers_equivalent(&legacy_verifier, &verifier);
++    assert_verifiers_equivalent(&legacy_verifier, &folded_verifier);
++    assert!(instance.generators.verify(legacy_verifier));
++    assert!(instance.generators.verify(verifier));
++    assert!(instance.generators.verify(folded_verifier));
++
++    // Malleate the proof, ensuring the verifiers still match and the proof is rejected
++    for _ in 0 .. 8 {
++      let mut proof = instance.proof.clone();
++      let i = usize::try_from(OsRng.next_u64() % u64::try_from(proof.len()).unwrap()).unwrap();
++      let existing_byte = proof[i];
++      while proof[i] == existing_byte {
++        proof[i] = u8::try_from(OsRng.next_u64() & u64::from(u8::MAX)).unwrap();
++      }
++
++      let (legacy_res, legacy_verifier) =
++        instance.verify_with(&rng, &proof, |rng, verifier, transcript| {
++          instance.statement().legacy_verify(rng, verifier, transcript)
++        });
++      let (res, verifier) = instance.verify_with(&rng, &proof, |rng, verifier, transcript| {
++        instance.statement().verify(rng, verifier, transcript)
++      });
++      assert_eq!(legacy_res, res);
++      if res.is_ok() {
++        assert_verifiers_equivalent(&legacy_verifier, &verifier);
++        assert!(!instance.generators.verify(legacy_verifier));
++        assert!(!instance.generators.verify(verifier));
++      }
++    }
++  }
++}
++
++#[test]
++fn test_accumulator_matches_fold_constraints() {
++  for _ in 0 .. 50 {
++    let instance = Instance::random();
++    let statement = instance.statement();
++    let z = F::random(&mut OsRng);
++
++    let mut accumulator =
++      ConstraintAccumulator::<Ristretto>::new(N, instance.c, instance.m, z).unwrap();
++    for constraint in instance.constraints.clone() {
++      accumulator.push(constraint).unwrap();
++    }
++    assert_eq!(accumulator.q(), instance.constraints.len());
++    let accumulated = accumulator.finish().unwrap();
++    let stored = statement.fold_constraints(z);
++
++    assert_eq!(accumulated.n(), N);
++    assert_eq!(accumulated.c(), instance.c);
++    assert_eq!(accumulated.m(), instance.m);
++    assert_eq!(accumulated.z(), z);
++    assert_eq!(accumulated.q(), instance.constraints.len());
++    assert_eq!(accumulated.l_weights(), stored.l_weights());
++    assert_eq!(accumulated.r_weights(), stored.r_weights());
++    assert_eq!(accumulated.o_weights(), stored.o_weights());
++    for i in 0 .. instance.c {
++      assert_eq!(accumulated.cg_weights(i).unwrap(), stored.cg_weights(i).unwrap());
++    }
++    assert_eq!(accumulated.cg_weights(instance.c), None);
++    assert_eq!(accumulated.v_weights(), stored.v_weights());
++    assert_eq!(accumulated.c_sum(), stored.c_sum());
++    assert_eq!(accumulated, stored);
++
++    // Check against a naive folding, which doesn't truncate the vector commitments' weights
++    let (l, r, o, cg, v, c_sum) =
++      naive_fold(&instance.constraints, N, instance.c, instance.m, z);
++    assert_eq!(accumulated.l_weights(), l.as_slice());
++    assert_eq!(accumulated.r_weights(), r.as_slice());
++    assert_eq!(accumulated.o_weights(), o.as_slice());
++    for (i, cg) in cg.iter().enumerate() {
++      let truncated = accumulated.cg_weights(i).unwrap();
++      assert!(!truncated.is_empty());
++      // The truncation must only have elided zeroes
++      assert_eq!(truncated, &cg[.. truncated.len()]);
++      assert!(cg[truncated.len() ..].iter().all(|weight| bool::from(weight.is_zero())));
++      // The truncation must be to the highest index referenced, as `prove` truncates
++      let hi = instance
++        .constraints
++        .iter()
++        .filter_map(|constraint| constraint.WCG().get(&i))
++        .flat_map(|WCG| WCG.iter().map(|(j, _)| *j))
++        .max()
++        .unwrap_or(0);
++      assert_eq!(truncated.len(), hi + 1);
++    }
++    assert_eq!(accumulated.v_weights(), v.as_slice());
++    assert_eq!(accumulated.c_sum(), c_sum);
++  }
++}
++
++#[test]
++fn test_accumulator_errors_match_statement_new() {
++  const N: usize = 4;
++  let generators = insecure_test_generators::<_, Ristretto>(&mut OsRng, N).unwrap();
++  let commitments = Transcript::new([0; 32])
++    .write_commitments::<Ristretto>(vec![G::random(&mut OsRng)], vec![G::random(&mut OsRng)]);
++  let v = || LinComb::empty().term(F::ONE, Variable::V(0));
++
++  #[allow(clippy::type_complexity)]
++  let cases: Vec<(Vec<LinComb<F>>, Result<(), AcStatementError>)> = vec![
++    (vec![v()], Ok(())),
++    (vec![v(), LinComb::from(Variable::aL(N - 1)), LinComb::from(Variable::aO(N - 1))], Ok(())),
++    (
++      vec![v(), LinComb::from(Variable::CG { commitment: 0, index: N - 1 }).constant(F::ONE)],
++      Ok(()),
++    ),
++    (vec![v(), LinComb::from(Variable::aL(N))], Err(AcStatementError::ConstrainedNonExistentTerm)),
++    (vec![LinComb::from(Variable::aR(N)), v()], Err(AcStatementError::ConstrainedNonExistentTerm)),
++    (vec![v(), LinComb::from(Variable::aO(N))], Err(AcStatementError::ConstrainedNonExistentTerm)),
++    (
++      vec![v(), LinComb::from(Variable::CG { commitment: 0, index: N })],
++      Err(AcStatementError::ConstrainedNonExistentTerm),
++    ),
++    (
++      vec![v(), LinComb::from(Variable::CG { commitment: 1, index: 0 })],
++      Err(AcStatementError::ConstrainedNonExistentVectorCommitment),
++    ),
++    (vec![LinComb::from(Variable::V(1))], Err(AcStatementError::ConstrainedNonExistentCommitment)),
++    // The first error is the one returned
++    (
++      vec![
++        LinComb::from(Variable::CG { commitment: 1, index: 0 }),
++        LinComb::from(Variable::aL(N)),
++      ],
++      Err(AcStatementError::ConstrainedNonExistentVectorCommitment),
++    ),
++    (
++      vec![LinComb::from(Variable::aL(N)).term(F::ONE, Variable::CG { commitment: 1, index: 0 })],
++      Err(AcStatementError::ConstrainedNonExistentTerm),
++    ),
++    (vec![], Err(AcStatementError::DidNotConstrainCommitment)),
++    (
++      vec![LinComb::empty().term(F::ZERO, Variable::V(0))],
++      Err(AcStatementError::DidNotConstrainCommitment),
++    ),
++    (vec![v() + &v()], Err(AcStatementError::DidNotConstrainCommitment)),
++    // A bounds error takes precedence over the commitment not being constrained
++    (vec![LinComb::from(Variable::aL(N))], Err(AcStatementError::ConstrainedNonExistentTerm)),
++  ];
++
++  for (constraints, expected) in cases {
++    let new = ArithmeticCircuitStatement::new(
++      generators.reduce(N).unwrap(),
++      constraints.clone(),
++      commitments.clone(),
++    )
++    .map(|_| ());
++    assert_eq!(new, expected);
++
++    let z = F::random(&mut OsRng);
++    let mut accumulator = ConstraintAccumulator::<Ristretto>::new(N, 1, 1, z).unwrap();
++    let mut first_err = None;
++    for constraint in constraints.clone() {
++      if let Err(err) = accumulator.push(constraint) {
++        first_err.get_or_insert(err);
++      }
++    }
++    let accumulated = accumulator.clone().finish();
++    assert_eq!(accumulated.as_ref().map(|_| ()).map_err(|err| *err), expected);
++    if let Some(err) = first_err {
++      assert_eq!(Err(err), expected);
++      // The accumulator retains its error
++      assert_eq!(accumulator.push(v()), Err(err));
++      assert_eq!(accumulator.finish().map(|_| ()), Err(err));
++    } else if let Ok(accumulated) = accumulated {
++      let statement = ArithmeticCircuitStatement::new(
++        generators.reduce(N).unwrap(),
++        constraints,
++        commitments.clone(),
++      )
++      .unwrap();
++      assert_eq!(accumulated, statement.fold_constraints(z));
++    }
++  }
++
++  assert_eq!(
++    ConstraintAccumulator::<Ristretto>::new(N, usize::MAX >> 4, 0, F::ONE),
++    Err(AcStatementError::TooManyCommitments)
++  );
++}
++
++impl<C: Ciphersuite> ArithmeticCircuitStatement<'_, C>
++where
++  C::F: FromUniformBytes<64>,
++  C::G: ConditionallySelectable,
++{
++  // A verbatim copy of `ArithmeticCircuitStatement::verify` prior to it being split into
++  // `FoldedStatement::verify_transcript` and `PendingVerification::apply`, solely renamed
++  fn legacy_verify<R: RngCore + CryptoRng>(
++    self,
++    rng: &mut R,
++    verifier: &mut BatchVerifier<C>,
++    transcript: &mut VerifierTranscript,
++  ) -> Result<(), AcVerifyError> {
++    if verifier.g_bold.len() < self.generators.len() {
++      verifier.g_bold.resize(self.generators.len(), C::F::ZERO);
++      verifier.h_bold.resize(self.generators.len(), C::F::ZERO);
++      verifier.h_sum.resize(self.generators.len(), C::F::ZERO);
++    }
++
++    let n = self.n();
++    let c = self.c();
++
++    let ni = (2 * c) + 2;
++
++    let ilr = ni / 2;
++    let io = ni;
++    let is = ni + 1;
++    let jo = 0;
++
++    let AI = transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++    let AO = transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++    let S = transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++    let y = transcript.challenge::<C>();
++    let z = transcript.challenge::<C>();
++    let YzChallenges { y_inv, z } = self.yz_challenges(y, z);
++
++    // The fixed GBP paper writes this as `2 * (ni + 1)` (inclusive), but this is exclusive
++    let t_poly_len = (2 * (ni + 1)) + 1;
++    let mut T_before_ni = Vec::with_capacity(ni - (ni / 2));
++    for _ in (ni / 2) .. ni {
++      T_before_ni.push(transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?);
++    }
++    let mut T_after_ni = Vec::with_capacity(t_poly_len - (ni + 1));
++    for _ in (ni + 1) .. t_poly_len {
++      T_after_ni.push(transcript.read_point::<C>().map_err(|_| AcVerifyError::IncompleteProof)?);
++    }
++    let x: ScalarVector<C::F> = ScalarVector::powers(transcript.challenge::<C>(), t_poly_len);
++
++    let mut l_weights = ScalarVector::new(n);
++    let mut r_weights = ScalarVector::new(n);
++    let mut o_weights = ScalarVector::new(n);
++    for (constraint, z) in self.constraints.iter().zip(&z.0) {
++      accumulate_vector(&mut l_weights, &constraint.WL, *z);
++      accumulate_vector(&mut r_weights, &constraint.WR, *z);
++      accumulate_vector(&mut o_weights, &constraint.WO, *z);
++    }
++    let r_weights = r_weights * &y_inv;
++
++    let delta = r_weights.inner_product(l_weights.0.iter());
++
++    let tau_x = transcript.read_scalar::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++    let mu = transcript.read_scalar::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++    let t_caret = transcript.read_scalar::<C>().map_err(|_| AcVerifyError::IncompleteProof)?;
++
++    // Lines 88-90, modified per Generalized Bulletproofs as needed w.r.t. `t`
++    // This corresponds to the verifier's final Step 4 in the 'fixed' paper
++    {
++      let verifier_weight = C::F::random(&mut *rng);
++      // lhs of the equation, weighted to enable batch verification
++      verifier.g += t_caret * verifier_weight;
++      verifier.h += tau_x * verifier_weight;
++
++      // rhs of the equation, negated to cause a sum to zero
++
++      /*
++        `delta - z...`, instead of `delta + z...`, is because we write our constraint as
++        `+ c = 0`, not `= c`, so we have to subtract it from both sides, which this effects.
++      */
++      verifier.g -= verifier_weight *
++        x[ni] *
++        (delta - z.inner_product(self.constraints.iter().map(|constraint| &constraint.c)));
++      let mut V_weights = ScalarVector::new(self.V.len());
++      for (constraint, z) in self.constraints.iter().zip(&z.0) {
++        accumulate_vector(&mut V_weights, &constraint.WV, *z);
++      }
++      V_weights = V_weights * x[ni];
++      for pair in V_weights.0.into_iter().zip(self.V.0) {
++        /*
++          We actually don't negate `verifier_weight` here as we write our constraint as
++          `... + WV V = 0` not `= WV V + ..`. This means we need to subtract it from both sides,
++          which this effects.
++        */
++        verifier.additional.push((verifier_weight * pair.0, pair.1));
++      }
++      for (i, T) in T_before_ni.into_iter().enumerate() {
++        verifier.additional.push((-verifier_weight * x[(ni / 2) + i], T));
++      }
++      for (i, T) in T_after_ni.into_iter().enumerate() {
++        verifier.additional.push((-verifier_weight * x[ni + 1 + i], T));
++      }
++    }
++
++    // This corresponds to the verifier's final Steps 3, 5 in the 'fixed' paper
++
++    let verifier_weight = C::F::random(&mut *rng);
++    // Multiply `x` by `verifier_weight` as this effects `verifier_weight` onto most scalars and
++    // saves a notable amount of operations
++    let x = x * verifier_weight;
++
++    // This following block effectively calculates P, within the multiexp
++    {
++      verifier.additional.push((x[ilr], AI));
++      verifier.additional.push((x[io], AO));
++      // `h_bold' * y` is equivalent to `h_bold` as `h_bold'` _is_ `h_bold * y^{-1}`
++      let mut log2_n = 0;
++      while (1 << log2_n) != n {
++        log2_n += 1;
++      }
++      verifier.h_sum[log2_n] -= verifier_weight;
++      verifier.additional.push((x[is], S));
++
++      // Lines 85-87 calculate `WL`, `WR`, `WO`
++      // We preserve them in terms of `g_bold` and `h_bold` for a more efficient multiexp
++      let mut h_bold_scalars = l_weights * x[ilr];
++      for (i, wr) in (r_weights * x[ilr]).0.into_iter().enumerate() {
++        verifier.g_bold[i] += wr;
++      }
++      h_bold_scalars = h_bold_scalars + &(o_weights * x[jo]);
++
++      for i in 0 .. self.C.len() {
++        let mut cg = ScalarVector::new(n);
++        for (constraint, z) in self.constraints.iter().zip(&z.0) {
++          if let Some(WCG) = constraint.WCG().get(&i) {
++            accumulate_vector(&mut cg, WCG, *z);
++          }
++        }
++
++        // Push the terms for `C`, which increment from `0`, and the terms for `WC`, which
++        // decrement from `n'`
++        {
++          let C = self.C.0[i];
++          let WCG = cg;
++          let i = 1 + i;
++          let j = ni - i;
++          verifier.additional.push((x[j], C));
++          h_bold_scalars = h_bold_scalars + &(WCG * x[i]);
++        }
++      }
++
++      // All terms for `h_bold` here have actually been for `h_bold'`, `h_bold * y^{-1}`
++      h_bold_scalars = h_bold_scalars * &y_inv;
++      for (i, scalar) in h_bold_scalars.0.into_iter().enumerate() {
++        verifier.h_bold[i] += scalar;
++      }
++
++      // Remove `mu * h` from `P`
++      verifier.h -= verifier_weight * mu;
++    }
++
++    // Prove for lines 88, 92 with an Inner-Product statement
++    // This inlines Protocol 1, as our IpStatement implements Protocol 2
++    let ip_x = transcript.challenge::<C>();
++    // `P` is amended with this additional term
++    verifier.g += verifier_weight * ip_x * t_caret;
++    IpStatement::new(self.generators, y_inv, ip_x, P::Verifier { verifier_weight })
++      .expect("created an invalid IpStatement")
++      .verify(verifier, transcript)
++      .map_err(|e| match e {
++        IpVerifyError::IncompleteProof => AcVerifyError::IncompleteProof,
++      })
++  }
++}
++
++#[test]
++fn test_pending_verification_fails_closed() {
++  let instance = loop {
++    let instance = Instance::random();
++    // Ensure there's a vector commitment, so `c` may be off-by-one in both directions
++    if instance.c != 0 {
++      break instance;
++    }
++  };
++
++  /*
++    Process the transcript, then:
++    - `None`: drop the pending verification without applying any folded constraints
++    - `Some((n, c, z_offset))`: fold the constraints for these dimensions, with `z + z_offset`,
++      and apply them
++
++    Returns the result of `apply` (`None` if it wasn't called) and if the batch verified.
++  */
++  let verify = |fold: Option<(usize, usize, F)>| {
++    let mut verifier = Generators::batch_verifier();
++    let mut transcript = VerifierTranscript::new([0; 32], &instance.proof);
++    transcript.read_commitments::<Ristretto>(instance.c, instance.m).unwrap();
++    let pending = instance
++      .folded_statement()
++      .verify_transcript(&mut OsRng, &mut verifier, &mut transcript)
++      .unwrap();
++    let res = fold.and_then(|(n, c, z_offset)| {
++      let mut accumulator =
++        ConstraintAccumulator::<Ristretto>::new(n, c, pending.m(), pending.z() + z_offset)
++          .unwrap();
++      for constraint in instance.constraints.clone() {
++        // This may fail when the dimensions are reduced, in which case `pending` is dropped
++        accumulator.push(constraint).ok()?;
++      }
++      Some(pending.apply(accumulator.finish().ok()?))
++    });
++    (res, instance.generators.verify(verifier))
++  };
++
++  // Correctly folded constraints verify
++  assert_eq!(verify(Some((N, instance.c, F::ZERO))), (Some(Ok(())), true));
++
++  // Dropping the pending verification without applying folded constraints fails closed
++  assert_eq!(verify(None), (None, false));
++
++  // Constraints folded with another `z`, or for other dimensions, are rejected
++  for fold in [(N, instance.c, F::ONE), (2 * N, instance.c, F::ZERO), (N, instance.c + 1, F::ZERO)]
++  {
++    assert_eq!(
++      verify(Some(fold)),
++      (Some(Err(AcVerifyError::InconsistentFoldedConstraints)), false)
++    );
++  }
++  // These may fail to accumulate, yet must be rejected regardless
++  for fold in [(N / 2, instance.c, F::ZERO), (N, instance.c - 1, F::ZERO)] {
++    let (res, valid) = verify(Some(fold));
++    assert!(matches!(res, None | Some(Err(AcVerifyError::InconsistentFoldedConstraints))));
++    assert!(!valid);
++  }
++}
+diff --git a/crypto/generalized-bulletproofs/src/transcript.rs b/crypto/generalized-bulletproofs/src/transcript.rs
+index ea8bb0d..edc0dc8 100644
+--- a/crypto/generalized-bulletproofs/src/transcript.rs
++++ b/crypto/generalized-bulletproofs/src/transcript.rs
+@@ -131,6 +131,10 @@ impl Transcript {
+ }
+ 
+ /// A transcript for verifying proofs.
++///
++/// This may be cloned in order to replay a deterministic sequence of challenges (such as when
++/// constructing a circuit twice). A clone evolves independently of the original.
++#[derive(Clone)]
+ pub struct VerifierTranscript<'a> {
+   digest: Blake2b512,
+   transcript: &'a [u8],
+-- 
+2.43.0
+

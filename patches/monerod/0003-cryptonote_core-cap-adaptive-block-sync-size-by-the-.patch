@@ -1,0 +1,58 @@
+From 90921e2b3674cf87b15937cb56c78073eb10a0bc Mon Sep 17 00:00:00 2001
+From: optimizer <optimizer@hydrogen>
+Date: Mon, 2 Nov 2026 20:33:30 +0000
+Subject: [PATCH 3/5] cryptonote_core: cap adaptive block sync size by the
+ block weight limit
+
+The adaptive estimate in get_block_sync_size only looks at blocks we already
+have. After >=100 near-empty blocks it requests BLOCKS_MAX_WINDOW blocks; if
+the following blocks are large the NOTIFY_RESPONSE_GET_OBJECTS exceeds
+LEVIN_DEFAULT_MAX_PACKET_SIZE, the connection is dropped and the identical
+request is retried forever (seen on stressnet at height 3105401: 134 MB
+response). Cap the request so that N * block_weight_limit stays within 90%
+of the packet limit. Explicit --block-sync-size is not affected.
+---
+ src/cryptonote_core/cryptonote_core.cpp | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/src/cryptonote_core/cryptonote_core.cpp b/src/cryptonote_core/cryptonote_core.cpp
+index ff0b05106..6af08fefe 100644
+--- a/src/cryptonote_core/cryptonote_core.cpp
++++ b/src/cryptonote_core/cryptonote_core.cpp
+@@ -39,6 +39,7 @@ using namespace epee;
+ #include <unordered_set>
+ #include <thread>
+ #include "cryptonote_core.h"
++#include "net/levin_base.h"
+ #include "common/util.h"
+ #include "common/updates.h"
+ #include "common/download.h"
+@@ -958,6 +959,25 @@ namespace cryptonote
+         res = batch_max_weight / projected_blocksize;
+         MINFO("projected blocksize is " << projected_blocksize << " bytes, sync " << res << " blocks in next batch");
+       }
++
++      // The estimate above only looks backward, at blocks we already have. After a run of
++      // near-empty blocks it asks for BLOCKS_MAX_WINDOW blocks even if the next blocks are
++      // large, and the peer's NOTIFY_RESPONSE_GET_OBJECTS can then exceed the levin packet
++      // limit: the connection is dropped and the same request is retried forever.
++      // Bound the request by the consensus block weight limit instead: a block's serialized
++      // size does not exceed its weight, so N blocks at the limit fit in N * limit bytes
++      // (plus small per-block/per-tx overhead, covered by the 10% margin).
++      const uint64_t weight_limit = m_blockchain_storage.get_current_cumulative_block_weight_limit();
++      if (weight_limit > 0)
++      {
++        const uint64_t budget = LEVIN_DEFAULT_MAX_PACKET_SIZE / 10 * 9;
++        const size_t cap = std::max<uint64_t>(1, budget / weight_limit);
++        if (res > cap)
++        {
++          MINFO("capping block sync size from " << res << " to " << cap << " blocks (block weight limit " << weight_limit << " bytes)");
++          res = cap;
++        }
++      }
+     }
+ 
+     static size_t max_block_size = 0;
+-- 
+2.43.0
+

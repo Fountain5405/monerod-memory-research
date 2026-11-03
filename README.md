@@ -25,4 +25,5 @@ How much can monerod memory use be reduced *for real*, without weakening verific
 - `evidence/`: small raw evidence (CSVs, summaries, environment captures, diffs).
 - `~/work/research-artifacts/`: large artifacts (heaptrack captures, logs, DB snapshots), indexed by sha256 in `evidence/ARTIFACTS.sha256`.
 - `FINDINGS.md`: current ranked findings; becomes the final report.
+- `patches/`: **the code**: the ordered `git format-patch` series for the recommended build (1 monero-oxide patch, 5 monerod patches) with reproduction instructions. Per-step diffs also sit under `evidence/`.
 - `reports/`: owner-facing write-ups: SUMMARY.md (results), HOW-IT-WORKS.md and HOW-IT-WORKS-plain.md (the mechanism, technical and plain language), REVIEW-70pct.md (a critical re-check of the headline), E001-sync-wedge-ISSUE.md.

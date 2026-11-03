@@ -1,0 +1,43 @@
+From 2e80c06853d4a5811258e13560e185ce6a1b5a01 Mon Sep 17 00:00:00 2001
+From: optimizer <optimizer@hydrogen>
+Date: Mon, 2 Nov 2026 21:44:39 +0000
+Subject: [PATCH 1/5] rctSigs: cap FCMP++ batch verification at physical cores
+
+Peak memory during sync scales with concurrently verifying FCMP++ batches
+(~200 MB transient per batch). SMT siblings add memory without throughput.
+Stressnet A/B (E004a, --max-concurrency 12 vs 24 on 12C/24T): peak RssAnon
+5614 -> 3393 MB (-39.6%), wall 221 -> 197 s.
+---
+ src/ringct/rctSigs.cpp | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/src/ringct/rctSigs.cpp b/src/ringct/rctSigs.cpp
+index 02a8e2d65..7c4caf6c9 100644
+--- a/src/ringct/rctSigs.cpp
++++ b/src/ringct/rctSigs.cpp
+@@ -36,6 +36,7 @@
+ #include "misc_log_ex.h"
+ #include "common/perf_timer.h"
+ #include "common/threadpool.h"
++#include <boost/thread/thread.hpp>
+ #include "common/util.h"
+ #include "fcmp_pp/fcmp_pp_crypto.h"
+ #include "fcmp_pp/fcmp_pp_types.h"
+@@ -1675,7 +1676,13 @@ done:
+ 
+       tools::threadpool &tpool = tools::threadpool::getInstanceForCompute();
+       tools::threadpool::waiter waiter(tpool);
+-      const std::size_t n_threads = std::max<std::size_t>(1, tpool.get_max_concurrency());
++      // Each concurrently verifying batch holds a large transient working set (the per-proof
++      // FCMP++ circuit, ~200 MB on stressnet), so peak memory scales with the number of batches.
++      // Verification is compute-bound and gains nothing from SMT siblings, so use at most one batch
++      // per physical core (falls back to the pool size if the core count is unknown).
++      const std::size_t pool_threads = std::max<std::size_t>(1, tpool.get_max_concurrency());
++      const std::size_t physical_cores = boost::thread::physical_concurrency();
++      const std::size_t n_threads = physical_cores > 0 ? std::min(pool_threads, physical_cores) : pool_threads;
+       const bool multithreaded = n_threads > 1;
+ 
+       // 1 batch per thread
+-- 
+2.43.0
+

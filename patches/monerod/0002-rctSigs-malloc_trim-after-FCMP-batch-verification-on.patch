@@ -1,0 +1,32 @@
+From 3ffb58c7745f0a01cc13bae2dc6907699852c46a Mon Sep 17 00:00:00 2001
+From: optimizer <optimizer@hydrogen>
+Date: Mon, 2 Nov 2026 23:07:29 +0000
+Subject: [PATCH 2/5] rctSigs: malloc_trim after FCMP++ batch verification (on
+ top of the batch cap)
+
+---
+ src/ringct/rctSigs.cpp | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/src/ringct/rctSigs.cpp b/src/ringct/rctSigs.cpp
+index 7c4caf6c9..81247ec51 100644
+--- a/src/ringct/rctSigs.cpp
++++ b/src/ringct/rctSigs.cpp
+@@ -1766,6 +1766,14 @@ done:
+       if (multithreaded)
+         CHECK_AND_ASSERT_THROW_MES(waiter.wait(), "Failed to batch verify FCMP++ proofs");
+ 
++      // Each batch just freed a large transient working set (the per-proof FCMP++ circuits, ~200 MB
++      // per batch on stressnet). glibc keeps freed memory inside each thread's arena, so without a
++      // trim RSS grows to (threads that ever ran a batch) x (per-thread high-water mark) and stays
++      // there after sync. Return it to the OS once per batch-verify call (once per block).
++#if defined(__GLIBC__)
++      malloc_trim(0);
++#endif
++
+       for (bool r : results) {
+         if (!r)
+           return false;
+-- 
+2.43.0
+

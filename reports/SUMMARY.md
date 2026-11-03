@@ -63,6 +63,9 @@ A critical re-check of the raw data and source is in reports/REVIEW-70pct.md. Sh
 - **About two thirds of the win is cryptographic code not yet reviewed by cryptographers** (E007, ~1,000 lines in monero-oxide). It was reviewed by me and then by an independent Fable-tier agent (reports/E007-crypto-review.md: no soundness bug, no new panic, fail-closed holds; one medium test gap, being closed). That is still not an audit. Without it, the ~15-line cap + trim changes give about -45%, and the zero-code `--max-concurrency 12` gives -40%.
 - `malloc_trim` is glibc-only. FCMP++ itself is still a beta (stressnet), not mainnet.
 
+## The code
+`patches/`: the full ordered patch series (monero-oxide + monerod) with build instructions. Source trees on the work box: `~/work/monero-oxide-e007` (c215a80) and `~/work/monero-fcmp-adapt` (4a51d434d).
+
 ## How it works
 Two explanations of the mechanism, written at the owner's request: reports/HOW-IT-WORKS.md (technical: where the memory went, the streaming verifier's design and fail-closed properties, the cap and the trim, where to look in the code) and reports/HOW-IT-WORKS-plain.md (plain language).
 

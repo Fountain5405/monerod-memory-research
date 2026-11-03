@@ -343,3 +343,4 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Findings: F1 medium, the FCMP-level equivalence test compares against the refactored stored path, not the base verifier (base equivalence rests on legacy_verify over small random instances). F2/F3 low hardening. F4-F6 notes.
 - Corrected one claim in my E007 notes ("old stored path kept").
 - Queued E016 (STATE, F2) to close F1 with a verbatim-base equivalence test and a differential fuzz, after E014 frees the box.
+- 12:02 Owner asked where the code is. Added patches/ (git format-patch series from both trees, with a README on how to rebuild) and linked it from README and SUMMARY.
