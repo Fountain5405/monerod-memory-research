@@ -2,7 +2,7 @@
 
 Two versions of the verifier change are kept on purpose (owner, 2026-11-03):
 - **`v1-E007-full-streaming/`**: the measured, validated series (E007 streaming verifier, ~1,000 code lines in monero-oxide restructuring `ArithmeticCircuitStatement::verify`, + ~1,200 lines of tests; independent review in reports/E007-crypto-review.md). Largest saving; largest review burden.
-- **`v2-E017-minimal/`** (crate tests passing, node-level measurement E018 pending): same idea with the stock `verify` left byte-identical; fcmps pre-folds each circuit into one constraint. Target ~150-200 code lines. See experiments/E017-minimal-streaming.
+- **`v2-E017-minimal/`** (measured at the node in E018/E019: same memory as v1, negdiff identical to base, but heavy blocks +43-57% wall over v1 and small-tx blocks +12-17% over stock; the alternative series, not the recommended one): same idea with the stock `verify` left byte-identical; fcmps pre-folds each circuit into one constraint. Target ~150-200 code lines. See experiments/E017-minimal-streaming.
 
 Both share the same monerod patches 0001-0003 and 0005; only 0004 (the cargo `[patch]` glue) points at a different monero-oxide branch.
 
@@ -56,7 +56,7 @@ To build the intermediate configurations instead: 0001 only = E004c; 0001+0002 =
 ## Crate tests
 In the patched monero-oxide: `cargo test -p full-chain-membership-proofs --release -- --skip prove_benchmark` and `cargo test -p generalized-bulletproofs --release`. The full fcmps suite including `test_malleated_proofs` takes ~45 min on a 3900X.
 
-## v2: E017 minimal streaming verifier (crate tests passing; node-level measurement E018 pending)
+## v2: E017 minimal streaming verifier (measured in E018/E019; alternative to v1, which stays recommended on speed)
 Same monerod changes as v1. In monero-oxide the audited `ArithmeticCircuitStatement::verify` is left byte-identical; instead fcmps hands it ONE pre-folded constraint `sum(z^k c_k)`, which `verify` weights by `z`, giving the same `sum(z^(k+1) c_k)` it computed from the stored constraints. Design and results: experiments/E017-minimal-streaming/README.md.
 
 | patch | what | measured as |

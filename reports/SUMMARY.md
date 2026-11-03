@@ -120,6 +120,7 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
 | E007 | streaming verifier | 2.3 GB (-59%) | -50% | +3% | component |
 | E008 combo | E004c + E004e + E007 + E001 | 1.75-1.86 GB (-67%) | -47% | +15% | superseded |
 | **E012 adapt** | combo with an adaptive cap and trim | **1.64-1.78 GB (-68%)** | **-50%** | **+4%** | **recommended** |
+| E017 e017 (v2) | adapt's monerod changes + the pre-folded verifier (stock `verify` untouched, ~1/3 of the diff) | 1.63 GB (-70%) | -29% | +12% | alternative (E018) |
 
 ## Guardrails: how we know nothing was weakened
 - Every run ends on the same block hash as the reference node (E004-E013).
@@ -177,7 +178,8 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
 
 ## Still running / next
 - E014 thread-count sweep: done (above).
-- E018 (hydrogen): node-level measurement of the v2 / E017 folded verifier against base and adapt (heavy, small-tx, negdiff, min_mem, long resync).
+- E018 (hydrogen): done (experiments/E018-node-level-v2, F31). v2 keeps v1's memory (heavy peak +2.6%, idle -16%, cgroup minimum 1,765 vs 1,866 MB, long-resync peak -72%) and its correctness (negdiff identical to base, 236 cases; all hashes), but fails the pre-registered speed criterion: heavy window +43% wall over v1, small-tx +12% over base, long resync +5.1% over base where v1 is -4.6%. **v1 / adapt stays the recommended build; v2 is the small-diff alternative (reports/HOW-IT-WORKS.md 2.1b).**
 - E019 (box81): done (above).
-- Base-equivalence test for E007 / v1 (the crypto review's F1): only if v1 stays the recommended series; v2 closes it by construction. Decide after E018.
+- E016, base-equivalence test for E007 / v1 (the crypto review's F1): now needed, since v1 stays the recommended series.
+- E020 candidate: v2 with two builds instead of three (peek z1 and z2 both from the discard build, fold c1 and c2 in one pass), to recover v1's speed with v2's diff.
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth); W002 measurement next.

@@ -1,0 +1,17 @@
+chain e018 start 2026-11-03T12:47:22+00:00
+e014 complete and go-marker present; starting 2026-11-03T15:25:53+00:00
+b180679 E017: verify FCMPs with the constraints folded into one as they are produced
+4bf0c13 fcmps: extract verifier_layout and build_verifier_circuits
+BUILD_OK
+119b94b0345bed42859985dcc3d8217035bab8e04b890e739285a678bbd0a9c3  /home/optimizer/work/monero-fcmp-e017/build/beta31-e017/bin/monerod
+no shadow processes
+governor schedutil -> performance
+(a) heavy A/B done 2026-11-03T16:33:19+00:00
+(b) small-tx A/B done 2026-11-03T17:40:46+00:00
+(c) negdiff done 2026-11-03T17:54:33+00:00: DIFF PASS / DIFF PASS
+min_mem ref wall 157 s
+(d) min_mem done 2026-11-03T18:08:49+00:00: RESULT: minimum passing MemoryMax for e017 = 1765 MB (largest failing = 1663 MB, tol 125 MB)
+(e) long resync done 2026-11-03T18:37:08+00:00
+governor restored to schedutil
+done 2026-11-03T18:37:08+00:00
+CHAIN_E018_COMPLETE

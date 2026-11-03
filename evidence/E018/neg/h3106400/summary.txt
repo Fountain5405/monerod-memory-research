@@ -1,0 +1,16 @@
+negdiff start 2026-11-03T17:50:10+00:00 snap=/home/optimizer/work/research-artifacts/snapshots/stressnet_h3106400 H=3106400 scan=400
+RESULT OK height 3106400
+[base] 2d1e3e9c17518b12 height="height": 3106400
+H=3106400 txs=3 inputs=[2, 2, 2] cases={'tampered': 96, 'swapped': 2, 'original': 3} wrong=0
+PASS
+[base] 27 s; log lines 'Failed to verify input FCMP++': 98
+[e017] 119b94b0345bed42 height="height": 3106400
+H=3106400 txs=3 inputs=[2, 2, 2] cases={'tampered': 96, 'swapped': 2, 'original': 3} wrong=0
+PASS
+[e017] 5 s; log lines 'Failed to verify input FCMP++': 98
+/home/optimizer/work/research-artifacts/e018_neg/h3106400/e017.json: 101 cases, (status, flags) disagreements: 0, reason-text differences: 0
+/home/optimizer/work/research-artifacts/e018_neg/h3106400/base.json: PASS=True n={'tampered': 96, 'swapped': 2, 'original': 3} inputs=[2, 2, 2]
+/home/optimizer/work/research-artifacts/e018_neg/h3106400/e017.json: PASS=True n={'tampered': 96, 'swapped': 2, 'original': 3} inputs=[2, 2, 2]
+oracle rejection flag mix: {'invalid_input': 98}
+DIFF PASS
+NEGDIFF_COMPLETE
