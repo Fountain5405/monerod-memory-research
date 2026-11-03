@@ -26,3 +26,6 @@ The problem is known and was worked on in October-December 2025. Upstream reduce
 
 ## Not checked
 Matrix rooms (#monero-stressnet, #monero-dev) and IRC logs were not searched; a verbal proposal there would not show up here. The monero-oxide repository has no issue or PR matching "streaming", "fold" or "constraint" besides #136.
+
+## Wallet sync (community note relayed by the owner, 2026-11-03)
+A developer comment seen in the Monero community chat, relayed by the owner on 2026-11-03: beta.3.1 carries a roughly 6x wallet sync speedup, a pending subaddress PR is expected to give about another 2x, there is "lots of low hanging fruit", and the old stressnet spam wallets could sync in under a minute if done efficiently, against over an hour today. What this means for the wallet track here: the monero-wallet-cli measured in W002 is built from the beta.3.1 tree, so the 6x is already in the baseline; the comment is about speed, and W002 measures memory, but a faster scanner that pulls and parses larger batches raises the refresh-time transients that W001 flagged as the likely wallet peak, so wallet speed work upstream and wallet memory here can pull in opposite directions. The spam wallets (many owned outputs) are the case our fresh wallet does not cover; W002's fresh wallet exercises the scan path only.

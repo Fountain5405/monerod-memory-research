@@ -23,8 +23,12 @@ $WC --version >> $C 2>&1
 pgrep -fa shadow | grep -v pgrep >> $C || echo "no shadow processes" >> $C
 ( while kill -0 $$ 2>/dev/null; do pgrep -fa shadow | grep -v pgrep > /dev/null && echo "SHADOW seen $(date -Is)" >> $C; sleep 60; done ) &
 
-rm -f $DD/testnet/lmdb/lock.mdb; cp $SNAP/testnet/lmdb/data.mdb $DD/testnet/lmdb/data.mdb
-echo "restored synced snapshot $(date -Is)" >> $C
+if [ -z "${SKIP_RESTORE:-}" ]; then
+  rm -f $DD/testnet/lmdb/lock.mdb; cp $SNAP/testnet/lmdb/data.mdb $DD/testnet/lmdb/data.mdb
+  echo "restored synced snapshot $(date -Is)" >> $C
+else
+  echo "SKIP_RESTORE set: DB left as restored by the previous attempt $(date -Is)" >> $C
+fi
 $D --testnet --data-dir $DD --offline --non-interactive --no-igd --rpc-bind-ip 127.0.0.1 --rpc-bind-port $PORT \
   --log-file $O/monerod.log --log-level 0 > $O/monerod.stdout 2>&1 &
 MP=$!
@@ -45,14 +49,22 @@ echo "run,restore_height,wall_s,peak_anon_MB,peak_rss_MB,vmhwm_MB,peak_privdirty
 run_wallet() {
   local tag=$1 rh=$2; shift 2
   rm -f $O/wallets/$tag $O/wallets/$tag.keys $O/wallets/$tag.address.txt
+  # step 1 (not measured): create the wallet and set its refresh height. wallet-cli ignores --restore-height for
+  # --generate-new-wallet (the smoke run of 22:56 refreshed from the daemon's tip), so set it as a wallet variable.
+  $WC --testnet --generate-new-wallet $O/wallets/$tag --password "" --mnemonic-language English \
+    --daemon-address 127.0.0.1:$PORT --trusted-daemon --log-file $O/$tag.create.log --log-level 1 \
+    --command set refresh-from-block-height $rh < /dev/null > $O/$tag.create.stdout 2>&1
+  echo "[$tag] created: $(grep -o 'refresh-from-block-height = [0-9]*' $O/$tag.create.stdout $O/$tag.create.log | tail -1)" >> $C
+  # step 2 (measured): open it and refresh
   local t0=$(date +%s)
-  "$@" $WC --testnet --generate-new-wallet $O/wallets/$tag --password "" --mnemonic-language English \
-    --restore-height $rh --daemon-address 127.0.0.1:$PORT --trusted-daemon \
+  "$@" $WC --testnet --wallet-file $O/wallets/$tag --password "" \
+    --daemon-address 127.0.0.1:$PORT --trusted-daemon \
     --log-file $O/$tag.wallet.log --log-level 1 --command refresh < /dev/null > $O/$tag.stdout 2>&1 &
   local WP=$! P=
   for i in $(seq 1 120); do
-    for p in $(pgrep -x monero-wallet-cli); do tr '\0' ' ' < /proc/$p/cmdline | grep -q -- "wallets/$tag " && P=$p; done
-    [ -n "$P" ] && break; sleep 1
+    # comm is truncated to 15 chars ("monero-wallet-c"), so match the command line, excluding the heaptrack wrapper
+    for p in $(pgrep -f -- "--wallet-file $O/wallets/$tag "); do grep -q "^Name:.monero-wallet-c" /proc/$p/status 2>/dev/null && P=$p; done
+    [ -n "$P" ] && break; kill -0 $WP 2>/dev/null || break; sleep 1
   done
   echo "[$tag] started $(date -Is) pid=${P:-none} wrapper=$WP rh=$rh" >> $C
   local cpu=
@@ -76,7 +88,8 @@ run_wallet() {
 
 # smoke: 270 blocks, must report a refresh
 run_wallet smoke 3123000
-if ! grep -q "^smoke,3123000,[0-9]*,[0-9]*,[0-9]*,[0-9]*,[0-9]*,0,[1-9]" $R; then
+echo "[smoke] $(grep -o 'Refresh starting from block [0-9]*' $O/smoke.wallet.log | head -1); $(grep -o 'blocks received: [0-9]*' $O/smoke.wallet.log | tail -1)" >> $C
+if ! grep -q "^smoke,3123000,[0-9]*,[0-9]*,[0-9]*,[0-9]*,[0-9]*,0,[1-9]" $R || ! grep -q "blocks received: [1-9]" $O/smoke.wallet.log; then
   echo "W002_SMOKE_FAIL (see $O/smoke.stdout, $O/smoke.wallet.log)" >> $C
   tail -20 $O/smoke.stdout >> $C
   sudo cpupower frequency-set -g $OLDGOV > /dev/null
