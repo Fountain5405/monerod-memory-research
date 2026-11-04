@@ -459,3 +459,6 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - 15/15 hashes. t8 vs t16: peak anon 471 vs 506 MB, CPU 157 vs 199 s, both with non-overlapping ranges. t32: no benefit, on just 5 differing blocks.
 - Caught before write-up: the harness wall and CPU columns are not like for like here, because arms overshot the end by 0-15 blocks (t8 most). Harness wall read +8.3%; on identical heights from log timestamps it is +2.8% (whole window) and +4.0% (8-input blocks). My first segment script also mislabelled a 2-input batch as the 16-input one (Synced N means up to index N-1); fixed before anything was recorded.
 - Cap and trim are switched together by heavy_call, so which gives the CPU saving is not separated. Below 8 is untestable on this chain. Guard launched: small-tx window x3, criterion in run_e022b.sh.
+
+## 2026-11-04 02:47 Check-in: E022 guard progressing
+- Run 1 of 6 (t16) syncing, no results yet, ETA ~03:25. Box quiet: no shadow lanes, 32 GB free, governor pinned for the chain. Peer watch: 192.168.1.116 is among .22's connections.
