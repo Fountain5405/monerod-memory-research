@@ -461,4 +461,4 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Cap and trim are switched together by heavy_call, so which gives the CPU saving is not separated. Below 8 is untestable on this chain. Guard launched: small-tx window x3, criterion in run_e022b.sh.
 
 ## 2026-11-04 02:47 Check-in: E022 guard progressing
-- Run 1 of 6 (t16) syncing, no results yet, ETA ~03:25. Box quiet: no shadow lanes, 32 GB free, governor pinned for the chain. Peer watch: 192.168.1.116 is among .22's connections.
+- Run 1 of 6 (t16) syncing, no results yet, ETA ~03:25. Box quiet: no shadow lanes, 32 GB free, governor pinned for the chain. Peer watch: 192.168.1.116 is among .22's connections at h=2204719, state=normal, connected 614s (still below the 3,105,401 wedge height).
