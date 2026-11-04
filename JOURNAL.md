@@ -454,3 +454,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 ## 2026-11-04 01:20 E022a scan done, E022 threshold sweep launched
 - Scan of 3,080,000-3,123,269 on our offline node: 762,594 txs, 99.6% with 1-2 inputs (759,840), 1,339 with 3-15, 148 with 16-63, 1,267 with 64 or more. Blocks by largest tx: 34,507 empty, 8,535 at 1-2, 43 at 3-7, 83 at 8-15, 21 at 16-31, 17 at 32-63, 64 at 64+. So only 104 of 43,270 blocks (0.24%) change behaviour for a threshold of 8, 16 or 32. Stressnet's mix is synthetic; it says nothing about how often mid-size proofs would occur on mainnet.
 - Contiguous stretch 3,106,069-3,106,110 (37 blocks at 8 inputs, 5 at 16) makes a targeted sweep cheap, with no new snapshot (pop_to from h3106400). t8 / t16 / t32 on the idle tree, 5 rounds because wall resolution is 2 s on a short window. Decision rule written into run_e022.sh before the data.
+
+## 2026-11-04 02:40 E022 window done: the pre-set rule selects threshold 8; guard running
+- 15/15 hashes. t8 vs t16: peak anon 471 vs 506 MB, CPU 157 vs 199 s, both with non-overlapping ranges. t32: no benefit, on just 5 differing blocks.
+- Caught before write-up: the harness wall and CPU columns are not like for like here, because arms overshot the end by 0-15 blocks (t8 most). Harness wall read +8.3%; on identical heights from log timestamps it is +2.8% (whole window) and +4.0% (8-input blocks). My first segment script also mislabelled a 2-input batch as the 16-input one (Synced N means up to index N-1); fixed before anything was recorded.
+- Cap and trim are switched together by heavy_call, so which gives the CPU saving is not separated. Below 8 is untestable on this chain. Guard launched: small-tx window x3, criterion in run_e022b.sh.
