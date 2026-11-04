@@ -506,3 +506,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Profile of e020 vs final, 2 rounds per arm: e020 +36.5% cycles. Field multiplication is 56% of the difference, symbols only e020 has are 34%, memmove + memset 3.8%. So E020's copying candidate explains little. Callers of the multiplication are inferred, because the profile has no call graphs. Going further depends on whether the owner wants v2.
 - The queue was otherwise empty, so I added the gaps I had been reporting as open. E025: the published v2 series with 0007 + 0008 has never been built, and E015's differential test predates the last two patches. E026: the 10 s trim interval is the last unswept tuning constant, and small-tx wall is the build's main cost. Expectations and the rule are in the script headers, written before the runs.
 - Slip: the profile script's shadow check matched my own launch shell, because the command text contained the word. No lanes ran; the chain's own check says so.
+
+## 2026-11-04 10:47 Check-in: E025 progressing
+- Build OK (v2final sha a9969e61). Differential test: DIFF PASS at both heights. Heavy window, 3 rounds, 6/6 reached the window end: final wall 111 s, v2final 140 s (harness figures, medians); peak anon 1,803 vs 1,675 MB; post-idle 1,129 vs 795 MB. Interim until the small-tx part is in and the log-based wall is read.
+- Small-tx round 1 of 3 running, E026 still waiting on the marker. Both ETAs still estimates, E025 about 11:10-11:25.
+- Box: no lanes, 32 GB free, governor pinned by the chain. Peer watch: 192.168.1.116 is among .22's connections at h=2291408, state=normal, up 23,098 blocks in 2 h, still below the 3,105,401 wedge height.
