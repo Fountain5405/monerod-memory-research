@@ -606,3 +606,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Queue empty except Needs owner, so I took the largest remaining gap in the report: final's cgroup minimum and long resync have only been measured on hydrogen, and base's minimum has not been re-measured against final since E009. E031 does both on box81, with long resync at 3 rounds rather than E023's 1. It uses an idle machine and does not change the recommendation. The owner asked earlier for box81 to be used for useful work.
 - Not started: anything on the E029 option (owner keeps final), the window-aware E001 cap (owner's call).
 - Peer watch: 192.168.1.116 not among .22 connections on two looks, second check in a row. Last seen at h=2303879 at 18:47. Cause not known from here.
+
+## 2026-11-04 23:38 Owner decision: v2 if anything goes upstream
+- Owner: the maintainers are not keen on merging LLM-generated code, so if anything it would be v2, because fewer lines change, with v1 referenced for its extra compute savings. I had recommended v1 on speed and had not weighed review burden.
+- Patch size including tests: v2 +985/-121, v1 +2,827/-188.
+- This makes v2final's gaps matter: its cgroup minimum, long resync and second-machine figures predate its last two patches. Queued E032 to fill them, after E031 so two boxes do not share .22 during timing. Queued E033, the monerod patches alone, as the smallest thing that could be presented.

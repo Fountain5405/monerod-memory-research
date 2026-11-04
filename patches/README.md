@@ -1,5 +1,7 @@
 # The code: patch series
 
+**If anything is presented upstream it is v2, with v1 referenced for its extra compute savings (owner, 2026-11-04).**
+
 Two versions of the verifier change are kept on purpose (owner, 2026-11-03):
 - **`v1-E007-full-streaming/`**: the measured, validated series (E007 streaming verifier, ~1,000 code lines in monero-oxide restructuring `ArithmeticCircuitStatement::verify`, + ~1,200 lines of tests; independent review in reports/E007-crypto-review.md). Largest saving; largest review burden.
 - **`v2-E017-minimal/`** (measured at the node in E018/E019/E020: same memory as v1, negdiff identical to base, but slower than v1: with all three patches, heavy blocks +28% wall over v1 (37% under stock) and small-tx blocks +3% over v1 (+8% over stock), and E025 found the same gap with E021 + E022 on both series (+27.5%, +2.7%); with 0001-0002 alone +43-57% and +12-17%; the alternative series, not the recommended one): same idea with the stock `verify` left byte-identical; fcmps pre-folds each circuit into one constraint. Target ~150-200 code lines. See experiments/E017-minimal-streaming.

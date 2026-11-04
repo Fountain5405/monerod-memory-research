@@ -180,6 +180,8 @@ Routing proofs under 8 inputs to the stored-circuit verifier gives, against fina
 - E007 is security-critical cryptographic code and **not audited**. Upstream use needs review by the FCMP++ authors.
 
 ## Upstreamability (if the owner wants it)
+**Owner's decision, 2026-11-04: if anything is presented to the maintainers, it is v2, because it changes fewer lines, with v1 referenced for its extra compute savings.** The maintainers are not keen on merging LLM-generated code, so review burden outweighs speed here. Patch size including tests: v2 +985/-121, v1 +2,827/-188. v1 is still the faster build and the one the headline tables measure; v2final's cgroup minimum, long resync and second-machine figures have not yet been measured with its last two patches. Nothing has been posted.
+
 | change | size | notes |
 |---|---|---|
 | E001 sync-size cap | ~10 lines | stressnet-tested. For post-FCMP++ mainnet use the owner's window-aware cap (simulated, not built) |
