@@ -1,0 +1,7 @@
+e022scan start 2026-11-04T00:59:36+00:00
+restored synced snapshot 2026-11-04T01:03:04+00:00
+node up height=3123270 pid=743066 2026-11-04T01:03:06+00:00
+done
+scan rc=0 2026-11-04T01:19:06+00:00 lines=43273
+node stopped 2026-11-04T01:19:08+00:00
+E022SCAN_COMPLETE
