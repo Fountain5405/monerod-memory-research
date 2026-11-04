@@ -560,3 +560,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Small-tx wall from logs, 5 rounds, 20/20 hashes: base 146.4, e007 151.9, inever 153.1, final 154.4 s. Verifier +3.8%, separate ranges, and all the CPU cost (+8.0%). Rest of adapt +0.8% and light-call trims +0.8%, overlapping, no visible CPU change.
 - Miss: the total was expected at about +6.6% from E023, measured +5.5%, the same as box81. E023's figure stays as measured, and SUMMARY now gives both.
 - No swept constant is left to recover the cost. What remains is the double circuit build.
+
+## 2026-11-04 17:21 E029 launched
+- E028 left one candidate for the small-tx wall cost: the second circuit build. The stored-circuit path already exists in the E007 tree as verify_stored, under cfg(test). So this is a small change: 8 lines route proofs under 8 inputs to it.
+- It may well raise the small-tx peak, since E028 shows the verifier also gives -15.6% there. The goal is memory, so the rule fixed in the script refuses to trade more than 5% of peak for speed. If it fails the rule it is reported as an option, not adopted.
+- The crate tests compile the routing out, so they keep testing streaming. The routing itself is exercised at the node, by negdiff and the window hashes.
