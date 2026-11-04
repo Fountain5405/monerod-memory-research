@@ -1,6 +1,6 @@
 # E023: validation of the final v1 series
 
-**Status: done, with one miss. Heavy-window peak, negative test, cgroup minimum, long resync and all hashes meet the expectations fixed before the run. Small-tx wall does not: +6.6% against base, expected no more than +6%. E023b attributes that miss.**
+**Status: done, with one miss. Heavy-window peak, negative test, cgroup minimum, long resync and all hashes meet the expectations fixed before the run. Small-tx wall does not: +6.6% against base, expected no more than +6%. E023b finds the last two patches are not responsible: the gap is adapt's own cost on this window, and E012's +4.0% understated it.**
 
 **Why:** the recommended build gained E021 (idle trim) and E022 (threshold 8) after E013 validated it. E013's negative test, cgroup minimum and long resync all predated those patches, and carrying them over was an argument from the code, not a test.
 
@@ -33,7 +33,20 @@ final vs base: peak anon **-68.5%**, private dirty -68.2%, RSS -56.4%, wall -49.
 | base | 1,095 (1,036-1,435) | 1,320 (1,188-1,572) | 149 (148-150) | 145.4 (144.4-145.8) | 1,095 (992-1,198) | 1,337 (1,327-1,342) | 3/3 |
 | final | 807 (798-811) | 986 (979-996) | 159 (156-159) | 155.0 (153.3-155.3) | 709 (707-714) | 1,437 (1,435-1,437) | 3/3 |
 
-final vs base: peak anon -26.3%, wall **+6.6%** on identical heights, CPU +7.5%, post-idle -35.3%. Wall ranges do not overlap, so the cost is real and it is above the +6% I expected. E012 measured adapt at +4.0% here (157 vs 151 s). Final's harness range of 156-159 s is the same as adapt's 156-159 s in E020, while base here ran 148-150 s against 151 s in E012, but those are comparisons across experiments. E023b measures adapt against final directly.
+final vs base: peak anon -26.3%, wall **+6.6%** on identical heights, CPU +7.5%, post-idle -35.3%. Wall ranges do not overlap, so the cost is real and it is above the +6% I expected. E012 measured adapt at +4.0% here (157 vs 151 s). Final's harness range of 156-159 s is the same as adapt's 156-159 s in E020, while base here ran 148-150 s against 151 s in E012, but those are comparisons across experiments. (b2) measures adapt against final directly.
+
+## (b2) E023b: are the last two patches responsible? adapt vs final, same window, 5 alternating rounds (min-max)
+
+| arm | wall s, logs over 3,106,405-3,107,400 | wall s, harness | peak RssAnon MB | post-idle RssAnon MB | CPU s | hashes |
+|---|---|---|---|---|---|---|
+| adapt | 154.4 (153.5-155.8) | 159 (157-161) | 807 (801-822) | 760 (756-778) | 1,448 (1,432-1,450) | 5/5 |
+| final | 152.7 (152.2-155.5) | 157 (156-159) | 821 (805-823) | 721 (712-727) | 1,440 (1,435-1,446) | 5/5 |
+
+final vs adapt: wall -1.1% with overlapping ranges, peak +1.7% with overlapping ranges, CPU -0.6%, post-idle -5.1%. `scripts/run_e023b.sh` fixed the reading before the run: ranges overlapping and medians within 1.5% means the last two patches are not responsible. **That is the case: the gap is adapt's own cost on this window.** It was there before E021 and E022.
+
+So E012's +4.0% (157 vs 151 s) understated it. adapt at 154.4 s here against base at 145.4 s in (b) is about +6%, but those two come from different chains (one hour apart, same box and setup), so that figure is indicative. The miss stands: my +6% line was set from E012's number, and the build does not meet it.
+
+Why the cost is larger on this window than on the dense stretch of the long resync (+4.1%, one run) was not investigated.
 
 ## (c) Negative test
 PASS at both heights: 128-, 8- and 2-input txs, 8 tampered copies of each rejected, the 3 originals accepted. evidence/E023/neg. The differential test E015 (236 cases against base as the oracle) was **not** rerun. E021 and E022 do not touch verification, so the argument that it carries over is from the code.
@@ -75,7 +88,7 @@ RssAnon per height segment, median MB (max), scripts/mem_segments.py:
 ## Reading
 - **The recommended build holds its memory result:** -68.5% peak on the heavy window, about -69% to -72% over the long resync, the same cgroup minimum, tampered proofs still rejected, and the chain state still identical.
 - **The heavy-window idle gain does not generalise:** -78.6% after the heavy window, -66.6% after a long sync ending in small blocks on the same sync settings.
-- **Small-tx wall is the price, and the +6% line was crossed.** Over the dense stretch of the long resync the gap is +4.1%, in one run. On the short small-tx window it is +6.6%, in three. The report now gives both.
+- **Small-tx wall is the price, and the +6% line was crossed.** Over the dense stretch of the long resync the gap is +4.1%, in one run. On the short small-tx window it is +6.6%, in three. The report now gives both. E023b shows this comes from adapt, not from E021 or E022.
 
 ## Guardrails
 - Binaries identified by sha256 in the chain log; final is byte-identical to the t8 measured in E022.

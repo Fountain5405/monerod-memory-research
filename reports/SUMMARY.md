@@ -5,7 +5,7 @@
 - -69% over an 18,000-block resync;
 - -67.5% in the minimum cgroup memory a sync can run under.
 
-Over the 18,000-block resync the recommended build is 5.4% faster overall: 2x faster on heavy blocks, 4.1% slower on dense small-tx blocks. On a 1,000-block window of small txs it is 6.6% slower, which is above the +6% I expected before E023 (see E023). All guardrails held: the same chain state as the reference node, invalid proofs still rejected (24/24 in E023; 236/236 identical decisions to base in the differential test E015, run on the build before E021 and E022), and no cost shifted to disk or swap.
+Over the 18,000-block resync the recommended build is 5.4% faster overall: 2x faster on heavy blocks, 4.1% slower on dense small-tx blocks. On a 1,000-block window of small txs it is 6.6% slower, which is above the +6% I expected before E023 (see E023; the last two patches are not the cause). All guardrails held: the same chain state as the reference node, invalid proofs still rejected (24/24 in E023; 236/236 identical decisions to base in the differential test E015, run on the build before E021 and E022), and no cost shifted to disk or swap.
 
 **Recommended build ("final", validated in E023; "adapt" in earlier experiments is this build without items 4 and the threshold of 8)** = beta.3.1 plus:
 1. The streaming FCMP++ verifier (E007).
@@ -44,7 +44,7 @@ These are single runs, and base itself moved between experiments (peak 5,369 her
 
 - No upward memory trend over the last 13,000 blocks: after the window final stays at 1.3-1.6 GB, rising about 260 MB up to 3,113,400 and then flat or falling, and it never passes its heavy-window peak. One run, so slow growth over a much longer sync is not excluded.
 - With DEFAULT sync settings (no `--block-sync-size`), final also synced all 18,000 blocks: peak 1,511 MB, 1,342 s, 5.9% more written. Base wedges there (E001).
-- On a 1,000-block window of small txs (E023, 3 rounds), final uses 807 MB vs base's 1,095 MB (-26%), and is 6.6% slower on identical heights (155.0 vs 145.4 s, ranges not overlapping). E012 measured adapt at +4.0% there; E023b compares adapt and final directly.
+- On a 1,000-block window of small txs (E023, 3 rounds), final uses 807 MB vs base's 1,095 MB (-26%), and is 6.6% slower on identical heights (155.0 vs 145.4 s, ranges not overlapping). E012 measured adapt at +4.0% there. A direct comparison (E023b, 5 rounds) shows the last two patches are not responsible (final vs adapt -1.1%, ranges overlapping), so the gap is adapt's own and E012 understated it.
 
 The owner's target was 40%. The minimum-cgroup number is the "real RAM a node needs" metric, because it counts heap, page cache, and everything else charged to the process.
 
@@ -114,7 +114,7 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
      - per-block trim +6.0% (~9 ms per block);
      - streaming verifier +2.7%.
    - adapt (E012) applies the cap and the per-call trim only when the largest proof has ≥ 16 inputs, and otherwise trims at most every 10 s.
-   - Result: small-tx blocks are +4% instead of +15%, the heavy window is unchanged, and the long resync is 4.6% faster than base.
+   - Result (as measured in E012/E013; later E023 measured +4.1% on the long resync's dense stretch and +6.6% on the short small-tx window): small-tx blocks are +4% instead of +15%, the heavy window is unchanged, and the long resync is 4.6% faster than base.
 
 ### Build history
 | build | what | heavy-window peak | heavy wall | small-tx wall | status |

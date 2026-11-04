@@ -1,0 +1,15 @@
+run,wall_s
+r1_adapt,155.2
+r1_final,152.7
+r2_adapt,155.8
+r2_final,155.1
+r3_adapt,153.5
+r3_final,152.2
+r4_adapt,153.9
+r4_final,152.3
+r5_adapt,154.4
+r5_final,155.5
+# adapt: median 154.4 min 153.5 max 155.8
+# final: median 152.7 min 152.2 max 155.5
+# final vs adapt: -1.1%
+# ranges overlap: yes

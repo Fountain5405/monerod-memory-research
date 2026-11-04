@@ -496,3 +496,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 ## 2026-11-04 08:47 Check-in: E023b progressing
 - 4 of 10 runs recorded, round 3 under way, ETA ~09:35. Interim wall from logs: adapt 155.2 and 155.8 s, final 152.7 and 155.1 s. Too few runs to read; the reading waits for all 5 rounds.
 - Box: no shadow lanes, 42 GB free, governor pinned by the chain. Peer watch: 192.168.1.116 is among .22's connections at h=2268310, state=normal, up 22,497 blocks in 2 h, still below the 3,105,401 wedge height.
+
+## 2026-11-04 09:32 E023b done: the small-tx miss comes from adapt, not from the last two patches; E024 launched
+- adapt vs final, 5 rounds, 10/10 hashes: wall 154.4 (153.5-155.8) vs 152.7 (152.2-155.5) s, -1.1%, ranges overlapping. Under the reading fixed in run_e023b.sh, the last two patches are not responsible. E023's miss stands: +6.6%. I set the +6% line from E012's +4.0%, which understated the cost.
+- Annotated SUMMARY's +4% lines rather than rewriting history: the E012/E013 result stays, marked with the later figures. Why the dense stretch of the long resync shows only +4.1% is not investigated.
+- E024 launched: flat perf profile of e020 vs final on the heavy window, the last item in the queue.
