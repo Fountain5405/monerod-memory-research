@@ -1,0 +1,56 @@
+chain e028 start 2026-11-04T14:50:38+00:00 load 0.00 0.00 0.00
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+ab3038be4bebeef83f4497e05dbeb749da0193dd5efb802eabf70e193ae591bb  /home/optimizer/work/monero-fcmp-e007/build/beta31-e007/bin/monerod
+3a858c3bb9a2fe848692bd22e460a3d8dafe175c7bd0b977c14af1399dc5adc9  /home/optimizer/work/research-artifacts/e026_bins/monerod-inever
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+no lanes
+governor schedutil -> performance
+governor restored schedutil
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| base | 5 | 1,073 (1,028-1,262) | 1,251 (1,157-1,404) | 4,114 (4,056-4,475) | 150 (149-152) | 1,016 (956-1,211) | 53 (49-54) | 1,123 (1,123-1,131) | 1,337 (1,333-1,343) | all yes |
+| e007 | 5 | 906 (895-938) | 1,080 (1,072-1,123) | 4,057 (4,038-4,080) | 156 (154-157) | 905 (895-938) | 52 (51-75) | 1,117 (1,117-1,131) | 1,444 (1,437-1,455) | all yes |
+| inever | 5 | 847 (841-857) | 1,018 (1,009-1,039) | 4,004 (3,996-4,009) | 157 (156-159) | 713 (710-728) | 52 (51-52) | 1,117 (1,117-1,123) | 1,442 (1,439-1,448) | all yes |
+| final | 5 | 818 (807-821) | 992 (987-1,025) | 3,945 (3,933-3,949) | 158 (157-159) | 717 (700-725) | 52 (51-69) | 1,117 (1,117-1,123) | 1,443 (1,440-1,448) | all yes |
+
+e007 vs base (medians): peak RssAnon MB -15.6%; peak Private_Dirty MB -13.7%; peak RSS MB -1.4%; wall s +4.0%; post-idle RssAnon MB -10.9%; read MB -1.9%; write MB -0.5%; CPU s +8.0%
+  peak anon ranges overlap: no (base 1,028-1,262, e007 895-938)
+inever vs base (medians): peak RssAnon MB -21.1%; peak Private_Dirty MB -18.6%; peak RSS MB -2.7%; wall s +4.7%; post-idle RssAnon MB -29.8%; read MB -1.9%; write MB -0.5%; CPU s +7.9%
+  peak anon ranges overlap: no (base 1,028-1,262, inever 841-857)
+final vs base (medians): peak RssAnon MB -23.8%; peak Private_Dirty MB -20.7%; peak RSS MB -4.1%; wall s +5.3%; post-idle RssAnon MB -29.4%; read MB -1.9%; write MB -0.5%; CPU s +7.9%
+  peak anon ranges overlap: no (base 1,028-1,262, final 807-821)
+run,wall_s
+r1_base,146.4
+r1_e007,151.9
+r1_final,153.8
+r1_inever,152.9
+r2_base,144.6
+r2_e007,152.9
+r2_final,154.5
+r2_inever,152.5
+r3_base,146.6
+r3_e007,151.3
+r3_final,154.7
+r3_inever,153.3
+r4_base,147.5
+r4_e007,152.1
+r4_final,152.3
+r4_inever,153.1
+r5_base,146.0
+r5_e007,151.9
+r5_final,154.4
+r5_inever,154.4
+# base: median 146.4 min 144.6 max 147.5
+# e007: median 151.9 min 151.3 max 152.9
+# final: median 154.4 min 152.3 max 154.7
+# inever: median 153.1 min 152.5 max 154.4
+# e007 vs base: +3.8%
+# ranges overlap: no
+# inever vs e007: +0.8%
+# ranges overlap: yes
+# final vs inever: +0.8%
+# ranges overlap: yes
+# final vs base: +5.5%
+# ranges overlap: no
+done 2026-11-04T17:18:01+00:00
+CHAIN_E028_COMPLETE

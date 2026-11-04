@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-04 16:47
+Last updated: 2026-11-04 17:30
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -50,7 +50,7 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
 
 - **E027a DONE 12:09 on box81 (hostname moonpie; e027a.chain there): final built from v1's published patches, tree hash equal to hydrogen's adbe70cf8, sha a9a22c46; differential test at 3,105,401: 135 cases, 0 disagreements with base, DIFF PASS. **
-- **E028 RUNNING on hydrogen since 14:50 (scripts/run_e028.sh, marker CHAIN_E028_COMPLETE in ~/work/research-artifacts/e028.chain; 20 runs, ETA ~17:20, an estimate): attributes the small-tx wall cost, arms base, e007, inever, final, 5 rounds. Report only. Expectations in the header.**
+- **E028 DONE 17:18 (experiments/E028-small-tx-attribution, F44, evidence/E028): small-tx wall base -> final +5.5%: verifier +3.8% (separate), rest of adapt +0.8%, light-call trims +0.8% (overlap). 20/20 hashes. Miss: total expected about +6.6%.**
 - **E027 DONE 14:48 (experiments/E027-final-on-box81, F43, evidence/E027): final on box81: heavy peak -61.0%, post-idle -76.3%, wall -42.3%; small-tx wall +5.5%, post-idle -27.9%; 13/13 hashes, no swap, differential 236/236. MISS: small-tx peak -18.8% vs about -33% expected; base's figure moved (904 vs 1,091 MB), final's did not (734 vs 729 MB).**
 - **E026 DONE 13:22 (experiments/E026-trim-interval, F42, evidence/E026): 60 s wall -0.8% (overlap), peak +4.4%; no light-call trim wall -1.4% (overlap), peak +4.6%; 15/15 hashes. Rule not met, 10 s stays. Idle tree clean, binary sha d779a522.**
 - **E025 DONE 11:29 (experiments/E025-v2final-and-difftest, F41, evidence/E025): final and v2final 236/236 identical to base on E015's case files; v2final vs final heavy wall +27.5%, small-tx +2.7% (overlap), post-idle after heavy 795 vs 1,129 MB; 12/12 hashes. Peak -7.1% on heavy is outside the expected 5% band on the favourable side, ranges overlap. v1 stays recommended.**

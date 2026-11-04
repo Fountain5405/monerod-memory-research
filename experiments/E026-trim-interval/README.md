@@ -34,7 +34,7 @@ In each of the 5 rounds both were faster than i10 from the logs, i60 by 1.0-2.2 
 
 ## Reading
 - **The interval trades a little memory against a little wall, and 10 s is a defensible point.** Going from 10 s to 60 s gives up nearly all the peak benefit of light-call trims (+4.4%, against +4.6% with none) for a wall saving of 0.8%. About 36 MB for about 1.3 s on this window.
-- **Light-call trims are not the small-tx cost.** With none at all, wall drops by 1.4%. E023's gap against base on this window is +6.6%, so most of it lies elsewhere in adapt. This compares across experiments, on the same window and box. Which part of adapt carries it is not measured here; E011's +2.7% for E007 alone and +7.3% for the cap alone predate the adaptive cap and do not settle it.
+- **Light-call trims are not the small-tx cost.** With none at all, wall drops by 1.4%. E023's gap against base on this window is +6.6%, so most of it lies elsewhere in adapt. This compares across experiments, on the same window and box. Which part of adapt carries it is not measured here; E011's +2.7% for E007 alone and +7.3% for the cap alone predate the adaptive cap and do not settle it. (E028 later measured it: streaming verifier +3.8%, the rest +0.8% each.)
 - **No effect on CPU or post-idle anon that the spread can show.** CPU medians are within 0.3%, and post-idle ranges overlap, as expected: the idle trim is unchanged.
 
 ## Limits

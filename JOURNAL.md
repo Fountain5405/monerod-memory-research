@@ -555,3 +555,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - All hashes match so far. ETA about 17:20. Harness walls so far: base 149-151 s, e007 154-157 s, inever 156-157 s, final 157-159 s. Not read as a result: the reading uses log-based wall over all 5 rounds.
 - Box: no lanes, 31 GB free, governor pinned by the chain. box81 idle, nothing of ours running.
 - Peer watch: 192.168.1.116 was not among .22's connections at this check, on two looks a few seconds apart. It has been absent at an earlier check too, then came back. Last seen at h=2297963 at 14:47. It had already been showing very young connections, so this says little by itself. Cause not known from here.
+
+## 2026-11-04 17:30 E028 done
+- Small-tx wall from logs, 5 rounds, 20/20 hashes: base 146.4, e007 151.9, inever 153.1, final 154.4 s. Verifier +3.8%, separate ranges, and all the CPU cost (+8.0%). Rest of adapt +0.8% and light-call trims +0.8%, overlapping, no visible CPU change.
+- Miss: the total was expected at about +6.6% from E023, measured +5.5%, the same as box81. E023's figure stays as measured, and SUMMARY now gives both.
+- No swept constant is left to recover the cost. What remains is the double circuit build.
