@@ -523,3 +523,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 ## 2026-11-04 12:00 E027 started on box81 at the owner's prompt
 - The owner asked whether anything useful could run on moonpie, which is box81's hostname. It was idle with 44 GB free. I had listed a second-machine rerun of the final series as not planned, and that was the wrong call: E019 only covers adapt, and every final-series figure is from hydrogen.
 - Part a (build from the published patches, tree hash check, differential test at the heavy height with hydrogen's case file) does not sync from .22, so it runs now. Part b (A/B) waits for E026, so the two boxes do not share .22 while E026 decides on a 2% wall rule.
+
+## 2026-11-04 12:10 E027 part a done on box81
+- Built in about 3 minutes (ccache). The tree hash equals hydrogen's adbe70cf8, so the published patches reproduce the final source exactly. Binary sha a9a22c46, native to that box.
+- Differential test at 3,105,401: 135 cases, 0 disagreements with base, DIFF PASS, with the same 127 rejections at the FCMP++ check as on hydrogen. All three expectations for part a met.
+- Part b waits for E026 (5 of 15 runs at 12:09).
