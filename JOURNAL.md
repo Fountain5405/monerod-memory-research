@@ -550,3 +550,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Final on box81, base vs final: heavy peak -61.0%, post-idle -76.3%, wall -42.3%; small-tx wall +5.5%, post-idle -27.9%; 13/13 hashes, no swap, differential test 236/236 on natively compiled binaries. Published patches give hydrogen's exact tree.
 - Miss: small-tx peak -18.8%, expected about -33%. Final's figure is where adapt's was (734 vs 729 MB). Base's moved (904 vs 1,091 MB, separate ranges, same binary and harness). I set -33% from one 3-run median of a figure known to vary. Cause of the shift not investigated.
 - E028 launched on hydrogen. The queue was otherwise empty, and the small-tx wall cost is the recommended build's main cost and is still unattributed after E026. The fixed expectations cannot all hold, because +2.7% and +1.4% do not add up to +6.6%. Report only.
+
+## 2026-11-04 16:47 Check-in: E028 at 15 of 20 runs
+- All hashes match so far. ETA about 17:20. Harness walls so far: base 149-151 s, e007 154-157 s, inever 156-157 s, final 157-159 s. Not read as a result: the reading uses log-based wall over all 5 rounds.
+- Box: no lanes, 31 GB free, governor pinned by the chain. box81 idle, nothing of ours running.
+- Peer watch: 192.168.1.116 was not among .22's connections at this check, on two looks a few seconds apart. It has been absent at an earlier check too, then came back. Last seen at h=2297963 at 14:47. It had already been showing very young connections, so this says little by itself. Cause not known from here.
