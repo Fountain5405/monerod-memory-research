@@ -501,3 +501,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - adapt vs final, 5 rounds, 10/10 hashes: wall 154.4 (153.5-155.8) vs 152.7 (152.2-155.5) s, -1.1%, ranges overlapping. Under the reading fixed in run_e023b.sh, the last two patches are not responsible. E023's miss stands: +6.6%. I set the +6% line from E012's +4.0%, which understated the cost.
 - Annotated SUMMARY's +4% lines rather than rewriting history: the E012/E013 result stays, marked with the later figures. Why the dense stretch of the long resync shows only +4.1% is not investigated.
 - E024 launched: flat perf profile of e020 vs final on the heavy window, the last item in the queue.
+
+## 2026-11-04 09:44 E024 done; E025 and E026 launched
+- Profile of e020 vs final, 2 rounds per arm: e020 +36.5% cycles. Field multiplication is 56% of the difference, symbols only e020 has are 34%, memmove + memset 3.8%. So E020's copying candidate explains little. Callers of the multiplication are inferred, because the profile has no call graphs. Going further depends on whether the owner wants v2.
+- The queue was otherwise empty, so I added the gaps I had been reporting as open. E025: the published v2 series with 0007 + 0008 has never been built, and E015's differential test predates the last two patches. E026: the 10 s trim interval is the last unswept tuning constant, and small-tx wall is the build's main cost. Expectations and the rule are in the script headers, written before the runs.
+- Slip: the profile script's shadow check matched my own launch shell, because the command text contained the word. No lanes ran; the chain's own check says so.

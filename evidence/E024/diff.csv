@@ -1,0 +1,34 @@
+total cycles: final 3.67e12, e020 5.01e12, difference +1.34e12 (+36.5%)
+delta_e12,share_of_difference_pct,final_e12,e020_e12,symbol
++0.468,+34.9,0.678,1.146,crypto_bigint::uint::modular::reduction::montgomery_reduction::<4: usize>
++0.283,+21.2,0.451,0.734,<crypto_bigint::uint::Uint<4: usize>>::mul_wide::<4: usize>
++0.197,+14.7,0.000,0.197,<generalized_bulletproofs::arithmetic_circuit_proof::ArithmeticCircuitStatement<helioselene::ciphersuite::Selene>>::verify::<rand_core::os::OsRng>
++0.151,+11.3,0.001,0.152,<generalized_bulletproofs::scalar_vector::ScalarVector<helioselene::field::HelioseleneField> as core::ops::arith::Mul<helioselene::field::HelioseleneField>>::mul
++0.053,+3.9,0.000,0.053,<generalized_bulletproofs_circuit_abstraction::FoldedConstraints<helioselene::ciphersuite::Selene>>::accumulate
++0.052,+3.9,0.000,0.052,<generalized_bulletproofs_circuit_abstraction::FoldedConstraints<helioselene::ciphersuite::Helios>>::accumulate
++0.035,+2.6,0.180,0.215,__memmove_avx_unaligned_erms
++0.030,+2.2,0.000,0.030,<generalized_bulletproofs::scalar_vector::ScalarVector<helioselene::field::HelioseleneField> as core::ops::arith::Add<&generalized_bulletproofs::scalar_vector::ScalarVect
++0.022,+1.7,0.158,0.180,<generalized_bulletproofs::lincomb::LinComb<helioselene::field::HelioseleneField>>::term
++0.020,+1.5,0.026,0.046,<helioselene::field::HelioseleneField as ff::Field>::sqrt
++0.016,+1.2,0.005,0.021,__memset_avx2_unaligned_erms
++0.007,+0.5,0.026,0.033,_int_malloc
++0.006,+0.4,0.000,0.006,0xffffffffb1800080
++0.005,+0.3,0.074,0.079,multiexp::underlying::prep_bits::<helioselene::point::selene::SelenePoint>
++0.004,+0.3,0.000,0.004,<full_chain_membership_proofs::circuit::Circuit<helioselene::ciphersuite::Selene>>::statement
++0.004,+0.3,0.015,0.019,_int_free
++0.003,+0.3,0.008,0.012,_int_free_merge_chunk
++0.003,+0.2,0.000,0.003,0xffffffffb15e0ffa
++0.003,+0.2,0.001,0.004,0xffffffffb1672460
++0.003,+0.2,0.007,0.010,<alloc::raw_vec::RawVecInner>::finish_grow
++0.003,+0.2,0.006,0.009,realloc
++0.002,+0.2,0.194,0.196,<dalek_ff_group::field::FieldElement>::pow
++0.002,+0.1,0.007,0.009,cfree@GLIBC_2.2.5
++0.002,+0.1,0.005,0.007,_int_realloc
+-0.002,-0.1,0.003,0.001,<helioselene::point::selene::SelenePoint as group::GroupEncoding>::to_bytes
+-0.002,-0.1,0.002,0.000,sc_muladd
+-0.002,-0.2,0.002,0.000,<blake2::Blake2bVarCore>::compress
+-0.008,-0.6,0.026,0.017,generalized_bulletproofs_ec_gadgets::dlog::divisor_challenge_eval::<helioselene::ciphersuite::Helios, monero_fcmp_plus_plus::SeleneParams>
+-0.012,-0.9,0.012,0.000,<generalized_bulletproofs::arithmetic_circuit_proof::PendingVerification<helioselene::ciphersuite::Helios>>::apply
+-0.012,-0.9,0.012,0.000,<generalized_bulletproofs::arithmetic_circuit_proof::PendingVerification<helioselene::ciphersuite::Selene>>::apply
+-0.037,-2.8,0.051,0.014,generalized_bulletproofs::lincomb::accumulate_vector::<helioselene::field::HelioseleneField>
+-0.048,-3.6,0.052,0.004,<generalized_bulletproofs_circuit_abstraction::Circuit<helioselene::ciphersuite::Selene>>::constrain_equal_to_zero

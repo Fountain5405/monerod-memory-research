@@ -1,0 +1,9 @@
+chain e024 start 2026-11-04T09:32:11+00:00
+a4d8448af856960ecba7c907a39f88516987d6586acfd5855872417a9ee180fe  /home/optimizer/work/monero-fcmp-e020/build/beta31-e020/bin/monerod
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+no shadow processes
+r1_e020 done 2026-11-04T09:34:55+00:00: window done h=3105441 after 146s
+r1_final done 2026-11-04T09:36:58+00:00: window done h=3105441 after 110s
+r2_final done 2026-11-04T09:39:00+00:00: window done h=3105441 after 109s
+r2_e020 done 2026-11-04T09:41:38+00:00: window done h=3105441 after 144s
+CHAIN_E024_COMPLETE
