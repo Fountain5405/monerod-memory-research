@@ -575,3 +575,6 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Small-tx 3 of 10 runs, all hashes yes. Harness figures, not read as a result: final 158 s, 806 MB; e029 148-151 s, 861-866 MB. The reading uses log wall over all 5 rounds. Heavy window still to come. ETA about 20:30 stands as an estimate.
 - Box: no lanes, 45 GB free. box81: load 0.00, nothing of ours running, 43 GB free.
 - Peer watch: 192.168.1.116 is back among .22 connections at h=2303879, state=normal, live 558 s. Up 5,916 since 14:47 (4 h), after being absent at 16:47. Still below the 3,105,401 wedge height. Cause of the slow rate not known from here.
+
+## 2026-11-04 19:58 Owner decision: keep final, E029 is an option
+- Owner, after seeing the small-tx medians (wall -5.7% harness, peak +7.0%, CPU -8.0%): "keep final, report e029 as an option". This matches the rule fixed in the script. The chain keeps running so the option is written up with the heavy window and log walls.
