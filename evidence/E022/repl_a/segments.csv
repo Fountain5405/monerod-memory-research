@@ -1,0 +1,17 @@
+run,wall_s,cpu_s
+r1_t16,8.18,68.0
+r1_t8,8.41,46.8
+r2_t16,8.14,66.7
+r2_t8,8.32,47.1
+r3_t16,8.20,67.2
+r3_t8,8.49,47.1
+r4_t16,8.26,68.2
+r4_t8,8.45,48.1
+r5_t16,8.28,67.9
+r5_t8,8.59,47.4
+# t16 wall_s: median 8.20 min 8.14 max 8.28
+# t8 wall_s: median 8.45 min 8.32 max 8.59
+# t8 vs t16 wall_s: +3.0%
+# t16 cpu_s: median 67.86 min 66.72 max 68.16
+# t8 cpu_s: median 47.13 min 46.83 max 48.14
+# t8 vs t16 cpu_s: -30.5%

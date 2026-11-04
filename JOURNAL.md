@@ -472,3 +472,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Interim, from scripts/e022c_segments.py, not a decision. A, medians over 5 rounds, t8 vs t16: wall 8.45 vs 8.20 s (+3.0%, ranges 8.32-8.59 vs 8.14-8.28, no overlap), CPU 47.1 vs 67.9 s (-30.5%, no overlap). B so far, 3 rounds: wall +4.4%, CPU -29.8%. B's wall is close to the +5% limit, so it is not settled.
 - A's peak anon in results.csv: t8 470 vs t16 478 MB (medians; t8 ranges 428-484, t16 475-483). Those peaks come from runs that overshot the window by different amounts (80-90 blocks recorded), so they are not on identical heights.
 - Box: no shadow lanes, 35 GB free, governor pinned by the chain. Peer watch: 192.168.1.116 is among .22's connections at h=2221815, state=normal, up 17,096 blocks in 2 h from 2204719, still below the 3,105,401 wedge height.
+
+## 2026-11-04 05:10 E022 done: threshold 8 passes on both windows and is adopted; E023 validation launched
+- Replication finished 05:04, 20/20 hashes. A: CPU -30.5%, wall +3.0%. B: CPU -29.9%, wall +3.7%. CPU ranges do not overlap. Passes the criterion fixed before the run.
+- Checked peak on identical heights because the harness peak includes overshoot (new scripts/e022c_peak.py): t8 -11.2% and -5.6% inside the windows on 5 samples per run; whole-run -1.7% and -1.4%, overlapping. Reading: memory falls only while 8-15 input blocks verify, and larger proofs set a run's peak. So this is a CPU change, not a memory one; SUMMARY, F38 and the patch message say so.
+- Correction to my own note: I assumed window A had no blocks at 16 or more inputs. The scan shows 3,105,102-3,105,104 do. Both arms treat them alike, so they dilute rather than inflate.
+- Committed adbe70cf8; rebuild is byte-identical to the measured t8 (sha d779a522). Patches 0007 v1, 0008 v2 (v2 apply check only, not built).
+- Launched E023 ahead of the optional e020 profile: the recommended build's negative test, min_mem and long resync all predate its last two patches, which matters more than the profile. Expected results written into run_e023.sh before the run.

@@ -1,0 +1,41 @@
+From adbe70cf803b4c6076a566e3b240c20283355079 Mon Sep 17 00:00:00 2001
+From: optimizer <optimizer@hydrogen>
+Date: Wed, 4 Nov 2026 05:09:12 +0000
+Subject: [PATCH] E022: count FCMP++ batch calls as heavy from 8 inputs, not 16
+
+The cap at physical cores and the per-call trim apply when the largest
+proof in a call has at least HEAVY_PROOF_MIN_INPUTS inputs. Measured on
+two independent stressnet stretches of 8-input blocks, 5 alternating
+rounds each, 8 against 16 over identical heights:
+
+  3,105,085-3,105,105: CPU -30.5%, wall +3.0%, 10/10 hashes
+  3,106,265-3,106,285: CPU -29.9%, wall +3.7%, 10/10 hashes
+
+CPU ranges do not overlap on either stretch. This is mainly a CPU change.
+Anon memory falls only while 8-15 input blocks are verified. Over a run
+that also holds larger proofs, the peak moves by less than the
+run-to-run spread, because those larger proofs set it in both arms.
+
+Thresholds below 8 could not be tested: the test chain has too few
+blocks at 3-7 inputs. The mix on that chain is synthetic, so this says
+nothing about how often such proofs would occur on mainnet.
+---
+ src/ringct/rctSigs.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/ringct/rctSigs.cpp b/src/ringct/rctSigs.cpp
+index d3f54781c..0c517efb9 100644
+--- a/src/ringct/rctSigs.cpp
++++ b/src/ringct/rctSigs.cpp
+@@ -1715,7 +1715,7 @@ done:
+       // With many-input proofs, SMT siblings slow verification down (E004c: -9% wall with the cap) and
+       // multiply peak memory. With few-input proofs SMT helps (E011: the cap costs +7% wall on 2-input txs),
+       // so light calls use the whole pool. The inputs are sorted by input count, descending, above.
+-      static constexpr std::size_t HEAVY_PROOF_MIN_INPUTS = 16;
++      static constexpr std::size_t HEAVY_PROOF_MIN_INPUTS = 8;
+       const bool heavy_call = fcmp_pp::n_inputs_in_fcmp_pp(fcmp_pp_verify_inputs.front()) >= HEAVY_PROOF_MIN_INPUTS;
+       const std::size_t pool_threads = std::max<std::size_t>(1, tpool.get_max_concurrency());
+       const std::size_t physical_cores = boost::thread::physical_concurrency();
+-- 
+2.43.0
+

@@ -9,7 +9,7 @@ Over the 18,000-block resync the recommended build is 4.6% faster overall: 2x fa
 
 **Recommended build ("adapt", E012/E013)** = beta.3.1 plus:
 1. The streaming FCMP++ verifier (E007).
-2. For FCMP++ batch calls whose largest proof has ≥ 16 inputs: a cap on the batch count at physical cores, and `malloc_trim(0)` afterwards. Otherwise no cap, and a trim at most every 10 s.
+2. For FCMP++ batch calls whose largest proof has ≥ 8 inputs (16 in E012, changed by E022): a cap on the batch count at physical cores, and `malloc_trim(0)` afterwards. Otherwise no cap, and a trim at most every 10 s.
 3. The E001 sync-size cap.
 
 ### Headline: 40-block heavy window 3,105,401 → 3,105,441, 3 alternating A/B rounds, medians (E013)
@@ -168,7 +168,7 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
 
 ## Caveats
 - The headline numbers are from hydrogen (12c/24t). E019 reproduced the A/B on a second machine, box81 (6c/12t, 14 GB): -61.5% peak, -71% post-idle, -43% wall on the heavy window, -33% peak on small-tx blocks, 18/18 hashes, no swap. The headline is one 40-block window with 3 A/B rounds; the 18,000-block resyncs (E010, E013, E018) are 1 run per arm, on hydrogen only.
-- adapt's threshold of 16 inputs and its trim interval of 10 s are judgment calls; neither was swept. adapt holds ~0.1-0.4 GB more than the non-adaptive combo during light-block sync, because it trims less often; at idle E021's single idle trim releases ~230 MB of it on the heavy window (about -17%, F37), now patch 0006 of the series. E013's validation was not rerun with that patch, and it is unmeasured at the chain tip.
+- adapt's threshold is now 8 inputs: E022 swept 8 / 16 / 32 and replicated 8 against 16 on two stretches (about -30% CPU, +3-4% wall on 8-input blocks; no lower peak once larger proofs are in the run; 83 of 43,270 blocks affected on this synthetic chain; below 8 untested; F38). The figures in this report for adapt were measured with 16 unless they cite E022 or later. The trim interval of 10 s is still a judgment call and was not swept. adapt holds ~0.1-0.4 GB more than the non-adaptive combo during light-block sync, because it trims less often; at idle E021's single idle trim releases ~230 MB of it on the heavy window (about -17%, F37), now patch 0006 of the series. E013's validation was not rerun with that patch or with E022's; E023 does that. It is unmeasured at the chain tip.
 - Post-sync idle memory varies run to run by a few hundred MB: a trim cannot release fragmented arenas completely.
 - E007 is security-critical cryptographic code and **not audited**. Upstream use needs review by the FCMP++ authors.
 

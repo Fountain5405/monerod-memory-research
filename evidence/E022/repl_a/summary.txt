@@ -1,0 +1,26 @@
+ab_window start 2026-11-04T03:26:23+00:00 end=3105106 timeout=900 rounds=5 arms=2
+arm t16: /home/optimizer/work/research-artifacts/e022_bins/monerod-t16 --block-sync-size 5 | 6e6f14c6acdc4b5b
+arm t8: /home/optimizer/work/research-artifacts/e022_bins/monerod-t8 --block-sync-size 5 | d779a522faf0673f
+ 03:26:23 up 1 day, 15:58,  3 users,  load average: 0.51, 2.98, 3.61
+no shadow processes
+[r1_t16] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-04T03:30:10+00:00
+[r1_t16] --block-sync-size 5 -> h=3105170 wall=14s peak_anon=478MB post_idle_anon=442MB tip=3105175 yes
+[r1_t8] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-04T03:35:06+00:00
+[r1_t8] --block-sync-size 5 -> h=3105160 wall=14s peak_anon=448MB post_idle_anon=448MB tip=3105170 yes
+[r2_t8] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-04T03:40:01+00:00
+[r2_t8] --block-sync-size 5 -> h=3105170 wall=14s peak_anon=484MB post_idle_anon=484MB tip=3105175 yes
+[r2_t16] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-04T03:44:59+00:00
+[r2_t16] --block-sync-size 5 -> h=3105170 wall=14s peak_anon=479MB post_idle_anon=462MB tip=3105175 yes
+[r3_t16] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-04T03:50:11+00:00
+[r3_t16] --block-sync-size 5 -> h=3105170 wall=14s peak_anon=475MB post_idle_anon=475MB tip=3105175 yes
+[r3_t8] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-04T03:55:10+00:00
+[r3_t8] --block-sync-size 5 -> h=3105170 wall=14s peak_anon=470MB post_idle_anon=470MB tip=3105175 yes
+[r4_t8] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-04T04:00:07+00:00
+[r4_t8] --block-sync-size 5 -> h=3105170 wall=14s peak_anon=470MB post_idle_anon=470MB tip=3105175 yes
+[r4_t16] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-04T04:05:09+00:00
+[r4_t16] --block-sync-size 5 -> h=3105170 wall=15s peak_anon=483MB post_idle_anon=475MB tip=3105175 yes
+[r5_t16] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-04T04:09:51+00:00
+[r5_t16] --block-sync-size 5 -> h=3105170 wall=14s peak_anon=477MB post_idle_anon=477MB tip=3105175 yes
+[r5_t8] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_wedge_h3105401 2026-11-04T04:14:35+00:00
+[r5_t8] --block-sync-size 5 -> h=3105165 wall=14s peak_anon=428MB post_idle_anon=428MB tip=3105170 yes
+AB_COMPLETE

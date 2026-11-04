@@ -29,7 +29,7 @@ Roughly 40 of the 68 points can be had by halving concurrency on the stock binar
 2. **One machine, one chain.** 12c/24t, stressnet. E014 (running) tests 1/2/4 threads. No second machine, no mainnet-like traffic except the small-tx window (-30% there). **Update 2026-11-03 evening: E014 done (adapt -47.5% / -25.5% / -28.7% peak at 4 / 2 / 1 threads, F29); E019 done on a second machine, box81 (Ryzen 5 5600G 6c/12t, 14 GB, native builds): -61.5% peak, -71% post-idle, -43% wall, 18/18 hashes, no swap (F30). One chain (stressnet) remains the only workload.**
 3. **The remaining 1.7 GB is unattributed.** No heaptrack of the new build yet, so I cannot say what it is (likely the per-proof IPA vectors × 12 threads plus ~300 MB baseline) or whether it could go lower.
 4. **Sampling resolution** (point 1 above): headline peaks for fast builds should be quoted with the cgroup bound, which the summary now does.
-5. **Tuning constants** (16-input threshold, 10 s trim interval) were chosen, not swept. Post-idle memory varies by a few hundred MB run to run.
+5. **Tuning constants** (16-input threshold, 10 s trim interval) were chosen, not swept. (Later: E022 swept the threshold and moved it to 8; the trim interval is still unswept.) Post-idle memory varies by a few hundred MB run to run.
 6. **Base peak varies 6% across sessions** (5,289-5,617 MB). It does not change any conclusion, but it is why the headline is quoted from one 3-round session, not pooled.
 
 ## Verdict
