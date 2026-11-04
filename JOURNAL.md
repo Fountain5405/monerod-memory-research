@@ -519,3 +519,7 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Limit: the 236 cases are 128- and 2-input only. E022's 8-input path is covered by E023's negative test, not this one.
 - Also fixed the FINDINGS status line, which still named adapt as recommended and listed E014 and E015 as pending.
 - E026 started by itself at 11:29.
+
+## 2026-11-04 12:00 E027 started on box81 at the owner's prompt
+- The owner asked whether anything useful could run on moonpie, which is box81's hostname. It was idle with 44 GB free. I had listed a second-machine rerun of the final series as not planned, and that was the wrong call: E019 only covers adapt, and every final-series figure is from hydrogen.
+- Part a (build from the published patches, tree hash check, differential test at the heavy height with hydrogen's case file) does not sync from .22, so it runs now. Part b (A/B) waits for E026, so the two boxes do not share .22 while E026 decides on a 2% wall rule.
