@@ -492,3 +492,7 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Found: the idle trim releases only 70-79 MB after a long resync, against 231-234 MB after the heavy window, and final_bss5's 1,400 MB idle is no lower than E013's 1,379 MB. So F37's -17% is specific to a burst ending on heavy blocks. Recorded in F39, SUMMARY, HOW-IT-WORKS and the E021 README.
 - SUMMARY's headline tables now carry E023, including a less flattering long-run idle figure (-66.6%, was -70.3%).
 - E023b launched: adapt vs final, small-tx window, 5 rounds. Reading fixed in the script header. E023's figure stands whatever it finds.
+
+## 2026-11-04 08:47 Check-in: E023b progressing
+- 4 of 10 runs recorded, round 3 under way, ETA ~09:35. Interim wall from logs: adapt 155.2 and 155.8 s, final 152.7 and 155.1 s. Too few runs to read; the reading waits for all 5 rounds.
+- Box: no shadow lanes, 42 GB free, governor pinned by the chain. Peer watch: 192.168.1.116 is among .22's connections at h=2268310, state=normal, up 22,497 blocks in 2 h, still below the 3,105,401 wedge height.
