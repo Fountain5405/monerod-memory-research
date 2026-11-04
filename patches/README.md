@@ -4,7 +4,7 @@ Two versions of the verifier change are kept on purpose (owner, 2026-11-03):
 - **`v1-E007-full-streaming/`**: the measured, validated series (E007 streaming verifier, ~1,000 code lines in monero-oxide restructuring `ArithmeticCircuitStatement::verify`, + ~1,200 lines of tests; independent review in reports/E007-crypto-review.md). Largest saving; largest review burden.
 - **`v2-E017-minimal/`** (measured at the node in E018/E019/E020: same memory as v1, negdiff identical to base, but slower than v1: with all three patches, heavy blocks +28% wall over v1 (37% under stock) and small-tx blocks +3% over v1 (+8% over stock); with 0001-0002 alone +43-57% and +12-17%; the alternative series, not the recommended one): same idea with the stock `verify` left byte-identical; fcmps pre-folds each circuit into one constraint. Target ~150-200 code lines. See experiments/E017-minimal-streaming.
 
-Both share the same monerod patches 0001-0003 and 0005; only 0004 (the cargo `[patch]` glue) points at a different monero-oxide branch.
+Both share the same monerod patches 0001-0003, 0005 and the E021 idle trim (0006 in v1, 0007 in v2); only 0004 (the cargo `[patch]` glue) points at a different monero-oxide branch (v2 adds 0006 to repoint it).
 
 ## v1: E007 full streaming verifier (the recommended build as measured in E013)
 
@@ -30,8 +30,9 @@ Base: v0.19.0.0-beta.3.1 = `d80596ad1`.
 | `v1-E007-full-streaming/monerod/0003-cryptonote_core-cap-adaptive-block-sync-size-by-the-.patch` | E001 sync-wedge fix: cap the adaptive block-sync batch by the levin limit / block weight limit | ~10 | E001 (not a memory change; see reports/E001-sync-wedge-ISSUE.md, and the owner's note that a window-aware cap is needed for post-fork mainnet) |
 | `v1-E007-full-streaming/monerod/0004-E007-build-fcmp_pp_rust-against-local-monero-oxide-e.patch` | `src/fcmp_pp/fcmp_pp_rust/Cargo.toml`: a `[patch]` section pointing the five monero-oxide crates at the patched tree, plus the `Cargo.lock` change | build glue | E007/E008 |
 | `v1-E007-full-streaming/monerod/0005-E012-FCMP-batch-cap-and-malloc_trim-adaptive-to-proo.patch` | make 0001/0002 adaptive: cap and per-call trim only when the largest proof in the call has >= 16 inputs; otherwise trim at most every 10 s | ~20 | E012/E013 (the recommended build) |
+| `v1-E007-full-streaming/monerod/0006-E021-trim-FCMP-verifier-memory-once-verification-go.patch` | one `malloc_trim(0)` from `core::on_idle` once no batch verification has run for 5 s (two atomics in rctSigs.cpp record the last verification and the last trim; `rct::idleTrimFcmpPp`; a 2 s `once_a_time_seconds` in core) | ~40 | E021 (post-idle -19% on top of E012, no speed cost; E013's validation was run without it) |
 
-All five monerod patches together change `src/ringct/rctSigs.cpp`, `src/cryptonote_core/cryptonote_core.cpp` (E001) and the `fcmp_pp_rust` Cargo files. The combined effect of 0001+0002+0005 on `rctSigs.cpp` is ~25 lines.
+All six monerod patches together change `src/ringct/rctSigs.cpp` and `.h`, `src/cryptonote_core/cryptonote_core.cpp` and `.h` (E001, E021) and the `fcmp_pp_rust` Cargo files. The combined effect of 0001+0002+0005 on `rctSigs.cpp` is ~25 lines; 0006 adds ~35 more plus a two-line hook in core. The E013-measured binary (sha256 `d6f93d06...`) is 0001-0005; with 0006 the build is the E021 idle binary (sha256 `6e6f14c6acdc4b5b...`).
 
 ## Reproducing the build
 ```sh
@@ -68,4 +69,4 @@ Same monerod changes as v1. In monero-oxide the audited `ArithmeticCircuitStatem
 
 Sizes vs 31c26d9: code +513 / -88 (refactor commit 92/33 of it is motion), tests +228 plus a benchmark; patch 0003 adds +83 / -26 (57 additive lines beside the audited verifier, none inside it). v1 for comparison: code +1,004 / -134, with +570 inside the audited verifier.
 
-monerod for v2: `v2-E017-minimal/monerod/0001-0005` are v1's patches unchanged, plus `0006` which repoints the cargo `[patch]` paths from the E007 tree to the E017 tree (0004 + 0006 together are the build glue; they will be squashed if v2 becomes the recommended series). Build as for v1, with `monero-oxide-e017` in the `sed`. Apply 0001-0003 for the measured e020 build (0001-0002 alone is the slower e017 build of E018/E019).
+monerod for v2: `v2-E017-minimal/monerod/0001-0005` are v1's patches unchanged, plus `0006` which repoints the cargo `[patch]` paths from the E007 tree to the E017 tree (0004 + 0006 together are the build glue; they will be squashed if v2 becomes the recommended series), plus `0007` = v1's 0006 (E021 idle trim) renumbered. Build as for v1, with `monero-oxide-e017` in the `sed`. Apply 0001-0003 for the measured e020 build (0001-0002 alone is the slower e017 build of E018/E019).

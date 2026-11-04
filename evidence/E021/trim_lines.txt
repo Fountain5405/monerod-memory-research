@@ -1,0 +1,12 @@
+e021_heavy/r1_idle.log:2026-11-03 23:48:19.501	[P2P9]	INFO	global	src/ringct/rctSigs.cpp:1691	FCMP++ verification idle for 5 s: returned freed verifier memory to the OS
+e021_heavy/r2_idle.log:2026-11-03 23:54:28.748	[P2P8]	INFO	global	src/ringct/rctSigs.cpp:1691	FCMP++ verification idle for 5 s: returned freed verifier memory to the OS
+e021_heavy/r3_idle.log:2026-11-04 00:13:07.973	[P2P8]	INFO	global	src/ringct/rctSigs.cpp:1691	FCMP++ verification idle for 5 s: returned freed verifier memory to the OS
+e021_small/r1_idle.log:2026-11-04 00:27:47.300	[P2P9]	INFO	global	src/ringct/rctSigs.cpp:1691	FCMP++ verification idle for 6 s: returned freed verifier memory to the OS
+e021_small/r2_idle.log:2026-11-04 00:35:06.017	[P2P1]	INFO	global	src/ringct/rctSigs.cpp:1691	FCMP++ verification idle for 6 s: returned freed verifier memory to the OS
+e021_small/r3_idle.log:2026-11-04 00:57:27.383	[P2P1]	INFO	global	src/ringct/rctSigs.cpp:1691	FCMP++ verification idle for 6 s: returned freed verifier memory to the OS
+e021_heavy/r1_adapt.log:0
+e021_heavy/r2_adapt.log:0
+e021_heavy/r3_adapt.log:0
+e021_small/r1_adapt.log:0
+e021_small/r2_adapt.log:0
+e021_small/r3_adapt.log:0

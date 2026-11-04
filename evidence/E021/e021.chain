@@ -1,0 +1,40 @@
+chain e021 start 2026-11-03T23:33:01+00:00
+ src/cryptonote_core/cryptonote_core.cpp |  2 ++
+ src/cryptonote_core/cryptonote_core.h   |  1 +
+ src/ringct/rctSigs.cpp                  | 41 +++++++++++++++++++++++++++++----
+ src/ringct/rctSigs.h                    |  3 +++
+ 4 files changed, 42 insertions(+), 5 deletions(-)
+build BUILD_OK 2026-11-03T23:36:11+00:00
+d6f93d0664604726aeafbaf99982f181adc5bb8f31480f4902660bb686fa3ae8  /home/optimizer/work/monero-fcmp-adapt/build/beta31-adapt/bin/monerod
+6e6f14c6acdc4b5bb19d74f76da022ec418903f0083afdf7add5d151861a167c  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+1
+no shadow processes
+governor schedutil -> performance
+(a) heavy A/B done 2026-11-04T00:13:52+00:00
+(b) small-tx A/B done 2026-11-04T00:58:11+00:00
+governor restored to schedutil
+== e021_heavy
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| adapt | 3 | 1,807 (1,402-1,840) | 1,830 (1,400-1,861) | 3,034 (2,737-3,067) | 110 (110-112) | 1,349 (1,045-1,360) | 9 (9-32) | 466 (466-466) | 911 (910-916) | all yes |
+| idle | 3 | 1,713 (1,649-1,800) | 1,713 (1,649-1,800) | 3,026 (2,985-3,056) | 111 (108-112) | 1,087 (1,068-1,140) | 9 (9-27) | 466 (466-466) | 910 (906-910) | all yes |
+
+idle vs adapt (medians): peak RssAnon MB -5.2%; peak Private_Dirty MB -6.4%; peak RSS MB -0.3%; wall s +0.9%; post-idle RssAnon MB -19.4%; read MB +0.0%; write MB +0.0%; CPU s -0.1%
+  peak anon ranges overlap: yes (base 1,402-1,840, idle 1,649-1,800)
+== e021_small
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| adapt | 3 | 813 (798-818) | 996 (973-1,017) | 3,924 (3,914-3,938) | 155 (154-159) | 750 (749-755) | 52 (51-52) | 1,117 (1,117-1,117) | 1,435 (1,433-1,436) | all yes |
+| idle | 3 | 822 (819-833) | 1,017 (1,006-1,030) | 3,942 (3,934-3,961) | 157 (156-157) | 721 (717-733) | 51 (51-52) | 1,117 (1,117-1,123) | 1,434 (1,433-1,443) | all yes |
+
+idle vs adapt (medians): peak RssAnon MB +1.1%; peak Private_Dirty MB +2.1%; peak RSS MB +0.5%; wall s +1.3%; post-idle RssAnon MB -3.9%; read MB -1.9%; write MB +0.0%; CPU s -0.1%
+  peak anon ranges overlap: no (base 798-818, idle 819-833)
+idle-trim log lines per run:
+/home/optimizer/work/research-artifacts/e021_heavy/r1_idle.log:1
+/home/optimizer/work/research-artifacts/e021_heavy/r2_idle.log:1
+/home/optimizer/work/research-artifacts/e021_heavy/r3_idle.log:1
+/home/optimizer/work/research-artifacts/e021_small/r1_idle.log:1
+/home/optimizer/work/research-artifacts/e021_small/r2_idle.log:1
+/home/optimizer/work/research-artifacts/e021_small/r3_idle.log:1
+done 2026-11-04T00:58:11+00:00
+CHAIN_E021_COMPLETE

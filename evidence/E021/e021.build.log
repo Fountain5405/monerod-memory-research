@@ -1,0 +1,450 @@
+[1/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/cpu.cpp.o
+[2/283] Building C object external/db_drivers/liblmdb/CMakeFiles/lmdb.dir/midl.c.o
+[3/283] Building C object external/randomx/CMakeFiles/randomx.dir/src/virtual_memory.c.o
+[4/283] Building C object external/randomx/CMakeFiles/randomx.dir/src/argon2_ref.c.o
+[5/283] Building C object external/randomx/CMakeFiles/randomx.dir/src/argon2_avx2.c.o
+[6/283] Building C object external/randomx/CMakeFiles/randomx.dir/src/argon2_ssse3.c.o
+[7/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/aes_hash.cpp.o
+[8/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/soft_aes.cpp.o
+[9/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/bytecode_machine.cpp.o
+[10/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/dataset.cpp.o
+[11/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/instruction.cpp.o
+[12/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/allocator.cpp.o
+[13/283] Building C object external/randomx/CMakeFiles/randomx.dir/src/argon2_core.c.o
+[14/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/blake2_generator.cpp.o
+[15/283] Building C object external/randomx/CMakeFiles/randomx.dir/src/reciprocal.c.o
+[16/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/vm_compiled.cpp.o
+[17/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/vm_interpreted.cpp.o
+[18/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/assembly_generator_x86.cpp.o
+[19/283] Building C object external/randomx/CMakeFiles/randomx.dir/src/blake2/blake2b.c.o
+[20/283] Building C object external/randomx/CMakeFiles/randomx.dir/src/jit_compiler_x86_static.S.o
+[21/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/randomx.cpp.o
+[22/283] Building C object external/mx25519/CMakeFiles/mx25519_static.dir/src/portable/scalarmult.c.o
+[23/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/vm_compiled_light.cpp.o
+[24/283] Building C object external/mx25519/CMakeFiles/mx25519_static.dir/src/impl.c.o
+[25/283] Building C object external/mx25519/CMakeFiles/mx25519_static.dir/src/cpu.c.o
+[26/283] Building C object external/mx25519/CMakeFiles/mx25519_static.dir/src/mx25519.c.o
+[27/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/amd64-64-24k-choose_tp.s.o
+[28/283] Building C object external/mx25519/CMakeFiles/mx25519_static.dir/src/amd64/scalarmult_gnu.S.o
+[29/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/choose_t.s.o
+[30/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/consts.s.o
+[31/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/vm_interpreted_light.cpp.o
+[32/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/amd64-64-24k.c.o
+[33/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_freeze.s.o
+[34/283] Linking C static library external/mx25519/libmx25519.a
+[35/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_mul.s.o
+[36/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_getparity.c.o
+[37/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_iseq.c.o
+[38/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_invert.c.o
+[39/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_neg.c.o
+[40/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_pack.c.o
+[41/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_square.s.o
+[42/283] Building C object external/db_drivers/liblmdb/CMakeFiles/lmdb.dir/mdb.c.o
+[43/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_setint.c.o
+[44/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_pow2523.c.o
+[45/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_add_p1p1.s.o
+[46/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_dbl_p1p1.s.o
+[47/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_nielsadd_p1p1.s.o
+[48/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_unpack.c.o
+[49/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_add.c.o
+[50/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_nielsadd2.s.o
+[51/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_p1p1_to_p2.s.o
+[52/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_p1p1_to_p3.s.o
+[53/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_pnielsadd_p1p1.s.o
+[54/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/instructions_portable.cpp.o
+[55/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_double.c.o
+[56/283] Linking C static library external/db_drivers/liblmdb/liblmdb.a
+[57/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_add.s.o
+[58/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_pack.c.o
+[59/283] Building ASM object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/fe25519_sub.s.o
+[60/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_unpackneg.c.o
+[61/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/ge25519_scalarmult_base.c.o
+[62/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/sc25519_from32bytes.c.o
+[63/283] Building C object monero_crypto_src/amd64/CMakeFiles/monero-crypto-amd64-64-24k.dir/__/__/crypto_sign/ed25519/amd64-64-24k/sc25519_window4.c.o
+[64/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/virtual_machine.cpp.o
+[65/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/superscalar.cpp.o
+[66/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/byte_stream.cpp.o
+[67/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/byte_slice.cpp.o
+[68/283] Building CXX object external/randomx/CMakeFiles/randomx.dir/src/jit_compiler_x86.cpp.o
+[69/283] Linking CXX static library external/randomx/librandomx.a
+[70/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/hex.cpp.o
+[71/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/wipeable_string.cpp.o
+[72/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/parserse_base_utils.cpp.o
+[73/283] Building C object contrib/epee/src/CMakeFiles/obj_epee.dir/memwipe.c.o
+[74/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/string_tools.cpp.o
+[75/283] Building CXX object external/easylogging++/CMakeFiles/easylogging.dir/easylogging++.cc.o
+In file included from /usr/include/features.h:502,
+                 from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/limits.h:26,
+                 from /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h:205,
+                 from /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h:7,
+                 from /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h:34,
+                 from /home/optimizer/work/monero-fcmp-idle/external/easylogging++/ea_config.h:3,
+                 from /home/optimizer/work/monero-fcmp-idle/external/easylogging++/easylogging++.h:19,
+                 from /home/optimizer/work/monero-fcmp-idle/external/easylogging++/easylogging++.cc:18:
+In function ‘size_t wcstombs(char*, const wchar_t*, size_t)’,
+    inlined from ‘static char* el::base::utils::Str::wcharPtrToCharPtr(const wchar_t*)’ at /home/optimizer/work/monero-fcmp-idle/external/easylogging++/easylogging++.cc:1124:16:
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:146:10: warning: ‘size_t __wcstombs_alias(char*, const wchar_t*, size_t)’ specified size 18446744073709551614 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+  146 |   return __glibc_fortify (wcstombs, __len, sizeof (char),
+      |          ^~~~~~~~~~~~~~~
+/usr/include/x86_64-linux-gnu/bits/stdlib.h: In static member function ‘static char* el::base::utils::Str::wcharPtrToCharPtr(const wchar_t*)’:
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:131:15: note: in a call to function ‘size_t __wcstombs_alias(char*, const wchar_t*, size_t)’ declared with attribute ‘access (read_only, 2)’
+  131 | extern size_t __REDIRECT_NTH (__wcstombs_alias,
+      |               ^~~~~~~~~~~~~~
+In function ‘size_t wcstombs(char*, const wchar_t*, size_t)’,
+    inlined from ‘static char* el::base::utils::Str::wcharPtrToCharPtr(const wchar_t*)’ at /home/optimizer/work/monero-fcmp-idle/external/easylogging++/easylogging++.cc:1124:16,
+    inlined from ‘el::base::MessageBuilder& el::base::MessageBuilder::operator<<(const wchar_t*)’ at /home/optimizer/work/monero-fcmp-idle/external/easylogging++/easylogging++.cc:2914:52:
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:146:10: warning: ‘size_t __wcstombs_alias(char*, const wchar_t*, size_t)’ specified size 18446744073709551614 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+  146 |   return __glibc_fortify (wcstombs, __len, sizeof (char),
+      |          ^~~~~~~~~~~~~~~
+/usr/include/x86_64-linux-gnu/bits/stdlib.h: In member function ‘el::base::MessageBuilder& el::base::MessageBuilder::operator<<(const wchar_t*)’:
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:131:15: note: in a call to function ‘size_t __wcstombs_alias(char*, const wchar_t*, size_t)’ declared with attribute ‘access (read_only, 2)’
+  131 | extern size_t __REDIRECT_NTH (__wcstombs_alias,
+      |               ^~~~~~~~~~~~~~
+[76/283] Linking CXX static library external/easylogging++/libeasylogging.a
+[77/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/abstract_http_client.cpp.o
+[78/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/mlog.cpp.o
+[79/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/net_utils_base.cpp.o
+[80/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/levin_base.cpp.o
+[81/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/buffer.cpp.o
+[82/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/http_protocol_handler.cpp.o
+[83/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/mlocker.cpp.o
+[84/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/network_throttle.cpp.o
+[85/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/int-util.cpp.o
+[86/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/file_io_utils.cpp.o
+[87/283] Building CXX object contrib/epee/src/wire/CMakeFiles/wire.dir/error.cpp.o
+[88/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/net_helper.cpp.o
+[89/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/http_auth.cpp.o
+[90/283] Building CXX object src/CMakeFiles/obj_version.dir/__/version.cpp.o
+[91/283] Linking CXX static library src/libversion.a
+[92/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/network_throttle-detail.cpp.o
+[93/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/misc_language.cpp.o
+[94/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/account_secrets.cpp.o
+[95/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/carrot_enote_types.cpp.o
+[96/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/address_utils.cpp.o
+[97/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/core_types.cpp.o
+[98/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/device.cpp.o
+[99/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/device_ram_borrowed.cpp.o
+[100/283] Building CXX object contrib/epee/src/wire/CMakeFiles/wire.dir/write.cpp.o
+[101/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee_readline.dir/readline_buffer.cpp.o
+[102/283] Linking CXX static library contrib/epee/src/libepee_readline.a
+[103/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/enote_utils.cpp.o
+[104/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/connection_basic.cpp.o
+[105/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/destination.cpp.o
+[106/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/scan.cpp.o
+[107/283] Building CXX object contrib/epee/src/wire/json/CMakeFiles/wire-json.dir/write.cpp.o
+[108/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/scan_unsafe.cpp.o
+[109/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/hash_functions.cpp.o
+[110/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/net_ssl.cpp.o
+[111/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/address_device_ram_borrowed.cpp.o
+[112/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/address_utils.cpp.o
+[113/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/payment_proposal.cpp.o
+[114/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/address_device_hierarchies.cpp.o
+[115/283] Building CXX object src/carrot_core/CMakeFiles/obj_carrot_core.dir/output_set_finalization.cpp.o
+[116/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/key_image_device_precomputed.cpp.o
+[117/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/key_image_device_composed.cpp.o
+[118/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/knowledge_proof_utils.cpp.o
+[119/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/net_parse_helpers.cpp.o
+[120/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/subaddress_map_legacy.cpp.o
+[121/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/output_opening_types.cpp.o
+[122/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/tx_builder_inputs.cpp.o
+[123/283] Building CXX object src/common/CMakeFiles/obj_common.dir/base58.cpp.o
+[124/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/spend_device_ram_borrowed.cpp.o
+[125/283] Building CXX object src/common/CMakeFiles/obj_common.dir/error.cpp.o
+[126/283] Building CXX object contrib/epee/src/CMakeFiles/obj_epee.dir/portable_storage.cpp.o
+[127/283] Linking CXX static library contrib/epee/src/libepee.a
+[128/283] Linking CXX static library contrib/epee/src/wire/libwire.a
+[129/283] Linking CXX static library contrib/epee/src/wire/json/libwire-json.a
+[130/283] Building CXX object src/common/CMakeFiles/obj_common.dir/command_line.cpp.o
+[131/283] Building CXX object src/common/CMakeFiles/obj_common.dir/expect.cpp.o
+[132/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/format_utils.cpp.o
+[133/283] Building CXX object src/common/CMakeFiles/obj_common.dir/password.cpp.o
+[134/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/input_selection.cpp.o
+[135/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/multi_tx_proposal_utils.cpp.o
+[136/283] Building CXX object src/common/CMakeFiles/obj_common.dir/perf_timer.cpp.o
+[137/283] Building CXX object src/common/CMakeFiles/obj_common.dir/pruning.cpp.o
+[138/283] Building C object src/common/CMakeFiles/obj_common.dir/aligned.c.o
+[139/283] Building CXX object src/common/CMakeFiles/obj_common.dir/dns_utils.cpp.o
+[140/283] Building CXX object src/common/CMakeFiles/obj_common.dir/notify.cpp.o
+[141/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/tx_builder_outputs.cpp.o
+[142/283] Building CXX object src/common/CMakeFiles/obj_common.dir/combinator.cpp.o
+[143/283] Building CXX object src/common/CMakeFiles/obj_common.dir/spawn.cpp.o
+[144/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/aesb.c.o
+[145/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/crypto-ops-data.c.o
+[146/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/chacha.c.o
+[147/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/blake2b.c.o
+[148/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/blake256.c.o
+[149/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/groestl.c.o
+[150/283] Building CXX object src/crypto/CMakeFiles/obj_cncrypto.dir/generators.cpp.o
+/home/optimizer/work/monero-fcmp-idle/src/crypto/generators.cpp:100:13: warning: ‘void crypto::hash_to_point(const hash&, ec_point&)’ defined but not used [-Wunused-function]
+  100 | static void hash_to_point(const crypto::hash &x, crypto::ec_point &point_out)
+      |             ^~~~~~~~~~~~~
+[151/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/hash-extra-blake.c.o
+[152/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/hash-extra-groestl.c.o
+[153/283] Building CXX object src/carrot_impl/CMakeFiles/obj_carrot_impl.dir/tx_proposal_utils.cpp.o
+[154/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/hash-extra-jh.c.o
+[155/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/hash-extra-skein.c.o
+[156/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/hash.c.o
+[157/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/hmac-keccak.c.o
+[158/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/keccak.c.o
+[159/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/jh.c.o
+[160/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/oaes_lib.c.o
+[161/283] Building CXX object src/common/CMakeFiles/obj_common.dir/threadpool.cpp.o
+[162/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/random.c.o
+[163/283] Building CXX object src/crypto/CMakeFiles/obj_cncrypto.dir/hash.cpp.o
+[164/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/CryptonightR_JIT.c.o
+[165/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/rx-slow-hash.c.o
+[166/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/CryptonightR_template.S.o
+[167/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/tree-hash.c.o
+/home/optimizer/work/monero-fcmp-idle/src/crypto/tree-hash.c: In function ‘tree_hash’:
+/home/optimizer/work/monero-fcmp-idle/src/crypto/tree-hash.c:89:5: warning: ‘__builtin_memcpy’ writing 64 bytes into a region of size 32 [-Wstringop-overflow=]
+   89 |     memcpy(ints, hashes, (2 * cnt - count) * HASH_SIZE);
+      |     ^
+/home/optimizer/work/monero-fcmp-idle/src/crypto/tree-hash.c:86:18: note: destination object of size 32 allocated by ‘calloc’
+   86 |     char *ints = calloc(cnt, HASH_SIZE);  // zero out as extra protection for using uninitialized mem
+      |                  ^~~~~~~~~~~~~~~~~~~~~~
+[168/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/skein.c.o
+[169/283] Building CXX object src/common/CMakeFiles/obj_common.dir/timings.cc.o
+[170/283] Building C object src/ringct/CMakeFiles/obj_ringct_basic.dir/rctCryptoOps.c.o
+[171/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/crypto-ops.c.o
+[172/283] Building CXX object src/crypto/CMakeFiles/obj_cncrypto.dir/crypto.cpp.o
+[173/283] Building CXX object src/common/CMakeFiles/obj_common.dir/updates.cpp.o
+[174/283] Building C object src/crypto/CMakeFiles/obj_cncrypto.dir/slow-hash.c.o
+[175/283] Linking CXX static library src/crypto/libcncrypto.a
+[176/283] Linking CXX static library src/crypto/wallet/libwallet-crypto.a
+[177/283] Linking CXX static library src/carrot_core/libcarrot_core.a
+[178/283] Building CXX object src/ringct/CMakeFiles/obj_ringct_basic.dir/rctTypes.cpp.o
+[179/283] Building CXX object src/ringct/CMakeFiles/obj_ringct_basic.dir/multiexp.cc.o
+[180/283] Building CXX object src/ringct/CMakeFiles/obj_ringct_basic.dir/rctOps.cpp.o
+[181/283] Building CXX object src/common/CMakeFiles/obj_common.dir/util.cpp.o
+[182/283] Building CXX object src/ringct/CMakeFiles/obj_ringct_basic.dir/bulletproofs_plus.cc.o
+[183/283] Building CXX object src/ringct/CMakeFiles/obj_ringct_basic.dir/bulletproofs.cc.o
+[184/283] Building CXX object src/cryptonote_basic/CMakeFiles/obj_cryptonote_format_utils_basic.dir/cryptonote_format_utils_basic.cpp.o
+[185/283] Linking CXX static library src/cryptonote_basic/libcryptonote_format_utils_basic.a
+[186/283] Building CXX object src/ringct/CMakeFiles/obj_ringct.dir/rctSigs.cpp.o
+[187/283] Building CXX object src/cryptonote_basic/CMakeFiles/obj_cryptonote_basic.dir/account.cpp.o
+[188/283] Building CXX object src/cryptonote_basic/CMakeFiles/obj_cryptonote_basic.dir/difficulty.cpp.o
+[189/283] Building CXX object src/common/CMakeFiles/obj_common.dir/download.cpp.o
+[190/283] Linking CXX static library src/common/libcommon.a
+[191/283] Building CXX object src/cryptonote_basic/CMakeFiles/obj_cryptonote_basic.dir/cryptonote_basic_impl.cpp.o
+[192/283] Building CXX object src/cryptonote_basic/CMakeFiles/obj_cryptonote_basic.dir/merge_mining.cpp.o
+[193/283] Building CXX object src/cryptonote_basic/CMakeFiles/obj_cryptonote_basic.dir/connection_context.cpp.o
+[194/283] Building CXX object src/checkpoints/CMakeFiles/obj_checkpoints.dir/checkpoints.cpp.o
+[195/283] Linking CXX static library src/checkpoints/libcheckpoints.a
+[196/283] Building CXX object src/cryptonote_basic/CMakeFiles/obj_cryptonote_basic.dir/hardfork.cpp.o
+[197/283] Building CXX object src/net/CMakeFiles/obj_net.dir/dandelionpp.cpp.o
+[198/283] Building CXX object src/net/CMakeFiles/obj_net.dir/error.cpp.o
+[199/283] Building CXX object src/cryptonote_basic/CMakeFiles/obj_cryptonote_basic.dir/cryptonote_format_utils.cpp.o
+In file included from /usr/include/c++/13/bits/exception_ptr.h:37,
+                 from /usr/include/c++/13/exception:164,
+                 from /usr/include/c++/13/stdexcept:38,
+                 from /usr/include/c++/13/system_error:43,
+                 from /usr/include/c++/13/bits/ios_base.h:46,
+                 from /usr/include/c++/13/streambuf:43,
+                 from /usr/include/c++/13/bits/streambuf_iterator.h:35,
+                 from /usr/include/c++/13/iterator:66,
+                 from /usr/include/boost/iterator/iterator_traits.hpp:10,
+                 from /usr/include/boost/range/mutable_iterator.hpp:23,
+                 from /usr/include/boost/range/iterator.hpp:20,
+                 from /usr/include/boost/range/begin.hpp:20,
+                 from /usr/include/boost/algorithm/string/trim.hpp:16,
+                 from /usr/include/boost/algorithm/string.hpp:19,
+                 from /home/optimizer/work/monero-fcmp-idle/src/cryptonote_basic/cryptonote_format_utils.cpp:32:
+In member function ‘bool std::type_info::operator==(const std::type_info&) const’,
+    inlined from ‘cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>’ at /home/optimizer/work/monero-fcmp-idle/src/cryptonote_basic/cryptonote_format_utils.cpp:887:107,
+    inlined from ‘bool __gnu_cxx::__ops::_Iter_pred<_Predicate>::operator()(_Iterator) [with _Iterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, std::vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>]’ at /usr/include/c++/13/bits/predefined_ops.h:318:23,
+    inlined from ‘_RandomAccessIterator std::__find_if(_RandomAccessIterator, _RandomAccessIterator, _Predicate, random_access_iterator_tag) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = __gnu_cxx::__ops::_Iter_pred<cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)> >]’ at /usr/include/c++/13/bits/stl_algobase.h:2072:14,
+    inlined from ‘_Iterator std::__find_if(_Iterator, _Iterator, _Predicate) [with _Iterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = __gnu_cxx::__ops::_Iter_pred<cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)> >]’ at /usr/include/c++/13/bits/stl_algobase.h:2117:23,
+    inlined from ‘_IIter std::find_if(_IIter, _IIter, _Predicate) [with _IIter = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>]’ at /usr/include/c++/13/bits/stl_algo.h:3923:28,
+    inlined from ‘bool cryptonote::pick(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t) [with T = tx_extra_mysterious_minergate]’ at /home/optimizer/work/monero-fcmp-idle/src/cryptonote_basic/cryptonote_format_utils.cpp:887:30:
+/usr/include/c++/13/typeinfo:206:49: warning: ‘int __builtin_strcmp(const char*, const char*)’ of a string of length 45 and an array of size 45 evaluates to nonzero [-Wstring-compare]
+  206 |     return __name[0] != '*' && __builtin_strcmp (__name, __arg.name()) == 0;
+      |                                ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+In member function ‘bool std::type_info::operator==(const std::type_info&) const’,
+    inlined from ‘cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>’ at /home/optimizer/work/monero-fcmp-idle/src/cryptonote_basic/cryptonote_format_utils.cpp:887:107,
+    inlined from ‘bool __gnu_cxx::__ops::_Iter_pred<_Predicate>::operator()(_Iterator) [with _Iterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, std::vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>]’ at /usr/include/c++/13/bits/predefined_ops.h:318:23,
+    inlined from ‘_RandomAccessIterator std::__find_if(_RandomAccessIterator, _RandomAccessIterator, _Predicate, random_access_iterator_tag) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = __gnu_cxx::__ops::_Iter_pred<cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)> >]’ at /usr/include/c++/13/bits/stl_algobase.h:2076:14,
+    inlined from ‘_Iterator std::__find_if(_Iterator, _Iterator, _Predicate) [with _Iterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = __gnu_cxx::__ops::_Iter_pred<cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)> >]’ at /usr/include/c++/13/bits/stl_algobase.h:2117:23,
+    inlined from ‘_IIter std::find_if(_IIter, _IIter, _Predicate) [with _IIter = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>]’ at /usr/include/c++/13/bits/stl_algo.h:3923:28,
+    inlined from ‘bool cryptonote::pick(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t) [with T = tx_extra_mysterious_minergate]’ at /home/optimizer/work/monero-fcmp-idle/src/cryptonote_basic/cryptonote_format_utils.cpp:887:30:
+/usr/include/c++/13/typeinfo:206:49: warning: ‘int __builtin_strcmp(const char*, const char*)’ of a string of length 45 and an array of size 45 evaluates to nonzero [-Wstring-compare]
+  206 |     return __name[0] != '*' && __builtin_strcmp (__name, __arg.name()) == 0;
+      |                                ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+In member function ‘bool std::type_info::operator==(const std::type_info&) const’,
+    inlined from ‘cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>’ at /home/optimizer/work/monero-fcmp-idle/src/cryptonote_basic/cryptonote_format_utils.cpp:887:107,
+    inlined from ‘bool __gnu_cxx::__ops::_Iter_pred<_Predicate>::operator()(_Iterator) [with _Iterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, std::vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>]’ at /usr/include/c++/13/bits/predefined_ops.h:318:23,
+    inlined from ‘_RandomAccessIterator std::__find_if(_RandomAccessIterator, _RandomAccessIterator, _Predicate, random_access_iterator_tag) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = __gnu_cxx::__ops::_Iter_pred<cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)> >]’ at /usr/include/c++/13/bits/stl_algobase.h:2080:14,
+    inlined from ‘_Iterator std::__find_if(_Iterator, _Iterator, _Predicate) [with _Iterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = __gnu_cxx::__ops::_Iter_pred<cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)> >]’ at /usr/include/c++/13/bits/stl_algobase.h:2117:23,
+    inlined from ‘_IIter std::find_if(_IIter, _IIter, _Predicate) [with _IIter = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>]’ at /usr/include/c++/13/bits/stl_algo.h:3923:28,
+    inlined from ‘bool cryptonote::pick(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t) [with T = tx_extra_mysterious_minergate]’ at /home/optimizer/work/monero-fcmp-idle/src/cryptonote_basic/cryptonote_format_utils.cpp:887:30:
+/usr/include/c++/13/typeinfo:206:49: warning: ‘int __builtin_strcmp(const char*, const char*)’ of a string of length 45 and an array of size 45 evaluates to nonzero [-Wstring-compare]
+  206 |     return __name[0] != '*' && __builtin_strcmp (__name, __arg.name()) == 0;
+      |                                ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+In member function ‘bool std::type_info::operator==(const std::type_info&) const’,
+    inlined from ‘cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>’ at /home/optimizer/work/monero-fcmp-idle/src/cryptonote_basic/cryptonote_format_utils.cpp:887:107,
+    inlined from ‘bool __gnu_cxx::__ops::_Iter_pred<_Predicate>::operator()(_Iterator) [with _Iterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, std::vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>]’ at /usr/include/c++/13/bits/predefined_ops.h:318:23,
+    inlined from ‘_RandomAccessIterator std::__find_if(_RandomAccessIterator, _RandomAccessIterator, _Predicate, random_access_iterator_tag) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = __gnu_cxx::__ops::_Iter_pred<cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)> >]’ at /usr/include/c++/13/bits/stl_algobase.h:2084:14,
+    inlined from ‘_Iterator std::__find_if(_Iterator, _Iterator, _Predicate) [with _Iterator = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = __gnu_cxx::__ops::_Iter_pred<cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)> >]’ at /usr/include/c++/13/bits/stl_algobase.h:2117:23,
+    inlined from ‘_IIter std::find_if(_IIter, _IIter, _Predicate) [with _IIter = __gnu_cxx::__normal_iterator<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate>*, vector<boost::variant<cryptonote::tx_extra_padding, cryptonote::tx_extra_pub_key, cryptonote::tx_extra_nonce, cryptonote::tx_extra_merge_mining_tag, cryptonote::tx_extra_additional_pub_keys, cryptonote::tx_extra_mysterious_minergate> > >; _Predicate = cryptonote::pick<tx_extra_mysterious_minergate>(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t)::<lambda(const cryptonote::tx_extra_field&)>]’ at /usr/include/c++/13/bits/stl_algo.h:3923:28,
+    inlined from ‘bool cryptonote::pick(binary_archive<true>&, std::vector<boost::variant<tx_extra_padding, tx_extra_pub_key, tx_extra_nonce, tx_extra_merge_mining_tag, tx_extra_additional_pub_keys, tx_extra_mysterious_minergate> >&, uint8_t) [with T = tx_extra_mysterious_minergate]’ at /home/optimizer/work/monero-fcmp-idle/src/cryptonote_basic/cryptonote_format_utils.cpp:887:30:
+/usr/include/c++/13/typeinfo:206:49: warning: ‘int __builtin_strcmp(const char*, const char*)’ of a string of length 45 and an array of size 45 evaluates to nonzero [-Wstring-compare]
+  206 |     return __name[0] != '*' && __builtin_strcmp (__name, __arg.name()) == 0;
+      |                                ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+[200/283] Building CXX object src/cryptonote_core/CMakeFiles/obj_cryptonote_core.dir/tx_sanity_check.cpp.o
+[201/283] Building CXX object src/net/CMakeFiles/obj_net.dir/i2p_address.cpp.o
+[202/283] Building CXX object src/cryptonote_core/CMakeFiles/obj_cryptonote_core.dir/cryptonote_tx_utils.cpp.o
+[203/283] Building CXX object src/net/CMakeFiles/obj_net.dir/resolve.cpp.o
+[204/283] Building CXX object src/net/CMakeFiles/obj_net.dir/parse.cpp.o
+[205/283] Building CXX object src/cryptonote_core/CMakeFiles/obj_cryptonote_core.dir/tx_verification_utils.cpp.o
+[206/283] Building CXX object src/cryptonote_basic/CMakeFiles/obj_cryptonote_basic.dir/miner.cpp.o
+[207/283] Building CXX object src/hardforks/CMakeFiles/obj_hardforks.dir/hardforks.cpp.o
+[208/283] Building CXX object src/net/CMakeFiles/obj_net.dir/zmq.cpp.o
+[209/283] Linking CXX static library src/hardforks/libhardforks.a
+[210/283] Building CXX object src/cryptonote_core/CMakeFiles/obj_cryptonote_core.dir/cryptonote_core.cpp.o
+[211/283] Building CXX object src/net/CMakeFiles/obj_net.dir/socks.cpp.o
+[212/283] Building CXX object src/cryptonote_core/CMakeFiles/obj_cryptonote_core.dir/tx_pool.cpp.o
+[213/283] Building CXX object src/net/CMakeFiles/obj_net.dir/socks_connect.cpp.o
+[214/283] Building CXX object src/net/CMakeFiles/obj_net.dir/http.cpp.o
+[215/283] Building CXX object src/net/CMakeFiles/obj_net.dir/tor_address.cpp.o
+[216/283] Linking CXX static library src/net/libnet.a
+[217/283] Building CXX object src/rpc/CMakeFiles/obj_rpc.dir/rpc_version_str.cpp.o
+[218/283] Building CXX object src/rpc/CMakeFiles/obj_rpc_base.dir/rpc_args.cpp.o
+[219/283] Building CXX object src/blockchain_db/CMakeFiles/obj_blockchain_db.dir/blockchain_db.cpp.o
+[220/283] Building CXX object src/cryptonote_core/CMakeFiles/obj_cryptonote_core.dir/blockchain.cpp.o
+[221/283] Building CXX object src/rpc/CMakeFiles/obj_daemon_rpc_server.dir/zmq_restricted_methods.cpp.o
+[222/283] Building CXX object src/rpc/CMakeFiles/obj_rpc_base.dir/rpc_handler.cpp.o
+[223/283] Linking CXX static library src/rpc/librpc_base.a
+[224/283] Building CXX object src/rpc/CMakeFiles/obj_daemon_messages.dir/message.cpp.o
+[225/283] Building CXX object src/rpc/CMakeFiles/obj_rpc_pub.dir/zmq_pub.cpp.o
+[226/283] Building CXX object src/rpc/CMakeFiles/obj_daemon_messages.dir/daemon_messages.cpp.o
+[227/283] Building CXX object src/rpc/CMakeFiles/obj_daemon_rpc_server.dir/zmq_pub.cpp.o
+[228/283] Building CXX object src/rpc/CMakeFiles/obj_daemon_rpc_server.dir/zmq_server.cpp.o
+[229/283] Building CXX object src/blockchain_db/CMakeFiles/obj_blockchain_db.dir/lmdb/db_lmdb.cpp.o
+[230/283] Building CXX object src/rpc/CMakeFiles/obj_daemon_rpc_server.dir/daemon_handler.cpp.o
+[231/283] Building CXX object src/p2p/CMakeFiles/obj_p2p.dir/net_peerlist.cpp.o
+[232/283] Building CXX object src/daemonizer/CMakeFiles/obj_daemonizer.dir/posix_fork.cpp.o
+[233/283] Linking CXX static library src/daemonizer/libdaemonizer.a
+[234/283] Building CXX object src/cryptonote_protocol/CMakeFiles/obj_cryptonote_protocol.dir/block_queue.cpp.o
+[235/283] Generating generated_testnet_blocks.c
+[236/283] Generating generated_stagenet_blocks.c
+[237/283] Generating generated_checkpoints.c
+[238/283] Building CXX object src/cryptonote_protocol/CMakeFiles/obj_cryptonote_protocol.dir/cryptonote_protocol_handler-base.cpp.o
+[239/283] Building CXX object src/serialization/CMakeFiles/obj_serialization.dir/json_object.cpp.o
+[240/283] Building C object src/blocks/CMakeFiles/obj_blocks.dir/generated_testnet_blocks.c.o
+[241/283] Building C object src/blocks/CMakeFiles/obj_blocks.dir/generated_stagenet_blocks.c.o
+[242/283] Building CXX object src/blocks/CMakeFiles/obj_blocks.dir/blocks.cpp.o
+[243/283] Building C object src/blocks/CMakeFiles/obj_blocks.dir/generated_checkpoints.c.o
+[244/283] Linking CXX static library src/blocks/libblocks.a
+[245/283] Building CXX object src/device/CMakeFiles/obj_device.dir/log.cpp.o
+[246/283] Building CXX object src/device/CMakeFiles/obj_device.dir/device.cpp.o
+[247/283] Building CXX object src/cryptonote_protocol/CMakeFiles/obj_cryptonote_protocol.dir/request_manager.cpp.o
+[248/283] Building CXX object src/p2p/CMakeFiles/obj_p2p.dir/net_node.cpp.o
+[249/283] Building CXX object src/device/CMakeFiles/obj_device.dir/device_default.cpp.o
+[250/283] Building CXX object src/device/CMakeFiles/obj_device.dir/device_ledger.cpp.o
+[251/283] Building CXX object src/device/CMakeFiles/obj_device.dir/device_io_hid.cpp.o
+[252/283] Building CXX object src/cryptonote_protocol/CMakeFiles/obj_cryptonote_protocol.dir/levin_notify.cpp.o
+[253/283] Building CXX object src/rpc/CMakeFiles/obj_rpc.dir/core_rpc_server.cpp.o
+[254/283] Building CXX object src/rpc/CMakeFiles/obj_rpc.dir/instantiations.cpp.o
+[255/283] Building fcmp++ rust lib
+   Compiling version_check v0.9.5
+   Compiling libc v0.2.189
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+   Compiling radium v0.7.0
+   Compiling rustversion v1.0.23
+   Compiling semver v1.0.28
+   Compiling typenum v1.20.1
+   Compiling subtle v2.6.1
+   Compiling cfg-if v1.0.4
+   Compiling tap v1.0.1
+   Compiling funty v2.0.0
+   Compiling foldhash v0.2.0
+   Compiling spin v0.10.1
+   Compiling cpufeatures v0.2.17
+   Compiling keccak v0.1.6
+   Compiling wyz v0.5.1
+   Compiling hashbrown v0.16.1
+   Compiling rustc_version v0.4.1
+   Compiling generic-array v0.14.9
+   Compiling curve25519-dalek v4.1.3
+   Compiling bitvec v1.1.1
+   Compiling std-shims v0.1.5
+   Compiling generic-array v1.4.5
+   Compiling monero-io v0.1.0 (https://github.com/monero-oxide/monero-oxide?rev=31c26d96eaadbba910ffe3613ad8b4cf9c598a93#31c26d96)
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.6
+   Compiling digest v0.10.7
+   Compiling syn v2.0.119
+   Compiling blake2 v0.10.6
+   Compiling sha2 v0.10.9
+   Compiling sha3 v0.10.9
+   Compiling getrandom v0.2.17
+   Compiling rand_core v0.6.4
+   Compiling ff v0.13.1
+   Compiling group v0.13.0
+   Compiling zeroize_derive v1.5.0
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling zeroize v1.9.0
+   Compiling flexible-transcript v0.3.4
+   Compiling crypto-bigint v0.5.5 (https://github.com/kayabaNerve/crypto-bigint?branch=c-repr#78352771)
+   Compiling multiexp v0.5.2
+   Compiling ciphersuite v0.4.2
+   Compiling generalized-bulletproofs v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/generalized-bulletproofs)
+warning: variant `InconsistentWitness` is never constructed
+   --> /home/optimizer/work/monero-oxide-e007/crypto/generalized-bulletproofs/src/inner_product.rs:101:3
+    |
+ 93 | pub(crate) enum IpProveError {
+    |                 ------------ variant in this enum
+...
+101 |   InconsistentWitness,
+    |   ^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `IpProveError` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+   Compiling generalized-bulletproofs-circuit-abstraction v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/fcmps/circuit-abstraction)
+warning: `generalized-bulletproofs` (lib) generated 1 warning
+   Compiling generalized-bulletproofs-ec-gadgets v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/fcmps/ec-gadgets)
+   Compiling dalek-ff-group v0.4.6
+   Compiling dalek-ff-group v0.5.0
+   Compiling ec-divisors v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/divisors)
+   Compiling monero-primitives v0.1.0 (https://github.com/monero-oxide/monero-oxide?rev=31c26d96eaadbba910ffe3613ad8b4cf9c598a93#31c26d96)
+   Compiling monero-ed25519 v0.1.0 (https://github.com/monero-oxide/monero-oxide?rev=31c26d96eaadbba910ffe3613ad8b4cf9c598a93#31c26d96)
+warning: `generalized-bulletproofs` (lib) generated 1 warning (1 duplicate)
+   Compiling helioselene v0.1.0 (https://github.com/monero-oxide/monero-oxide?rev=31c26d96eaadbba910ffe3613ad8b4cf9c598a93#31c26d96)
+   Compiling full-chain-membership-proofs v0.1.0 (/home/optimizer/work/monero-oxide-e007/crypto/fcmps)
+   Compiling monero-fcmp-plus-plus-generators v0.1.0 (https://github.com/monero-oxide/monero-oxide?rev=31c26d96eaadbba910ffe3613ad8b4cf9c598a93#31c26d96)
+   Compiling monero-fcmp-plus-plus v0.1.0 (https://github.com/monero-oxide/monero-oxide?rev=31c26d96eaadbba910ffe3613ad8b4cf9c598a93#31c26d96)
+   Compiling fcmp_pp_rust v0.0.0 (/home/optimizer/work/monero-fcmp-idle/src/fcmp_pp/fcmp_pp_rust)
+    Finished `release` profile [optimized] target(s) in 2m 12s
+Finished copying fcmp++ rust targets
+[256/283] Building CXX object src/fcmp_pp/CMakeFiles/obj_fcmp_pp.dir/fcmp_pp_crypto.cpp.o
+[257/283] Building CXX object src/fcmp_pp/CMakeFiles/obj_fcmp_pp.dir/prove.cpp.o
+[258/283] Building CXX object src/daemon/CMakeFiles/daemon.dir/executor.cpp.o
+[259/283] Building CXX object src/fcmp_pp/CMakeFiles/obj_fcmp_pp.dir/tower_cycle.cpp.o
+[260/283] Building CXX object src/fcmp_pp/CMakeFiles/obj_fcmp_pp.dir/fcmp_pp_types.cpp.o
+[261/283] Building CXX object src/fcmp_pp/CMakeFiles/obj_fcmp_pp.dir/tree_cache.cpp.o
+[262/283] Building CXX object src/fcmp_pp/CMakeFiles/obj_fcmp_pp.dir/curve_trees.cpp.o
+[263/283] Linking CXX static library src/fcmp_pp/libfcmp_pp.a
+[264/283] Linking CXX static library src/ringct/libringct_basic.a
+[265/283] Linking CXX static library src/device/libdevice.a
+[266/283] Linking CXX static library src/ringct/libringct.a
+[267/283] Linking CXX static library src/cryptonote_basic/libcryptonote_basic.a
+[268/283] Linking CXX static library src/carrot_impl/libcarrot_impl.a
+[269/283] Linking CXX static library src/blockchain_db/libblockchain_db.a
+[270/283] Linking CXX static library src/cryptonote_core/libcryptonote_core.a
+[271/283] Linking CXX static library src/p2p/libp2p.a
+[272/283] Linking CXX static library src/cryptonote_protocol/libcryptonote_protocol.a
+[273/283] Linking CXX static library src/serialization/libserialization.a
+[274/283] Linking CXX static library src/rpc/librpc_pub.a
+[275/283] Linking CXX static library src/rpc/libdaemon_messages.a
+[276/283] Linking CXX static library src/rpc/librpc.a
+[277/283] Linking CXX static library src/rpc/libdaemon_rpc_server.a
+[278/283] Building CXX object src/daemon/CMakeFiles/daemon.dir/command_parser_executor.cpp.o
+[279/283] Building CXX object src/daemon/CMakeFiles/daemon.dir/command_server.cpp.o
+[280/283] Building CXX object src/daemon/CMakeFiles/daemon.dir/main.cpp.o
+[281/283] Building CXX object src/daemon/CMakeFiles/daemon.dir/daemon.cpp.o
+[282/283] Building CXX object src/daemon/CMakeFiles/daemon.dir/rpc_command_executor.cpp.o
+[283/283] Linking CXX executable bin/monerod
+BUILD_OK

@@ -1,0 +1,140 @@
+From cb4541fab8d5368913cc0d5fe1fa0abb5a9154f1 Mon Sep 17 00:00:00 2001
+From: optimizer <optimizer@hydrogen>
+Date: Wed, 4 Nov 2026 00:58:28 +0000
+Subject: [PATCH] E021: trim FCMP++ verifier memory once verification goes idle
+
+E012 trims after heavy batch-verify calls and at most every 10 s on light
+calls, but only inside a verify call. After the last call of a sync burst
+nothing trims, so whatever the last light calls freed stays resident in the
+glibc arenas until the next verification: the adaptive build idled ~0.2 GB
+above the per-call build (E012: 1,333 vs 1,107 MB post-idle).
+
+Record the time of the last batch verification and of the last trim in two
+atomics, and have core::on_idle (every 2 s) call rct::idleTrimFcmpPp(5000):
+one malloc_trim(0) once no batch verification has run for 5 s and the last
+one was not already followed by a trim. The verify path stores its timestamp
+before deciding its own trim, so the idle trim never repeats one.
+
+Measured (E021, 3 alternating A/B rounds vs the E012 build, hydrogen):
+heavy window post-idle RssAnon 1,349 -> 1,087 MB (-19%), peak / wall / CPU
+unchanged; small-tx window wall unchanged; exactly one trim per run, 5-6 s
+after the last verification; all window hashes match. glibc only.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+---
+ src/cryptonote_core/cryptonote_core.cpp |  2 ++
+ src/cryptonote_core/cryptonote_core.h   |  1 +
+ src/ringct/rctSigs.cpp                  | 41 ++++++++++++++++++++++---
+ src/ringct/rctSigs.h                    |  3 ++
+ 4 files changed, 42 insertions(+), 5 deletions(-)
+
+diff --git a/src/cryptonote_core/cryptonote_core.cpp b/src/cryptonote_core/cryptonote_core.cpp
+index 6af08fefe..7adfbf250 100644
+--- a/src/cryptonote_core/cryptonote_core.cpp
++++ b/src/cryptonote_core/cryptonote_core.cpp
+@@ -39,6 +39,7 @@ using namespace epee;
+ #include <unordered_set>
+ #include <thread>
+ #include "cryptonote_core.h"
++#include "ringct/rctSigs.h"
+ #include "net/levin_base.h"
+ #include "common/util.h"
+ #include "common/updates.h"
+@@ -1644,6 +1645,7 @@ namespace cryptonote
+     m_block_rate_interval.do_call(boost::bind(&core::check_block_rate, this));
+     m_blockchain_pruning_interval.do_call(boost::bind(&core::update_blockchain_pruning, this));
+     m_diff_recalc_interval.do_call(boost::bind(&core::recalculate_difficulties, this));
++    m_fcmp_idle_trim_interval.do_call([]{ rct::idleTrimFcmpPp(5000); return true; }); // E021
+     m_miner.on_idle();
+     m_mempool.on_idle();
+     return true;
+diff --git a/src/cryptonote_core/cryptonote_core.h b/src/cryptonote_core/cryptonote_core.h
+index 4bd83f7b5..0ce527bba 100644
+--- a/src/cryptonote_core/cryptonote_core.h
++++ b/src/cryptonote_core/cryptonote_core.h
+@@ -1055,6 +1055,7 @@ namespace cryptonote
+      epee::math_helper::once_a_time_seconds<90, false> m_block_rate_interval; //!< interval for checking block rate
+      epee::math_helper::once_a_time_seconds<60*60*5, true> m_blockchain_pruning_interval; //!< interval for incremental blockchain pruning
+      epee::math_helper::once_a_time_seconds<60*60*24*7, false> m_diff_recalc_interval; //!< interval for recalculating difficulties
++     epee::math_helper::once_a_time_seconds<2, false> m_fcmp_idle_trim_interval; //!< E021: interval for the FCMP++ idle trim check
+ 
+      std::atomic<bool> m_starter_message_showed; //!< has the "daemon will sync now" message been shown?
+ 
+diff --git a/src/ringct/rctSigs.cpp b/src/ringct/rctSigs.cpp
+index 8dd351f42..d3f54781c 100644
+--- a/src/ringct/rctSigs.cpp
++++ b/src/ringct/rctSigs.cpp
+@@ -1666,6 +1666,36 @@ done:
+       return true;
+     }
+ 
++    // E021: when the last FCMP++ batch verification ran, and when the last trim ran (steady_clock ms).
++    // Written by batchVerifyFcmpPpProofs, read by idleTrimFcmpPp from the core idle loop.
++    static std::atomic<std::int64_t> s_fcmp_last_verify_ms{0};
++    static std::atomic<std::int64_t> s_fcmp_last_trim_ms{0};
++
++    static inline std::int64_t steadyNowMs()
++    {
++      return std::chrono::duration_cast<std::chrono::milliseconds>(
++        std::chrono::steady_clock::now().time_since_epoch()).count();
++    }
++
++    bool idleTrimFcmpPp(std::int64_t idle_ms)
++    {
++#if defined(__GLIBC__)
++      const std::int64_t last_verify = s_fcmp_last_verify_ms.load(std::memory_order_relaxed);
++      if (last_verify == 0 || s_fcmp_last_trim_ms.load(std::memory_order_relaxed) >= last_verify)
++        return false; // nothing verified since the last trim
++      const std::int64_t now_ms = steadyNowMs();
++      if (now_ms - last_verify < idle_ms)
++        return false; // still verifying
++      s_fcmp_last_trim_ms.store(now_ms, std::memory_order_relaxed);
++      malloc_trim(0);
++      MGINFO("FCMP++ verification idle for " << (now_ms - last_verify) / 1000 << " s: returned freed verifier memory to the OS");
++      return true;
++#else
++      (void)idle_ms;
++      return false;
++#endif
++    }
++
+     bool batchVerifyFcmpPpProofs(std::vector<fcmp_pp::FcmpPpVerifyInput> &&fcmp_pp_verify_inputs) {
+       const std::size_t n_proofs = fcmp_pp_verify_inputs.size();
+       if (n_proofs == 0)
+@@ -1780,13 +1810,14 @@ done:
+ #if defined(__GLIBC__)
+       // E012: trim after every heavy call, which just freed large working sets. Otherwise trim at most
+       // once every 10 s (E011: a trim after every light block costs +6% wall on 2-input txs).
++      // E021: record the verification first, so a trim here counts as "after the last verification"
++      // and the idle trim does not repeat it.
+       {
+-        static std::atomic<std::int64_t> last_trim_ms{0};
+-        const std::int64_t now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+-          std::chrono::steady_clock::now().time_since_epoch()).count();
+-        if (heavy_call || now_ms - last_trim_ms.load(std::memory_order_relaxed) >= 10000)
++        const std::int64_t now_ms = steadyNowMs();
++        s_fcmp_last_verify_ms.store(now_ms, std::memory_order_relaxed);
++        if (heavy_call || now_ms - s_fcmp_last_trim_ms.load(std::memory_order_relaxed) >= 10000)
+         {
+-          last_trim_ms.store(now_ms, std::memory_order_relaxed);
++          s_fcmp_last_trim_ms.store(now_ms, std::memory_order_relaxed);
+           malloc_trim(0);
+         }
+       }
+diff --git a/src/ringct/rctSigs.h b/src/ringct/rctSigs.h
+index 117911c6e..0f7995fb0 100644
+--- a/src/ringct/rctSigs.h
++++ b/src/ringct/rctSigs.h
+@@ -135,6 +135,9 @@ namespace rct {
+     bool verRctSemanticsSimple(const rctSig & rv);
+     bool verRctSemanticsSimple(const std::vector<const rctSig*> & rv);
+     bool verRctNonSemanticsSimple(const rctSig & rv);
++    // E021: return freed FCMP++ verifier memory to the OS once no batch verification has run for idle_ms.
++    // Returns true if a trim was performed. No-op on non-glibc builds.
++    bool idleTrimFcmpPp(std::int64_t idle_ms);
+     static inline bool verRctSimple(const rctSig & rv) { return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv); }
+     xmr_amount decodeRct(const rctSig & rv, const key & sk, unsigned int i, key & mask, hw::device &hwdev);
+     xmr_amount decodeRct(const rctSig & rv, const key & sk, unsigned int i, hw::device &hwdev);
+-- 
+2.43.0
+

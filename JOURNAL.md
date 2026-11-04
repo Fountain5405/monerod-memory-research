@@ -440,3 +440,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 
 ## 2026-11-03 23:35 E021 (idle trim) launched
 - Design from E012's own note (post-idle 1,333 vs combo 1,107 MB: after the last light call nothing trims). Patch: scripts/e021_patch_idle_trim.py on a copy of the adapt tree (~/work/monero-fcmp-idle); `rct::idleTrimFcmpPp(5000)` from `core::on_idle` via a 2 s `once_a_time_seconds`; the verify path stores its timestamp before deciding its own trim so the idle trim never repeats a trim already done. Build + heavy/small A/B adapt vs idle x3 running (scripts/run_e021.sh). Handoff note refreshed (~/.claude/HANDOFF.md on the control box).
+
+## 2026-11-04 00:58 E021 done: idle trim takes adapt's post-idle memory -19%, adopted as patch 0006
+- Chain 23:33-00:58: build OK (ccache, 3 min), heavy A/B x3 (23:36-00:13), small-tx A/B x3 (00:14-00:58). Heavy: post-idle 1,349 -> 1,087 MB (-19.4%), peak anon 1,807 vs 1,713 (ranges overlap), wall 110 vs 111 s, CPU 911 vs 910 s. Small-tx: wall 155 vs 157 s, post-idle 750 vs 721 MB, peak 813 vs 822 MB. 12/12 hashes. The sampler shows the drop in one 6 s step (r1 idle: 1,349 -> 1,113 MB at the logged trim); exactly one trim line per idle run (6/6).
+- Adopted: committed the idle tree, format-patch -> patches/v1 monerod 0006 and v2 monerod 0007; patches README, SUMMARY (caveat, upstreamability row, next list), HOW-IT-WORKS 2.3, F37. E013's negtest/min_mem/long-resync were run on 0001-0005; 0006 changes only when malloc_trim is called.
+- Box: governor restored to schedutil by the chain, no shadow lanes, ~32 GB free. Next: E022 threshold sweep.

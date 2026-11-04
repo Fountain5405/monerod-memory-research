@@ -77,6 +77,8 @@ Verification is pure field and curve arithmetic. On big proofs the two SMT sibli
 ### 2.3 Fix 2: return freed memory to the kernel (E004e, E012)
 After a heavy batch-verify call, `malloc_trim(0)` walks every arena and releases whole free pages back to the kernel (`madvise(MADV_DONTNEED)`), which the automatic top-of-heap trimming never does for fragmented arenas. This is what brings idle memory down from ~4.8 GB to ~1 GB, and it also lowers the peak, because memory freed by one block is no longer still resident when the next block's verifications start. A trim costs ~9 ms, so the final build trims after every heavy call and otherwise at most once every 10 s. glibc only (`#if defined(__GLIBC__)`). About 15 lines.
 
+One gap remained: those trims run only inside a verify call, so after the last call of a sync burst whatever the last light calls freed stayed resident (E012 measured adapt 0.2 GB above the per-call combo at idle). E021 closes it with one more trim from the daemon's idle loop: the verify path records its time in an atomic, and `core::on_idle` checks every 2 s whether a verification has happened since the last trim and is at least 5 s old; if so, one `malloc_trim(0)`. Measured: post-idle 1,349 -> 1,087 MB on the heavy window (-19%), nothing else moves; the trim fires exactly once per burst. About 40 lines, patch 0006.
+
 ## 3. How the pieces add up (heavy window, 24-thread machine)
 
 | build | peak RssAnon | wall | notes |
