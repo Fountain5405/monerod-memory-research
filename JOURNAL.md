@@ -479,3 +479,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Correction to my own note: I assumed window A had no blocks at 16 or more inputs. The scan shows 3,105,102-3,105,104 do. Both arms treat them alike, so they dilute rather than inflate.
 - Committed adbe70cf8; rebuild is byte-identical to the measured t8 (sha d779a522). Patches 0007 v1, 0008 v2 (v2 apply check only, not built).
 - Launched E023 ahead of the optional e020 profile: the recommended build's negative test, min_mem and long resync all predate its last two patches, which matters more than the profile. Expected results written into run_e023.sh before the run.
+
+## 2026-11-04 06:47 Check-in: E023 progressing, first three parts done, no miss so far
+- Heavy A/B x3, base vs final (medians): peak anon 5,606 vs 1,764 MB (-68.5%), post-idle 4,977 vs 1,066 MB (-78.6%), wall 221 vs 112 s (-49%), CPU 4,229 vs 914 s. 6/6 hashes. Inside the expected -60%.
+- Negative test PASS at both heights (128-, 8- and 2-input txs, tampered 8/8 rejected per tx, originals accepted). min_mem 1,866 MB (largest failing 1,765, step 125), the same result as E013 and under the expected 2,000 MB.
+- Small-tx in round 3 of 3, interim: base 150 / 149 / 148 s, final 156 / 159 s so far. Not read as a result yet. Long resync not started.
+- Box: no shadow lanes, 32 GB free, governor pinned by the chain. Peer watch: 192.168.1.116 is among .22's connections at h=2245813, state=normal, up 23,998 blocks in 2 h, still below the 3,105,401 wedge height.
