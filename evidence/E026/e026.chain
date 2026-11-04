@@ -1,0 +1,47 @@
+chain e026 queued 2026-11-04T09:44:23+00:00
+start 2026-11-04T11:29:25+00:00
+built i60 2026-11-04T11:29:32+00:00 diff:  1 file changed, 1 insertion(+), 1 deletion(-)
+built inever 2026-11-04T11:29:37+00:00 diff:  1 file changed, 1 insertion(+), 1 deletion(-)
+tree restored and rebuilt, status lines: 0
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/research-artifacts/e026_bins/monerod-i10
+266f354b33cbb75254b7a61e7b28544a5c401773b4e0d41a4cddee820af4e8e6  /home/optimizer/work/research-artifacts/e026_bins/monerod-i60
+3a858c3bb9a2fe848692bd22e460a3d8dafe175c7bd0b977c14af1399dc5adc9  /home/optimizer/work/research-artifacts/e026_bins/monerod-inever
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+no shadow processes
+governor schedutil -> performance
+governor restored schedutil
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| i10 | 5 | 810 (793-821) | 978 (958-1,006) | 3,938 (3,916-3,946) | 160 (158-161) | 708 (701-727) | 52 (51-74) | 1,117 (1,117-1,123) | 1,440 (1,433-1,441) | all yes |
+| i60 | 5 | 846 (840-854) | 1,026 (1,014-1,056) | 3,999 (3,988-4,005) | 159 (157-161) | 715 (709-723) | 52 (51-74) | 1,117 (1,117-1,128) | 1,436 (1,431-1,450) | all yes |
+| inever | 5 | 847 (827-853) | 1,019 (1,008-1,027) | 4,000 (3,986-4,007) | 158 (156-159) | 717 (708-723) | 52 (52-75) | 1,123 (1,117-1,128) | 1,442 (1,437-1,448) | all yes |
+
+i60 vs i10 (medians): peak RssAnon MB +4.4%; peak Private_Dirty MB +4.9%; peak RSS MB +1.5%; wall s -0.6%; post-idle RssAnon MB +1.0%; read MB +0.0%; write MB +0.0%; CPU s -0.3%
+  peak anon ranges overlap: no (base 793-821, i60 840-854)
+inever vs i10 (medians): peak RssAnon MB +4.6%; peak Private_Dirty MB +4.2%; peak RSS MB +1.6%; wall s -1.2%; post-idle RssAnon MB +1.3%; read MB +0.0%; write MB +0.5%; CPU s +0.1%
+  peak anon ranges overlap: no (base 793-821, inever 827-853)
+run,wall_s
+r1_i10,154.7
+r1_i60,153.4
+r1_inever,152.2
+r2_i10,156.7
+r2_i60,155.7
+r2_inever,155.1
+r3_i10,155.7
+r3_i60,153.5
+r3_inever,154.0
+r4_i10,157.1
+r4_i60,155.1
+r4_inever,154.2
+r5_i10,156.1
+r5_i60,154.8
+r5_inever,152.9
+# i10: median 156.1 min 154.7 max 157.1
+# i60: median 154.8 min 153.4 max 155.7
+# inever: median 154.0 min 152.2 max 155.1
+# i60 vs i10: -0.8%
+# ranges overlap: yes
+# inever vs i10: -1.4%
+# ranges overlap: yes
+done 2026-11-04T13:22:55+00:00
+CHAIN_E026_COMPLETE

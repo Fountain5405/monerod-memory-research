@@ -534,3 +534,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - E027 part b not started: it waits for E026. box81 is idle (load 0.00), 43 GB free.
 - Box: no lanes, 37 GB free, governor pinned by the chain.
 - Peer watch: 192.168.1.116 is among .22's connections at h=2295360, state=normal, live 153 s, up only 3,952 blocks in 2 h against about 23,000 in earlier intervals, still below the 3,105,401 wedge height. The short connection age suggests a reconnect or restart in the interval; cause not known from here. Watch it at the next check-in.
+
+## 2026-11-04 13:30 E026 done, 10 s stays; E027 part b launched
+- i60 vs i10: wall -0.8% from logs, ranges overlap, peak +4.4%, separate. Rule needed at least -2% with separate ranges. Not adopted, no patch. inever: wall -1.4%, overlap, peak +4.6%. 15/15 hashes.
+- So light-call trims are not what the small-tx wall gap is made of. The remainder of E023's +6.6% is not attributed.
+- Tree restored and clean, binary back at d779a522.
+- E027 part b started on box81 once E026's marker appeared. Hydrogen is idle.
