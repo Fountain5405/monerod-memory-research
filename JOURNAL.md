@@ -466,3 +466,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 ## 2026-11-04 03:26 E022 guard was an A/A; replication launched on real 8-input stretches
 - Guard passed its criterion (wall -0.2% from logs, CPU +0.6%, peak +1.0%, 6/6 hashes), but the window has no block with a largest tx of 8-15 inputs, so the arms behave identically. My mistake: I picked the window as the standard guard without checking it against the scan. Not counted as support for threshold 8; useful only as a noise floor.
 - Replication launched: 13 sensitive blocks on each of two independent stretches, 5 rounds each. New scripts/cpu_watch.sh closes the CPU overshoot gap. Criterion fixed in run_e022c.sh: both windows or 16 stays.
+
+## 2026-11-04 04:47 Check-in: E022 replication progressing, window A complete
+- Window A finished 04:15 (10 runs); window B is in round 4 of 5, 6 of its 10 runs have CPU files. ETA ~05:05 from A's 49 min, revised from ~05:30. The chain has reported no failure so far; hashes not yet read.
+- Interim, from scripts/e022c_segments.py, not a decision. A, medians over 5 rounds, t8 vs t16: wall 8.45 vs 8.20 s (+3.0%, ranges 8.32-8.59 vs 8.14-8.28, no overlap), CPU 47.1 vs 67.9 s (-30.5%, no overlap). B so far, 3 rounds: wall +4.4%, CPU -29.8%. B's wall is close to the +5% limit, so it is not settled.
+- A's peak anon in results.csv: t8 470 vs t16 478 MB (medians; t8 ranges 428-484, t16 475-483). Those peaks come from runs that overshot the window by different amounts (80-90 blocks recorded), so they are not on identical heights.
+- Box: no shadow lanes, 35 GB free, governor pinned by the chain. Peer watch: 192.168.1.116 is among .22's connections at h=2221815, state=normal, up 17,096 blocks in 2 h from 2204719, still below the 3,105,401 wedge height.
