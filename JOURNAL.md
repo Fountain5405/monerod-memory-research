@@ -600,3 +600,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 ## 2026-11-04 21:33 E030 README correction; E029 limit made concrete
 - E030 README said peak RSS ranges overlap. They do not (base 4,116-4,313, e029 4,050-4,108 MB). Corrected before anyone relied on it.
 - E029 limit: E022 already recorded only 43 blocks with a largest tx of 3-7 inputs, no usable window. So the unmeasured sizes cannot be measured at the node on this chain.
+
+## 2026-11-04 22:49 Check-in: nothing running, E031 launched on box81
+- Hydrogen idle since E030, no lanes, 30 GB free. box81 load 0.00, 43 GB free.
+- Queue empty except Needs owner, so I took the largest remaining gap in the report: final's cgroup minimum and long resync have only been measured on hydrogen, and base's minimum has not been re-measured against final since E009. E031 does both on box81, with long resync at 3 rounds rather than E023's 1. It uses an idle machine and does not change the recommendation. The owner asked earlier for box81 to be used for useful work.
+- Not started: anything on the E029 option (owner keeps final), the window-aware E001 cap (owner's call).
+- Peer watch: 192.168.1.116 not among .22 connections on two looks, second check in a row. Last seen at h=2303879 at 18:47. Cause not known from here.
