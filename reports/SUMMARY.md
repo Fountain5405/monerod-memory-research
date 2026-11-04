@@ -1,47 +1,50 @@
-# monerod memory research: summary (draft, updated 2026-11-03 after E019)
+# monerod memory research: summary (draft, updated 2026-11-04 after E023)
 
 **Bottom line:** on the FCMP++ stressnet sync workload, three separable changes cut the memory monerod needs by about **two thirds to 70%**, and sync is about as fast or faster:
 - -68% peak in a 40-block worst-case window (3 A/B rounds);
-- -70% over an 18,000-block resync;
+- -69% over an 18,000-block resync;
 - -67.5% in the minimum cgroup memory a sync can run under.
 
-Over the 18,000-block resync the recommended build is 4.6% faster overall: 2x faster on heavy blocks, 4.6% slower on small-tx blocks. All guardrails held: the same chain state as the reference node, invalid proofs still rejected (24/24 in E013; 236/236 identical decisions to base in the differential test E015), and no cost shifted to disk or swap.
+Over the 18,000-block resync the recommended build is 5.4% faster overall: 2x faster on heavy blocks, 4.1% slower on dense small-tx blocks. On a 1,000-block window of small txs it is 6.6% slower, which is above the +6% I expected before E023 (see E023). All guardrails held: the same chain state as the reference node, invalid proofs still rejected (24/24 in E023; 236/236 identical decisions to base in the differential test E015, run on the build before E021 and E022), and no cost shifted to disk or swap.
 
-**Recommended build ("adapt", E012/E013)** = beta.3.1 plus:
+**Recommended build ("final", validated in E023; "adapt" in earlier experiments is this build without items 4 and the threshold of 8)** = beta.3.1 plus:
 1. The streaming FCMP++ verifier (E007).
 2. For FCMP++ batch calls whose largest proof has ≥ 8 inputs (16 in E012, changed by E022): a cap on the batch count at physical cores, and `malloc_trim(0)` afterwards. Otherwise no cap, and a trim at most every 10 s.
 3. The E001 sync-size cap.
+4. One `malloc_trim(0)` once verification has been idle for 5 s (E021).
 
-### Headline: 40-block heavy window 3,105,401 → 3,105,441, 3 alternating A/B rounds, medians (E013)
+### Headline: 40-block heavy window 3,105,401 → 3,105,441, 3 alternating A/B rounds, medians (E023)
 
-| metric | baseline v0.19.0.0-beta.3.1 | adapt | change |
+| metric | baseline v0.19.0.0-beta.3.1 | final | change |
 |---|---|---|---|
-| peak anonymous memory (RssAnon) | 5,600 MB (5,403-5,617) | 1,780 MB (1,762-1,816) | **-68.2%** |
-| peak private dirty memory | 5,601 MB | 1,804 MB | **-67.8%** |
-| memory held after the window, idle (RssAnon) | 4,993 MB | 1,368 MB | **-72.6%** |
-| minimum cgroup MemoryMax that still syncs within 1.1x the wall time, swap off (E009, E013) | 5,750 MB | 1,866 MB | **-67.5%** |
-| wall time | 222 s | 111 s | **-50.0%** |
-| CPU time (utime + stime) | 4,258 s | 904 s | -78.8% |
+| peak anonymous memory (RssAnon) | 5,606 MB (5,405-5,634) | 1,764 MB (1,613-1,797) | **-68.5%** |
+| peak private dirty memory | 5,613 MB | 1,786 MB | **-68.2%** |
+| memory held after the window, idle (RssAnon) | 4,977 MB | 1,066 MB | **-78.6%** |
+| minimum cgroup MemoryMax that still syncs within 1.1x the wall time, swap off (base E009, final E023) | 5,750 MB | 1,866 MB | **-67.5%** |
+| wall time | 221 s | 112 s | **-49.3%** |
+| CPU time (utime + stime) | 4,229 s | 914 s | -78.4% |
 | bytes written to disk | 466 MB | 466 MB | unchanged |
 | end block hash = reference node (.22) | 3/3 | 3/3 | same |
-| tampered FCMP++ proofs rejected (monerod-level negtest) | 24/24 | 24/24 | same |
+| tampered FCMP++ proofs rejected (monerod-level negtest; base from E013) | 24/24 | 24/24 | same |
 
-### Long run: 18,000-block resync 3,105,401 → 3,123,400, 1 run per arm, `--block-sync-size 5` (E013)
+### Long run: 18,000-block resync 3,105,401 → 3,123,400, 1 run per arm, `--block-sync-size 5` (E023)
 
-| metric | baseline | adapt | change |
+| metric | baseline | final | change |
 |---|---|---|---|
-| peak RssAnon | 5,613 MB | 1,657 MB | **-70.5%** |
-| idle after sync (RssAnon) | 4,642 MB | 1,379 MB | **-70.3%** |
-| wall, whole resync | 1,345 s | 1,283 s | **-4.6%** |
-| wall, 40-block heavy window | 219 s | 108 s | -51% |
-| wall, 7,959 dense small-tx blocks | 1,051 s | 1,099 s | +4.6% |
-| wall, 10,000 near-empty blocks | 73 s | 72 s | 0% |
-| bytes written | 9,412 MB | 9,419 MB | unchanged |
+| peak RssAnon | 5,369 MB | 1,650 MB | **-69.3%** |
+| idle after sync (RssAnon) | 4,190 MB | 1,400 MB | **-66.6%** |
+| wall, whole resync | 1,360 s | 1,287 s | **-5.4%** |
+| wall, 40-block heavy window | 219 s | 106 s | -52% |
+| wall, about 7,960 dense small-tx blocks | 1,062 s | 1,106 s | +4.1% |
+| wall, about 10,000 near-empty blocks | 76 s | 72 s | -5% |
+| bytes written | 9,409 MB | 9,411 MB | unchanged |
 | end hash = .22 | yes | yes | same |
 
-- Memory does not grow over the run: after the window adapt stays at 1.3-1.6 GB.
-- With DEFAULT sync settings (no `--block-sync-size`), adapt also synced all 18,000 blocks: peak 1,663 MB, 1,305 s. Base wedges there (E001).
-- On a window of 2-input txs only (E012, 3 rounds), adapt uses 822 MB vs base's 1,167 MB (-30%), and is 4.0% slower (157 vs 151 s).
+These are single runs, and base itself moved between experiments (peak 5,369 here and 5,613 MB in E013; idle 4,190 and 4,642 MB).
+
+- No upward memory trend over the last 13,000 blocks: after the window final stays at 1.3-1.6 GB, rising about 260 MB up to 3,113,400 and then flat or falling, and it never passes its heavy-window peak. One run, so slow growth over a much longer sync is not excluded.
+- With DEFAULT sync settings (no `--block-sync-size`), final also synced all 18,000 blocks: peak 1,511 MB, 1,342 s, 5.9% more written. Base wedges there (E001).
+- On a 1,000-block window of small txs (E023, 3 rounds), final uses 807 MB vs base's 1,095 MB (-26%), and is 6.6% slower on identical heights (155.0 vs 145.4 s, ranges not overlapping). E012 measured adapt at +4.0% there; E023b compares adapt and final directly.
 
 The owner's target was 40%. The minimum-cgroup number is the "real RAM a node needs" metric, because it counts heap, page cache, and everything else charged to the process.
 
@@ -168,7 +171,7 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
 
 ## Caveats
 - The headline numbers are from hydrogen (12c/24t). E019 reproduced the A/B on a second machine, box81 (6c/12t, 14 GB): -61.5% peak, -71% post-idle, -43% wall on the heavy window, -33% peak on small-tx blocks, 18/18 hashes, no swap. The headline is one 40-block window with 3 A/B rounds; the 18,000-block resyncs (E010, E013, E018) are 1 run per arm, on hydrogen only.
-- adapt's threshold is now 8 inputs: E022 swept 8 / 16 / 32 and replicated 8 against 16 on two stretches (about -30% CPU, +3-4% wall on 8-input blocks; no lower peak once larger proofs are in the run; 83 of 43,270 blocks affected on this synthetic chain; below 8 untested; F38). The figures in this report for adapt were measured with 16 unless they cite E022 or later. The trim interval of 10 s is still a judgment call and was not swept. adapt holds ~0.1-0.4 GB more than the non-adaptive combo during light-block sync, because it trims less often; at idle E021's single idle trim releases ~230 MB of it on the heavy window (about -17%, F37), now patch 0006 of the series. E013's validation was not rerun with that patch or with E022's; E023 does that. It is unmeasured at the chain tip.
+- adapt's threshold is now 8 inputs: E022 swept 8 / 16 / 32 and replicated 8 against 16 on two stretches (about -30% CPU, +3-4% wall on 8-input blocks; no lower peak once larger proofs are in the run; 83 of 43,270 blocks affected on this synthetic chain; below 8 untested; F38). The figures in this report for adapt were measured with 16 unless they cite E022 or later. The trim interval of 10 s is still a judgment call and was not swept. adapt holds ~0.1-0.4 GB more than the non-adaptive combo during light-block sync, because it trims less often; at idle E021's single idle trim releases ~230 MB of it on the heavy window (about -17%, F37), but only 70-79 MB after a long resync (F39), so that gain is specific to a burst ending on heavy blocks. E023 reran the validation with both patches; the E015 differential test was not rerun. The idle trim is unmeasured at the chain tip.
 - Post-sync idle memory varies run to run by a few hundred MB: a trim cannot release fragmented arenas completely.
 - E007 is security-critical cryptographic code and **not audited**. Upstream use needs review by the FCMP++ authors.
 

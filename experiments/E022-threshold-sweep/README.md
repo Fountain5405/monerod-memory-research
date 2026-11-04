@@ -107,7 +107,7 @@ One-line commit adbe70cf8 in `~/work/monero-fcmp-idle`. Rebuilding from that com
 
 `--version` on these binaries still prints 4a51d434d, because the version string is fixed when CMake configures. Identify them by sha256.
 
-**Not rerun at adoption:** the headline windows, the negative test, min_mem and the long resync. The small-tx window has no 8-15 input blocks (d), but the heavy window 3,105,401-3,105,445 has 2 of its 24 non-empty blocks in that range, so the behaviour there changes slightly. E023 validates the final series.
+**Not rerun at adoption:** the headline windows, the negative test, min_mem and the long resync. The small-tx window has no 8-15 input blocks (d), but the heavy window 3,105,401-3,105,445 has 2 of its 24 non-empty blocks in that range, so the behaviour there changes slightly. E023 (experiments/E023-final-validation) validated the final series afterwards.
 
 ## Guardrails
 - One change per arm: the constant only; three distinct sha256 in the chain log; tree restored and clean afterwards.

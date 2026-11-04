@@ -1,0 +1,18 @@
+ab_window start 2026-11-04T06:06:14+00:00 end=3107400 timeout=900 rounds=3 arms=2
+arm base: /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod --block-sync-size 5 | 2d1e3e9c17518b12
+arm final: /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod --block-sync-size 5 | d779a522faf0673f
+ 06:06:14 up 1 day, 18:38,  4 users,  load average: 7.80, 7.38, 7.04
+no shadow processes
+[r1_base] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_h3106400 2026-11-04T06:10:08+00:00
+[r1_base] --block-sync-size 5 -> h=3107410 wall=150s peak_anon=1435MB post_idle_anon=1198MB tip=3107415 yes
+[r1_final] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_h3106400 2026-11-04T06:17:44+00:00
+[r1_final] --block-sync-size 5 -> h=3107400 wall=156s peak_anon=807MB post_idle_anon=709MB tip=3107405 yes
+[r2_final] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_h3106400 2026-11-04T06:25:10+00:00
+[r2_final] --block-sync-size 5 -> h=3107400 wall=159s peak_anon=811MB post_idle_anon=714MB tip=3107405 yes
+[r2_base] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_h3106400 2026-11-04T06:32:31+00:00
+[r2_base] --block-sync-size 5 -> h=3107400 wall=149s peak_anon=1036MB post_idle_anon=992MB tip=3107405 yes
+[r3_base] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_h3106400 2026-11-04T06:40:03+00:00
+[r3_base] --block-sync-size 5 -> h=3107405 wall=148s peak_anon=1095MB post_idle_anon=1095MB tip=3107410 yes
+[r3_final] restored DB from /home/optimizer/work/research-artifacts/snapshots/stressnet_h3106400 2026-11-04T06:47:23+00:00
+[r3_final] --block-sync-size 5 -> h=3107400 wall=159s peak_anon=798MB post_idle_anon=707MB tip=3107405 yes
+AB_COMPLETE

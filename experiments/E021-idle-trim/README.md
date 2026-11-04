@@ -81,3 +81,6 @@ The first version of this file (commit 94f570b) had these errors, found by audit
 - It said the small-tx peak gap was noise because "the only new code runs after the window ends". One atomic store per call also runs during the window, and three rounds cannot exclude a small cost.
 - It described the small-tx window as all 1-2-input proofs and the heavy window as all 128-input proofs. Both are mixes.
 - It said the patch "applies equally" to v2 and gave -78% against stock without saying that neither was measured directly.
+
+## Later: E023
+After a long resync ending on small blocks this trim released only 70 MB (`--block-sync-size 5`) and 79 MB (default), against 231-234 MB here. The -17% applies to a burst ending on heavy blocks, not to idle memory in general.

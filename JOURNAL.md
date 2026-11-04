@@ -485,3 +485,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Negative test PASS at both heights (128-, 8- and 2-input txs, tampered 8/8 rejected per tx, originals accepted). min_mem 1,866 MB (largest failing 1,765, step 125), the same result as E013 and under the expected 2,000 MB.
 - Small-tx in round 3 of 3, interim: base 150 / 149 / 148 s, final 156 / 159 s so far. Not read as a result yet. Long resync not started.
 - Box: no shadow lanes, 32 GB free, governor pinned by the chain. Peer watch: 192.168.1.116 is among .22's connections at h=2245813, state=normal, up 23,998 blocks in 2 h, still below the 3,105,401 wedge height.
+
+## 2026-11-04 08:16 E023 done with one miss; E023b launched to attribute it
+- Met: heavy peak -68.5%, negtest 24/24 and 3/3, min_mem 1,866 MB, 15/15 hashes, no upward memory trend over the last 13,000 blocks (one run per arm).
+- Missed: small-tx wall +6.6% from logs on identical heights, +6.7% from the harness, expected no more than +6%. Ranges do not overlap. Kept as a miss. The dense stretch of the long resync shows +4.1%, in one run.
+- Found: the idle trim releases only 70-79 MB after a long resync, against 231-234 MB after the heavy window, and final_bss5's 1,400 MB idle is no lower than E013's 1,379 MB. So F37's -17% is specific to a burst ending on heavy blocks. Recorded in F39, SUMMARY, HOW-IT-WORKS and the E021 README.
+- SUMMARY's headline tables now carry E023, including a less flattering long-run idle figure (-66.6%, was -70.3%).
+- E023b launched: adapt vs final, small-tx window, 5 rounds. Reading fixed in the script header. E023's figure stands whatever it finds.

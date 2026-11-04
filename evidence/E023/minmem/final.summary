@@ -1,0 +1,11 @@
+min_mem final start 2026-11-04T05:55:48+00:00 bin=/home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod ref=112 factor=1.10 lo=750 hi=4000 tol=125 extra='--block-sync-size 5'
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+[4000 MB] PASS wall=109s h=3105441 hash=yes cgroup_peak=1647MB oom_kills=0
+[750 MB] FAIL wall=8s h=3105421 hash=yes cgroup_peak=750MB oom_kills=1
+[2375 MB] PASS wall=106s h=3105441 hash=yes cgroup_peak=1934MB oom_kills=0
+[1562 MB] FAIL wall=38s h=3105426 hash=yes cgroup_peak=1562MB oom_kills=1
+[1968 MB] PASS wall=108s h=3105441 hash=yes cgroup_peak=1739MB oom_kills=0
+[1765 MB] FAIL wall=80s h=3105436 hash=yes cgroup_peak=1722MB oom_kills=1
+[1866 MB] PASS wall=120s h=3105441 hash=yes cgroup_peak=1654MB oom_kills=0
+RESULT: minimum passing MemoryMax for final = 1866 MB (largest failing = 1765 MB, tol 125 MB)
+MINMEM_COMPLETE
