@@ -1,0 +1,22 @@
+negdiff start 2026-11-04T18:20:02+00:00 snap=/home/optimizer/work/research-artifacts/snapshots/stressnet_h3106400 H=3106400 scan=400
+RESULT OK height 3106400
+[base] 2d1e3e9c17518b12 height="height": 3106400
+H=3106400 txs=3 inputs=[2, 2, 2] cases={'tampered': 96, 'swapped': 2, 'original': 3} wrong=0
+PASS
+[base] 4 s; log lines 'Failed to verify input FCMP++': 98
+[final] d779a522faf0673f height="height": 3106400
+H=3106400 txs=3 inputs=[2, 2, 2] cases={'tampered': 96, 'swapped': 2, 'original': 3} wrong=0
+PASS
+[final] 5 s; log lines 'Failed to verify input FCMP++': 98
+[e029] d93a970323ef79c2 height="height": 3106400
+H=3106400 txs=3 inputs=[2, 2, 2] cases={'tampered': 96, 'swapped': 2, 'original': 3} wrong=0
+PASS
+[e029] 4 s; log lines 'Failed to verify input FCMP++': 98
+/home/optimizer/work/research-artifacts/e029_neg/h3106400/final.json: 101 cases, (status, flags) disagreements: 0, reason-text differences: 0
+/home/optimizer/work/research-artifacts/e029_neg/h3106400/e029.json: 101 cases, (status, flags) disagreements: 0, reason-text differences: 0
+/home/optimizer/work/research-artifacts/e029_neg/h3106400/base.json: PASS=True n={'tampered': 96, 'swapped': 2, 'original': 3} inputs=[2, 2, 2]
+/home/optimizer/work/research-artifacts/e029_neg/h3106400/final.json: PASS=True n={'tampered': 96, 'swapped': 2, 'original': 3} inputs=[2, 2, 2]
+/home/optimizer/work/research-artifacts/e029_neg/h3106400/e029.json: PASS=True n={'tampered': 96, 'swapped': 2, 'original': 3} inputs=[2, 2, 2]
+oracle rejection flag mix: {'invalid_input': 98}
+DIFF PASS
+NEGDIFF_COMPLETE

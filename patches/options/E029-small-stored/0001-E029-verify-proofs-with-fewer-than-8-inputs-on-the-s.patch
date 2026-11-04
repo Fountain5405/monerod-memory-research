@@ -1,0 +1,55 @@
+From efced5a83c000a6436a2bebee089eef27e2f667d Mon Sep 17 00:00:00 2001
+From: optimizer <optimizer@localhost>
+Date: Wed, 4 Nov 2026 17:22:14 +0000
+Subject: [PATCH] E029: verify proofs with fewer than 8 inputs on the
+ stored-circuit path
+
+---
+ crypto/fcmps/src/circuit.rs |  1 -
+ crypto/fcmps/src/lib.rs     | 11 ++++++++++-
+ 2 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/crypto/fcmps/src/circuit.rs b/crypto/fcmps/src/circuit.rs
+index 9d9e2a7..a534640 100644
+--- a/crypto/fcmps/src/circuit.rs
++++ b/crypto/fcmps/src/circuit.rs
+@@ -58,7 +58,6 @@ impl<C: Ciphersuite> Circuit<C> {
+   }
+ 
+   // Only `Fcmp::verify_stored` stores the verifier's constraints
+-  #[cfg(test)]
+   pub(crate) fn verify() -> Self {
+     Self(UnderlyingCircuit::verify())
+   }
+diff --git a/crypto/fcmps/src/lib.rs b/crypto/fcmps/src/lib.rs
+index 66d34d8..3b396ac 100644
+--- a/crypto/fcmps/src/lib.rs
++++ b/crypto/fcmps/src/lib.rs
+@@ -1107,6 +1107,16 @@ where
+     layers: usize,
+     inputs: &[Input<<C::C1 as Ciphersuite>::F>],
+   ) -> Result<(), FcmpError> {
++    // E029: streaming builds every circuit twice to avoid storing it. For proofs with few inputs the
++    // stored circuit is small, so keep it and skip the second build.
++    #[cfg(not(test))]
++    {
++      const STREAM_MIN_INPUTS: usize = 8;
++      if inputs.len() < STREAM_MIN_INPUTS {
++        return self.verify_stored(rng, verifier_1, verifier_2, params, tree, layers, inputs);
++      }
++    }
++
+     let (layout, mut transcript, proof_1_vcs, proof_2_vcs) =
+       self.verify_prelude(rng, verifier_1, verifier_2, params, tree, layers, inputs)?;
+ 
+@@ -1203,7 +1213,6 @@ where
+   ///
+   /// This performs the exact same transcript operations, and samples the same randomness, as
+   /// `Fcmp::verify`.
+-  #[cfg(test)]
+   #[allow(clippy::too_many_arguments)]
+   pub(crate) fn verify_stored<R: RngCore + CryptoRng>(
+     &self,
+-- 
+2.43.0
+

@@ -35,6 +35,9 @@ Base: v0.19.0.0-beta.3.1 = `d80596ad1`.
 
 All seven monerod patches together change `src/ringct/rctSigs.cpp` and `.h`, `src/cryptonote_core/cryptonote_core.cpp` and `.h` (E001, E021) and the `fcmp_pp_rust` Cargo files. The combined effect of 0001+0002+0005 on `rctSigs.cpp` is ~25 lines; 0006 adds ~35 more plus a two-line hook in core. The E013-measured binary (sha256 `d6f93d06...`) is 0001-0005; with 0006 the build is the E021 idle binary (sha256 `6e6f14c6acdc4b5b...`).
 
+## Option, not in either series: `options/E029-small-stored/`
+`0001-E029-*.patch` routes proofs under 8 inputs to the stored-circuit verifier: small-tx wall -5.2%, CPU -8.1%, peak anon +7.0% against final (E029, F45). Not adopted, because the goal is memory. Apply it after the v1 monero-oxide series; no monerod change is needed. Applied to 64c79ea (v1's second oxide commit) it reproduces the measured tree exactly (tree 3a9a8e29). Proofs of 3-7 inputs are not measured; see experiments/E029-small-proofs-stored before using it.
+
 ## Reproducing the build
 ```sh
 # 1. the Rust crates

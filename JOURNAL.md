@@ -578,3 +578,11 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 
 ## 2026-11-04 19:58 Owner decision: keep final, E029 is an option
 - Owner, after seeing the small-tx medians (wall -5.7% harness, peak +7.0%, CPU -8.0%): "keep final, report e029 as an option". This matches the rule fixed in the script. The chain keeps running so the option is written up with the heavy window and log walls.
+
+## 2026-11-04 20:20 E029 done: an option, final stays; E030 launched
+- Small-tx, 5 rounds, log wall: final 154.3 s, e029 146.2 s (-5.2%, separate). CPU -8.1%. Peak anon 809 -> 866 MB (+7.0%, separate). Heavy, 3 rounds: wall +1.3%, peak +4.9%, CPU -0.5%, all overlapping. 16/16 hashes, DIFF PASS at both heights, 14 crate tests pass.
+- The peak fails the +5% limit fixed in the script, and the owner has decided: keep final, report E029 as an option. Patch in patches/options/, reproducing the measured tree hash.
+- Miss: wall was expected 2-4% below final. It saves 8.1 s, more than the 5.5 s E028 gave the verifier, so E028's two smaller steps may not be independent of streaming. Not separated here.
+- Checked: peak recomputed from the samplers up to the window end gives the same figures for all 16 runs, so the +7.0% is not a harness overshoot.
+- Limit I want on record: proofs of 3-7 inputs are not measured at all. They stay below the heavy threshold, so they keep the full thread pool while each stores a bigger circuit.
+- E030 launched: e029 against base directly on small-tx. E029 only has this across chains (146.2 vs E028 base 146.4 s), and it is the option's main claim. Report only.

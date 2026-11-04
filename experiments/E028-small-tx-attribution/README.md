@@ -37,7 +37,7 @@ The script said these could not all hold, since +2.7% and +1.4% do not add up to
 ## Reading
 - **About two-thirds of the cost is the verifier** (5.5 of 8.0 s), the only separate step, and the only one that costs CPU: +8.0%, against 0.1% or less for the others. E011 traced this to building every circuit twice.
 - **The two smaller steps cost wall and no CPU that shows.** Taken together, final vs e007 is +1.6%: slower in all 5 rounds, by 0.2-3.4 s, though the ranges overlap. Their source is not measured here. On the fixed reading neither step counts alone.
-- **There is no tuning left to recover this.** The constants are swept (E022, E026). What is left is the double build, and v2 does not remove it: v2final is another +2.7% (E025). Any further gain needs a change to the verifier.
+- **There is no tuning left to recover this.** The constants are swept (E022, E026). What is left is the double build, and v2 does not remove it: v2final is another +2.7% (E025). Any further gain needs a change to the verifier. (E029 tried that: wall -5.2%, CPU -8.1%, peak +7.0%; an option, not adopted.)
 - **Every step lowers memory.** Peak goes 1,073 -> 906 -> 847 -> 818 MB, all with separate ranges. Post-idle falls most at e007 -> inever (905 -> 713 MB). That step bundles the heavy-call trims and E021, and this run does not separate them.
 - **The wall steps pay for memory.** The verifier's +3.8% comes with -15.6% peak here, and with far more on heavy blocks, where it is 2x faster.
 

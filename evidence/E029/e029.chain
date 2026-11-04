@@ -1,0 +1,57 @@
+chain e029 start 2026-11-04T17:22:14+00:00 load 0.20 2.56 3.92
+E029 patched
+efced5a E029: verify proofs with fewer than 8 inputs on the stored-circuit path
+crate tests rc=0 2026-11-04T18:06:53+00:00: test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2668.62s test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s 
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+build BUILD_OK 2026-11-04T18:10:07+00:00
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+d93a970323ef79c23eccafa7d8a5b9c311774adfefbbf79b13dd8c2638bcd4cf  /home/optimizer/work/monero-fcmp-e029/build/beta31-e029/bin/monerod
+no lanes
+governor schedutil -> performance
+(b) negdiff done 2026-11-04T18:24:10+00:00: DIFF PASS  / DIFF PASS 
+(c) small done 2026-11-04T19:38:36+00:00
+(d) heavy done 2026-11-04T20:17:40+00:00
+governor restored schedutil
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| final | 5 | 809 (806-815) | 988 (973-1,012) | 3,920 (3,912-3,929) | 159 (156-159) | 711 (706-715) | 52 (52-52) | 1,123 (1,117-1,123) | 1,440 (1,430-1,446) | all yes |
+| e029 | 5 | 866 (851-869) | 1,058 (1,041-1,065) | 3,999 (3,992-4,008) | 150 (148-151) | 723 (707-734) | 52 (51-53) | 1,117 (1,117-1,123) | 1,323 (1,323-1,326) | all yes |
+
+e029 vs final (medians): peak RssAnon MB +7.0%; peak Private_Dirty MB +7.1%; peak RSS MB +2.0%; wall s -5.7%; post-idle RssAnon MB +1.7%; read MB +0.0%; write MB -0.5%; CPU s -8.1%
+  peak anon ranges overlap: no (base 806-815, e029 851-869)
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| final | 3 | 1,711 (1,632-1,912) | 1,711 (1,632-1,936) | 2,999 (2,967-3,045) | 108 (108-110) | 1,118 (1,059-1,119) | 9 (9-9) | 466 (466-466) | 910 (906-912) | all yes |
+| e029 | 3 | 1,794 (1,745-1,845) | 1,814 (1,769-1,864) | 3,041 (2,957-3,070) | 110 (108-111) | 1,126 (1,039-1,139) | 9 (9-9) | 466 (466-466) | 905 (899-908) | all yes |
+
+e029 vs final (medians): peak RssAnon MB +4.9%; peak Private_Dirty MB +6.0%; peak RSS MB +1.4%; wall s +1.9%; post-idle RssAnon MB +0.7%; read MB +0.0%; write MB +0.0%; CPU s -0.5%
+  peak anon ranges overlap: yes (base 1,632-1,912, e029 1,745-1,845)
+run,wall_s
+r1_e029,145.1
+r1_final,154.7
+r2_e029,146.6
+r2_final,154.3
+r3_e029,145.0
+r3_final,154.5
+r4_e029,146.2
+r4_final,153.4
+r5_e029,146.6
+r5_final,154.2
+# e029: median 146.2 min 145.0 max 146.6
+# final: median 154.3 min 153.4 max 154.7
+# e029 vs final: -5.2%
+# ranges overlap: no
+run,wall_s
+r1_e029,107.0
+r1_final,104.8
+r2_e029,106.1
+r2_final,106.3
+r3_e029,105.4
+r3_final,104.3
+# e029: median 106.1 min 105.4 max 107.0
+# final: median 104.8 min 104.3 max 106.3
+# e029 vs final: +1.3%
+# ranges overlap: yes
+done 2026-11-04T20:17:40+00:00
+CHAIN_E029_COMPLETE

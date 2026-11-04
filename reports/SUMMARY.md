@@ -1,4 +1,4 @@
-# monerod memory research: summary (draft, updated 2026-11-04 after E023)
+# monerod memory research: summary (draft, updated 2026-11-04 after E029)
 
 **Bottom line:** on the FCMP++ stressnet sync workload, three separable changes cut the memory monerod needs by about **two thirds to 70%**, and sync is about as fast or faster:
 - -68% peak in a 40-block worst-case window (3 A/B rounds);
@@ -152,6 +152,9 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
 | E004d: cap glibc arenas at physical cores | -8% | two concurrently verifying threads can share an arena, and both peak in it |
 | E008 combo as the final build | +15% on small-tx blocks | non-adaptive cap and per-block trim (E011); fixed by adapt |
 
+## Option not in the recommended build: faster small-tx blocks (E029)
+Routing proofs under 8 inputs to the stored-circuit verifier gives, against final, small-tx wall -5.2%, CPU -8.1%, peak anon +7.0% (+57 MB), with all of those ranges separate, and no resolvable change on heavy blocks (wall +1.3%, peak +4.9%, overlapping). Differential test identical to base at both heights, 16/16 hashes. It fails the +5% peak limit fixed before the run, and the project's goal is memory, so final stays (owner's decision, 2026-11-04). The patch is in `patches/options/E029-small-stored/`. Proofs of 3-7 inputs are not measured, and their peak could be well above +7%, so that needs measuring before anyone adopts it. It also moves a test-only path into production in unaudited code.
+
 ## Zero-code option available today
 - **Wallet:** `MALLOC_ARENA_MAX=2 monero-wallet-cli ...` (or in the environment of monero-wallet-rpc / a GUI that launches it): refresh peak -67% (1,132 -> 370 MB on 18,270 stressnet blocks), wall +7%, CPU +4%, all threads kept (W004, F36). glibc builds only.
 `--max-concurrency <physical cores>` (E004a) gives **-39.6% peak and 11% faster sync** on SMT machines with the stock binary. It also shrinks the other thread pools.
@@ -197,4 +200,5 @@ reports/PRIOR-ART.md: what upstream already did about FCMP++ verification memory
 - E026 (hydrogen): done (experiments/E026-trim-interval, F42). 10 s stays, under a rule fixed before the run.
 - E027 (box81): done (experiments/E027-final-on-box81, F43). The final series reproduces on the second machine, with one miss: small-tx peak -18.8% against about -33% expected, because base's figure moved and final's did not.
 - E028 (hydrogen): done (experiments/E028-small-tx-attribution, F44). Base -> final on small-tx blocks is +5.5% wall: streaming verifier +3.8%, the rest of adapt +0.8%, light-call trims +0.8% (only the first has separate ranges). All the swept constants are settled, so further gain needs a verifier change.
+- E029 (hydrogen): done (experiments/E029-small-proofs-stored, F45). An option, not adopted: see above. E030 (e029 against base directly, small-tx) is running; report only.
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth). W002 done (experiments/W002-wallet-refresh, F34): a fresh, empty wallet peaks at 1.17 GB RSS refreshing 18,270 stressnet blocks in 15 s on 24 threads, against a 349 MB live heap: the same glibc arena-retention gap the node had (F13). The largest live consumer is the FCMP++ tree extension (`outputs_to_leaves`, 115 MB). W003 (`--max-concurrency` 24/12/4/1: peak 1,100 / 909 / 510 / 357 MB, wall 16 / 23 / 55 / 105 s; F35) shows the peak is ~325 MB + ~32 MB per worker thread. **W004: `MALLOC_ARENA_MAX=2` in the wallet's environment cuts the peak 67% (1,132 -> 370 MB) at +7% wall with all threads kept (F36)**; the excess was glibc arena retention entirely, the live heap is ~350 MB. Zero code, available today. Not yet measured: a wallet that owns many outputs (needs a stressnet seed).
