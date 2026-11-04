@@ -1,0 +1,30 @@
+chain e030 start 2026-11-04T20:20:19+00:00 load 0.23 2.34 3.22
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+d93a970323ef79c23eccafa7d8a5b9c311774adfefbbf79b13dd8c2638bcd4cf  /home/optimizer/work/monero-fcmp-e029/build/beta31-e029/bin/monerod
+no lanes
+governor schedutil -> performance
+governor restored schedutil
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| base | 5 | 1,137 (950-1,295) | 1,297 (1,142-1,434) | 4,155 (4,116-4,313) | 150 (148-151) | 977 (950-1,137) | 50 (47-52) | 1,123 (1,117-1,131) | 1,336 (1,324-1,340) | all yes |
+| e029 | 5 | 870 (854-891) | 1,060 (1,032-1,098) | 4,074 (4,050-4,108) | 151 (148-153) | 729 (713-743) | 50 (49-50) | 1,123 (1,117-1,128) | 1,327 (1,321-1,331) | all yes |
+
+e029 vs base (medians): peak RssAnon MB -23.5%; peak Private_Dirty MB -18.3%; peak RSS MB -1.9%; wall s +0.7%; post-idle RssAnon MB -25.4%; read MB +0.0%; write MB +0.0%; CPU s -0.7%
+  peak anon ranges overlap: no (base 950-1,295, e029 854-891)
+run,wall_s
+r1_base,143.9
+r1_e029,148.4
+r2_base,145.2
+r2_e029,147.1
+r3_base,147.6
+r3_e029,145.8
+r4_base,146.4
+r4_e029,144.8
+r5_base,145.5
+r5_e029,148.4
+# base: median 145.5 min 143.9 max 147.6
+# e029: median 147.1 min 144.8 max 148.4
+# e029 vs base: +1.1%
+# ranges overlap: yes
+done 2026-11-04T21:32:36+00:00
+CHAIN_E030_COMPLETE

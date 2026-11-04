@@ -591,3 +591,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - 3 runs finished, all hashes yes. Harness figures, not read as a result: base 148 s, 1,295 MB; e029 151-153 s, 863-870 MB. The reading uses log wall over all 5 rounds. ETA about 21:35 stands as an estimate.
 - Box: no lanes, 30 GB free. box81: load 0.00, nothing of ours running, 43 GB free.
 - Peer watch: 192.168.1.116 is not among .22 connections at this check. Last seen at h=2303879 at 18:47. It has been absent before and come back. Cause not known from here.
+
+## 2026-11-04 21:33 E030 done: all expectations met; queue empty
+- e029 vs base, small-tx, 5 rounds, 10/10 hashes, log wall: 147.1 vs 145.5 s (+1.1%, overlap). CPU -0.7% (overlap). Peak anon 870 vs 1,137 MB (-23.5%, separate). Post-idle 729 vs 977 MB (-25.4%, separate).
+- So the E029 option removes most of final's +5.5% wall cost on these blocks. Final stays, per the owner: its peak is lower, and proofs of 3-7 inputs remain unmeasured on the option.
+- Nothing is running. The queue is empty except Needs owner. box81 idle. Hydrogen on schedutil, no lanes.

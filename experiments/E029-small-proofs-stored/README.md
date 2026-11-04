@@ -59,7 +59,7 @@ The script says a larger peak is not traded for speed, since the project's goal 
 ## Reading
 - **The verifier's CPU cost is the double build.** E028 put +8.0% CPU on the verifier, and removing the second build for small proofs takes off 8.1%. E011 had traced it there by profile; this removes it directly.
 - **It saves more wall than E028 assigned to the verifier:** 8.1 s against 5.5 s. E028's two smaller steps (+1.2 s and +1.3 s) showed no CPU change and overlapping ranges, so some of that may depend on streaming rather than being separate costs. This run does not separate that.
-- **Compared across chains, it looks like base's small-tx speed.** E028's base was 146.4 s and 1,337 s CPU, e029 here is 146.2 s and 1,323 s, with E028's base peak at 1,073 MB against 866 MB here. The final arm repeated closely between the two chains (154.4 vs 154.3 s, 1,443 vs 1,440 s CPU, 818 vs 809 MB), which supports comparing them, but base was not in this run. E030 measures it directly.
+- **Compared across chains, it looks like base's small-tx speed.** E028's base was 146.4 s and 1,337 s CPU, e029 here is 146.2 s and 1,323 s, with E028's base peak at 1,073 MB against 866 MB here. The final arm repeated closely between the two chains (154.4 vs 154.3 s, 1,443 vs 1,440 s CPU, 818 vs 809 MB), which supports comparing them, but base was not in this run. E030 measured it directly: wall +1.1% and CPU -0.7% (overlapping), peak anon -23.5% (separate).
 - **The heavy peak is not attributed to the change.** Its proofs have 128 inputs and take the streaming path. Final's own range there is 1,632-1,912 MB, and 3 rounds cannot resolve 4.9%. I did not check whether those blocks also hold small proofs.
 
 ## Who might want the option
