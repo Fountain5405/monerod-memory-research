@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-04 20:20
+Last updated: 2026-11-04 20:47
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -50,7 +50,7 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
 
 - **E027a DONE 12:09 on box81 (hostname moonpie; e027a.chain there): final built from v1's published patches, tree hash equal to hydrogen's adbe70cf8, sha a9a22c46; differential test at 3,105,401: 135 cases, 0 disagreements with base, DIFF PASS. **
-- **E030 RUNNING on hydrogen (scripts/run_e030.sh, marker CHAIN_E030_COMPLETE in ~/work/research-artifacts/e030.chain; ETA about 21:35, an estimate): e029 vs base directly, small-tx, 5 rounds, to replace the cross-chain comparison in E029's option. Report only.**
+- **E030 RUNNING on hydrogen (scripts/run_e030.sh, marker CHAIN_E030_COMPLETE in ~/work/research-artifacts/e030.chain; ETA about 21:35, an estimate; run 4 of 10 at 20:47): e029 vs base directly, small-tx, 5 rounds, to replace the cross-chain comparison in E029's option. Report only.**
 - **E029 DONE 20:17 (experiments/E029-small-proofs-stored, F45, evidence/E029): small-tx wall -5.2%, CPU -8.1%, peak +7.0% (separate); heavy wall +1.3%, peak +4.9% (overlap); 16/16 hashes, DIFF PASS x2, crate tests pass. Peak fails the +5% limit. OWNER DECISION 2026-11-04: keep final, report E029 as an option. Patch in patches/options/. Miss: wall expected 2-4% below final. Proofs of 3-7 inputs not measured.**
 - **E028 DONE 17:18 (experiments/E028-small-tx-attribution, F44, evidence/E028): small-tx wall base -> final +5.5%: verifier +3.8% (separate), rest of adapt +0.8%, light-call trims +0.8% (overlap). 20/20 hashes. Miss: total expected about +6.6%.**
 - **E027 DONE 14:48 (experiments/E027-final-on-box81, F43, evidence/E027): final on box81: heavy peak -61.0%, post-idle -76.3%, wall -42.3%; small-tx wall +5.5%, post-idle -27.9%; 13/13 hashes, no swap, differential 236/236. MISS: small-tx peak -18.8% vs about -33% expected; base's figure moved (904 vs 1,091 MB), final's did not (734 vs 729 MB).**

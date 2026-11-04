@@ -586,3 +586,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Checked: peak recomputed from the samplers up to the window end gives the same figures for all 16 runs, so the +7.0% is not a harness overshoot.
 - Limit I want on record: proofs of 3-7 inputs are not measured at all. They stay below the heavy threshold, so they keep the full thread pool while each stores a bigger circuit.
 - E030 launched: e029 against base directly on small-tx. E029 only has this across chains (146.2 vs E028 base 146.4 s), and it is the option's main claim. Report only.
+
+## 2026-11-04 20:47 Check-in: E030 on run 4 of 10
+- 3 runs finished, all hashes yes. Harness figures, not read as a result: base 148 s, 1,295 MB; e029 151-153 s, 863-870 MB. The reading uses log wall over all 5 rounds. ETA about 21:35 stands as an estimate.
+- Box: no lanes, 30 GB free. box81: load 0.00, nothing of ours running, 43 GB free.
+- Peer watch: 192.168.1.116 is not among .22 connections at this check. Last seen at h=2303879 at 18:47. It has been absent before and come back. Cause not known from here.
