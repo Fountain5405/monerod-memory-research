@@ -540,3 +540,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - So light-call trims are not what the small-tx wall gap is made of. The remainder of E023's +6.6% is not attributed.
 - Tree restored and clean, binary back at d779a522.
 - E027 part b started on box81 once E026's marker appeared. Hydrogen is idle.
+
+## 2026-11-04 14:47 Check-in: E027 part b on its last small-tx run
+- Heavy window and prep sync done on box81. Small-tx 5 of 6 runs, then the differential test at 3,106,400. ETA about 15:00. Interim, harness figures, hashes yes on all so far: heavy peak base 3,342 vs final 1,303 MB, wall 236 vs 137 s. Read when complete.
+- Box81: 43 GB free, 4 idle `user` sessions, nothing else using CPU. Hydrogen: idle, no lanes, 31 GB free.
+- Peer watch: 192.168.1.116 is among .22's connections at h=2297963, state=normal, live 23 s, up 2,603 blocks in 2 h. This is the second slow interval (3,952 before, about 23,000 earlier), and again the connection is very young. Below the 3,105,401 wedge height. Cause not known from here: I only see .22's side, and I do not touch that node.
