@@ -1,6 +1,6 @@
 # E022: sweep of adapt's heavy-proof threshold (8 / 16 / 32 inputs)
 
-**Status: measured; the rule fixed before the run selects 8; adoption depends on the guard in (d), which is running.**
+**Status: measured; the rule fixed before the run selects 8; the small-tx guard in (d) turned out to be an A/A, so adoption depends on the replication in (e), which is running.**
 
 **Why:** `HEAVY_PROOF_MIN_INPUTS = 16` (E012) decides which batch-verify calls count as heavy. A heavy call is capped at physical cores and trimmed after every call. A light call uses the whole thread pool and trims at most every 10 s. The value 16 was a judgment call and was never swept, and SUMMARY lists that as a caveat.
 
@@ -58,8 +58,24 @@ t8's whole-window and 8-input ranges do not overlap t16's. The last row's ranges
 - **Absolute stakes are small on this chain:** 83 of 43,270 blocks fall between 8 and 15 inputs, and the memory saving is 35 MB on a ~500 MB peak.
 - **Below 8 is untested.** Blocks with a largest tx of 3-7 inputs number 43 and do not form a usable window. E011 showed the cap costing +7.3% wall at 2 inputs, so the crossover in wall lies somewhere below 8 inputs but is not located.
 
-## (d) Guard
-t8 vs t16 on the standard small-tx window, 3 rounds, scripts/run_e022b.sh. Running. Pass, fixed before the run: all hashes match, and t8's median wall, CPU and peak anon are each within 3% of t16's or better.
+## (d) Small-tx guard: it passed, but it has no power
+t8 vs t16 on the standard small-tx window, 3 rounds, 2026-11-04 02:40-03:24, scripts/run_e022b.sh, evidence/E022/guard_small. Medians (min-max):
+
+| arm | wall from logs, blocks 3,106,405-3,107,399, s | CPU s | peak RssAnon MB | hashes |
+|---|---|---|---|---|
+| t16 | 152.8 (152.4-153.6) | 1,440 (1,433-1,441) | 803 (802-817) | 3/3 |
+| t8 | 152.5 (152.3-152.9) | 1,448 (1,443-1,449) | 811 (805-838) | 3/3 |
+
+The pre-set criterion is met literally, but **this window contains no block with a largest tx of 8-15 inputs (E022a scan: 0 of 1,000), so the two builds behave identically on it.** I chose the window without checking that. It is an A/A run and says nothing about the cost of threshold 8, so it is not counted as support.
+
+It does measure the noise floor between two builds that behave the same: peak anon +1.0% (8 MB) and CPU +0.6%, with CPU ranges that do not overlap (t8 also ran 5 blocks further in 2 of 3 runs). Non-overlapping ranges over 3 rounds are therefore weak evidence at this scale. That supports E021's reading of its 9 MB small-tx peak gap as probably noise.
+
+## (e) Replication
+t8 vs t16 on two independent stretches where the arms really differ, 5 rounds each, scripts/run_e022c.sh. Running.
+- Window A: 3,105,080 -> 3,105,106. Largest tx 8 inputs on 3,105,089-3,105,101, those txs nearly all 8-input.
+- Window B: 3,106,260 -> 3,106,286. Largest tx 8 inputs on 3,106,268-3,106,280, about a third of the txs 8-input.
+
+Wall from log timestamps and CPU from scripts/cpu_watch.sh, both over identical heights. **Criterion, fixed before the run. On both windows: t8's CPU at least 5% lower with non-overlapping ranges, wall no more than +5%, peak anon not worse by more than 5%, all hashes match. Then threshold 8 becomes a one-line patch. Otherwise 16 stays.**
 
 ## Guardrails
 - One change per arm: the constant only; three distinct sha256 in the chain log; tree restored and clean afterwards.

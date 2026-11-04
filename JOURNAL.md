@@ -462,3 +462,7 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 
 ## 2026-11-04 02:47 Check-in: E022 guard progressing
 - Run 1 of 6 (t16) syncing, no results yet, ETA ~03:25. Box quiet: no shadow lanes, 32 GB free, governor pinned for the chain. Peer watch: 192.168.1.116 is among .22's connections at h=2204719, state=normal, connected 614s (still below the 3,105,401 wedge height).
+
+## 2026-11-04 03:26 E022 guard was an A/A; replication launched on real 8-input stretches
+- Guard passed its criterion (wall -0.2% from logs, CPU +0.6%, peak +1.0%, 6/6 hashes), but the window has no block with a largest tx of 8-15 inputs, so the arms behave identically. My mistake: I picked the window as the standard guard without checking it against the scan. Not counted as support for threshold 8; useful only as a noise floor.
+- Replication launched: 13 sensitive blocks on each of two independent stretches, 5 rounds each. New scripts/cpu_watch.sh closes the CPU overshoot gap. Criterion fixed in run_e022c.sh: both windows or 16 stays.

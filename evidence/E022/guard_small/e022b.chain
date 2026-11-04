@@ -1,0 +1,15 @@
+chain e022b start 2026-11-04T02:40:29+00:00
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/research-artifacts/e022_bins/monerod-t8
+6e6f14c6acdc4b5bb19d74f76da022ec418903f0083afdf7add5d151861a167c  /home/optimizer/work/research-artifacts/e022_bins/monerod-t16
+no shadow processes
+governor schedutil -> performance
+governor restored schedutil
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| t16 | 3 | 803 (802-817) | 977 (970-983) | 3,911 (3,911-3,944) | 157 (156-157) | 705 (700-722) | 52 (52-52) | 1,117 (1,117-1,117) | 1,440 (1,433-1,441) | all yes |
+| t8 | 3 | 811 (805-838) | 990 (972-1,016) | 3,924 (3,919-3,938) | 157 (156-157) | 712 (710-732) | 52 (52-52) | 1,123 (1,117-1,123) | 1,448 (1,443-1,449) | all yes |
+
+t8 vs t16 (medians): peak RssAnon MB +1.0%; peak Private_Dirty MB +1.3%; peak RSS MB +0.3%; wall s +0.0%; post-idle RssAnon MB +1.0%; read MB +0.0%; write MB +0.5%; CPU s +0.6%
+  peak anon ranges overlap: yes (base 802-817, t8 805-838)
+done 2026-11-04T03:24:25+00:00
+CHAIN_E022B_COMPLETE
