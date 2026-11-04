@@ -49,7 +49,7 @@ So E012's +4.0% (157 vs 151 s) understated it. adapt at 154.4 s here against bas
 Why the cost is larger on this window than on the dense stretch of the long resync (+4.1%, one run) was not investigated.
 
 ## (c) Negative test
-PASS at both heights: 128-, 8- and 2-input txs, 8 tampered copies of each rejected, the 3 originals accepted. evidence/E023/neg. The differential test E015 (236 cases against base as the oracle) was **not** rerun. E021 and E022 do not touch verification, so the argument that it carries over is from the code.
+PASS at both heights: 128-, 8- and 2-input txs, 8 tampered copies of each rejected, the 3 originals accepted. evidence/E023/neg. The differential test E015 (236 cases against base as the oracle) was **not** rerun here. E021 and E022 do not touch verification, so the argument that it carries over was from the code. E025 later reran it on this build: 236/236 identical to base.
 
 ## (d) Minimum cgroup MemoryMax
 **1,866 MB** passes; the largest failing limit is 1,765 MB, on a 125 MB bisection step (reference wall 112 s). Same result as E013. Against base's 5,750 MB from E009 that is -67.5%; base was not re-measured here.
@@ -93,5 +93,5 @@ RssAnon per height segment, median MB (max), scripts/mem_segments.py:
 ## Guardrails
 - Binaries identified by sha256 in the chain log; final is byte-identical to the t8 measured in E022.
 - 15/15 window runs matched .22's hash. No shadow lanes during the chain. Governor restored. No swap in the long runs (VmSwap 0).
-- Not rerun: E015 differential test, E014 thread sweep, E019 second machine. v2's 0007 + 0008 have not been built.
+- Not rerun: E015 differential test (done later in E025, which also built v2's 0007 + 0008), E014 thread sweep, E019 second machine.
 - Evidence: evidence/E023 (chain log, results.csv, summary.txt and per-run mem.csv for each window; negative test and min_mem summaries).

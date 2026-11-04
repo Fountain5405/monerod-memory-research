@@ -1,0 +1,43 @@
+chain e025 start 2026-11-04T09:44:22+00:00
+c51bdfca9 E022: count FCMP++ batch calls as heavy from 8 inputs, not 16
+79a9fa396 E021: trim FCMP++ verifier memory once verification goes idle
+92f7ac279 E017: build fcmp_pp_rust against monero-oxide-e017 (folded verify) instead of e007
+ M src/fcmp_pp/fcmp_pp_rust/Cargo.toml
+build BUILD_OK 2026-11-04T09:47:32+00:00
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+a9969e61fbd07b7761e82a9ffc76f7b40b56a3d7c6a6e1a7c0b3b8e122c51f04  /home/optimizer/work/monero-fcmp-v2final/build/beta31-v2final/bin/monerod
+1718:      static constexpr std::size_t HEAVY_PROOF_MIN_INPUTS = 8;
+no shadow processes
+governor schedutil -> performance
+(b) negdiff done 2026-11-04T10:03:14+00:00: DIFF PASS  / DIFF PASS 
+(c) heavy done 2026-11-04T10:43:57+00:00
+(d) small done 2026-11-04T11:29:22+00:00
+governor restored schedutil
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| final | 3 | 1,803 (1,658-1,841) | 1,803 (1,660-1,862) | 3,031 (2,997-3,072) | 111 (108-112) | 1,129 (1,082-1,152) | 9 (9-9) | 466 (466-466) | 911 (904-916) | all yes |
+| v2final | 3 | 1,675 (1,640-1,677) | 1,701 (1,665-1,702) | 2,871 (2,847-2,881) | 140 (139-144) | 795 (771-802) | 9 (9-9) | 466 (466-466) | 1,222 (1,220-1,230) | all yes |
+
+v2final vs final (medians): peak RssAnon MB -7.1%; peak Private_Dirty MB -5.7%; peak RSS MB -5.3%; wall s +26.1%; post-idle RssAnon MB -29.6%; read MB +0.0%; write MB +0.0%; CPU s +34.1%
+  peak anon ranges overlap: yes (base 1,658-1,841, v2final 1,640-1,677)
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| final | 3 | 803 (802-813) | 992 (965-998) | 3,953 (3,952-3,955) | 159 (159-167) | 712 (707-712) | 51 (51-51) | 1,117 (1,117-1,123) | 1,440 (1,437-1,442) | all yes |
+| v2final | 3 | 805 (793-808) | 985 (951-991) | 3,946 (3,943-3,949) | 163 (161-164) | 711 (709-714) | 51 (51-52) | 1,123 (1,117-1,128) | 1,492 (1,484-1,503) | all yes |
+
+v2final vs final (medians): peak RssAnon MB +0.2%; peak Private_Dirty MB -0.7%; peak RSS MB -0.2%; wall s +2.5%; post-idle RssAnon MB -0.1%; read MB +0.0%; write MB +0.5%; CPU s +3.6%
+  peak anon ranges overlap: yes (base 802-813, v2final 793-808)
+run,wall_s
+r1_final,155.1
+r1_v2final,159.3
+r2_final,162.6
+r2_v2final,156.6
+r3_final,154.9
+r3_v2final,159.5
+# final: median 155.1 min 154.9 max 162.6
+# v2final: median 159.3 min 156.6 max 159.5
+# v2final vs final: +2.7%
+# ranges overlap: yes
+done 2026-11-04T11:29:22+00:00
+CHAIN_E025_COMPLETE

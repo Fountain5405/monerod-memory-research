@@ -511,3 +511,11 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Build OK (v2final sha a9969e61). Differential test: DIFF PASS at both heights. Heavy window, 3 rounds, 6/6 reached the window end: final wall 111 s, v2final 140 s (harness figures, medians); peak anon 1,803 vs 1,675 MB; post-idle 1,129 vs 795 MB. Interim until the small-tx part is in and the log-based wall is read.
 - Small-tx round 1 of 3 running, E026 still waiting on the marker. Both ETAs still estimates, E025 about 11:10-11:25.
 - Box: no lanes, 32 GB free, governor pinned by the chain. Peer watch: 192.168.1.116 is among .22's connections at h=2291408, state=normal, up 23,098 blocks in 2 h, still below the 3,105,401 wedge height.
+
+## 2026-11-04 11:40 E025 done
+- Differential test on final and v2final: 236/236 identical to base. The case files are E015's by sha256, so this is the same test on the later builds.
+- v2final vs final, 12/12 hashes: heavy wall +27.5% from logs, small-tx +2.7% with overlapping ranges, CPU +34.1% and +3.6%. Post-idle after heavy 795 vs 1,129 MB, separate ranges; after small-tx no difference. Why v2 holds less after heavy blocks is not investigated.
+- One literal miss: heavy peak -7.1%, outside the 5% band I set, on the favourable side. Final's peak range is wide and overlaps, so I do not read it as a v2 win.
+- Limit: the 236 cases are 128- and 2-input only. E022's 8-input path is covered by E023's negative test, not this one.
+- Also fixed the FINDINGS status line, which still named adapt as recommended and listed E014 and E015 as pending.
+- E026 started by itself at 11:29.
