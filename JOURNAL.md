@@ -528,3 +528,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Built in about 3 minutes (ccache). The tree hash equals hydrogen's adbe70cf8, so the published patches reproduce the final source exactly. Binary sha a9a22c46, native to that box.
 - Differential test at 3,105,401: 135 cases, 0 disagreements with base, DIFF PASS, with the same 127 rejections at the FCMP++ check as on hydrogen. All three expectations for part a met.
 - Part b waits for E026 (5 of 15 runs at 12:09).
+
+## 2026-11-04 12:47 Check-in: E026 at 10 of 15 runs
+- 10 of 15 runs recorded, all on the expected heights, ETA about 13:25. Interim harness walls are all 156-161 s, with no arm standing out. Not read as a result: the rule uses log-based wall over all 5 rounds.
+- E027 part b not started: it waits for E026. box81 is idle (load 0.00), 43 GB free.
+- Box: no lanes, 37 GB free, governor pinned by the chain.
+- Peer watch: 192.168.1.116 is among .22's connections at h=2295360, state=normal, live 153 s, up only 3,952 blocks in 2 h against about 23,000 in earlier intervals, still below the 3,105,401 wedge height. The short connection age suggests a reconnect or restart in the interval; cause not known from here. Watch it at the next check-in.
