@@ -93,5 +93,5 @@ RssAnon per height segment, median MB (max), scripts/mem_segments.py:
 ## Guardrails
 - Binaries identified by sha256 in the chain log; final is byte-identical to the t8 measured in E022.
 - 15/15 window runs matched .22's hash. No shadow lanes during the chain. Governor restored. No swap in the long runs (VmSwap 0).
-- Not rerun: E015 differential test (done later in E025, which also built v2's 0007 + 0008), E014 thread sweep, E019 second machine.
+- Not rerun: E015 differential test (done later in E025, which also built v2's 0007 + 0008), E014 thread sweep, E019 second machine (done later in E027).
 - Evidence: evidence/E023 (chain log, results.csv, summary.txt and per-run mem.csv for each window; negative test and min_mem summaries).

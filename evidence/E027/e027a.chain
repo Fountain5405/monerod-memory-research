@@ -1,0 +1,8 @@
+chain e027a start 2026-11-04T11:56:09+00:00 load 0.00 0.00 0.00
+tree fcbc96d34eeedaa3cabd69d3f14b89350c6448e4 expected fcbc96d34eeedaa3cabd69d3f14b89350c6448e4
+build BUILD_OK 2026-11-04T11:58:57+00:00
+bac70623e27810ff969d95218393302c70ee2852ef4ebf3e473ab4718b776e92  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+a9a22c468668859769c48192b5e3ba9c5356cd9cd9d4bef948827877368f25c4  /home/optimizer/work/monero-fcmp-final/build/beta31-final/bin/monerod
+/dev/mapper/ubuntu--vg-ubuntu--lv  107G   60G   43G  59% /
+(a3) negdiff done 2026-11-04T12:09:16+00:00: DIFF PASS 
+E027A_COMPLETE

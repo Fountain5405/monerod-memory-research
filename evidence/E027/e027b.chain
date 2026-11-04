@@ -1,0 +1,61 @@
+chain e027b start 2026-11-04T13:24:15+00:00
+bac70623e27810ff969d95218393302c70ee2852ef4ebf3e473ab4718b776e92  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+a9a22c468668859769c48192b5e3ba9c5356cd9cd9d4bef948827877368f25c4  /home/optimizer/work/monero-fcmp-final/build/beta31-final/bin/monerod
+idle check 2026-11-04T13:24:15+00:00: load 0.00 0.00 0.00; users:       4 user 
+optimiz+ 14.8 systemd
+governor powersave -> performance
+(b1) heavy done 2026-11-04T14:19:37+00:00
+(b2) prep done 2026-11-04T14:26:54+00:00: [r1_base_prep] --block-sync-size 5 -> h=3106411 wall=379s peak_anon=3583MB post_idle_anon=2898MB tip=3106416 yes
+(b3) small done 2026-11-04T14:47:56+00:00
+governor restored powersave
+(b4) negdiff done 2026-11-04T14:48:12+00:00: DIFF PASS 
+== e027_heavy
+|---|---|---|---|---|---|---|---|---|---|---|
+| base | 3 | 3,342 (3,230-3,377) | 3,386 (3,230-3,396) | 4,647 (4,530-4,769) | 236 (234-238) | 2,903 (2,854-3,003) | 10 (10-22) | 466 (466-466) | 2,387 (2,373-2,417) | all yes |
+| final | 3 | 1,303 (1,302-1,311) | 1,328 (1,325-1,336) | 2,510 (2,509-2,527) | 137 (136-139) | 687 (647-739) | 9 (9-22) | 466 (466-466) | 658 (656-671) | all yes |
+
+final vs base (medians): peak RssAnon MB -61.0%; peak Private_Dirty MB -60.8%; peak RSS MB -46.0%; wall s -41.9%; post-idle RssAnon MB -76.3%; read MB -10.0%; write MB +0.0%; CPU s -72.4%
+  peak anon ranges overlap: no (base 3,230-3,377, final 1,302-1,311)
+r1_base max VmSwap kB 0
+r1_final max VmSwap kB 0
+r2_base max VmSwap kB 0
+r2_final max VmSwap kB 0
+r3_base max VmSwap kB 0
+r3_final max VmSwap kB 0
+== e027_small
+|---|---|---|---|---|---|---|---|---|---|---|
+| base | 3 | 904 (834-913) | 1,102 (998-1,102) | 3,949 (3,833-4,105) | 150 (149-151) | 904 (814-913) | 0 (0-23) | 1,143 (1,134-1,149) | 979 (976-981) | all yes |
+| final | 3 | 734 (734-738) | 903 (899-938) | 3,759 (3,458-3,814) | 159 (157-159) | 652 (647-661) | 0 (0-0) | 1,150 (1,122-1,165) | 1,071 (1,060-1,071) | all yes |
+
+final vs base (medians): peak RssAnon MB -18.8%; peak Private_Dirty MB -18.1%; peak RSS MB -4.8%; wall s +6.0%; post-idle RssAnon MB -27.9%; write MB +0.6%; CPU s +9.4%
+  peak anon ranges overlap: no (base 834-913, final 734-738)
+r1_base max VmSwap kB 0
+r1_final max VmSwap kB 0
+r2_base max VmSwap kB 0
+r2_final max VmSwap kB 0
+r3_base max VmSwap kB 0
+r3_final max VmSwap kB 0
+run,wall_s
+r1_base,235.2
+r1_final,135.5
+r2_base,232.8
+r2_final,134.2
+r3_base,232.1
+r3_final,134.3
+# base: median 232.8 min 232.1 max 235.2
+# final: median 134.3 min 134.2 max 135.5
+# final vs base: -42.3%
+# ranges overlap: no
+run,wall_s
+r1_base,146.4
+r1_final,154.1
+r2_base,145.0
+r2_final,154.5
+r3_base,147.8
+r3_final,154.4
+# base: median 146.4 min 145.0 max 147.8
+# final: median 154.4 min 154.1 max 154.5
+# final vs base: +5.5%
+# ranges overlap: no
+done 2026-11-04T14:48:12+00:00
+CHAIN_E027_COMPLETE

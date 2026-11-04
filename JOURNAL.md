@@ -545,3 +545,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Heavy window and prep sync done on box81. Small-tx 5 of 6 runs, then the differential test at 3,106,400. ETA about 15:00. Interim, harness figures, hashes yes on all so far: heavy peak base 3,342 vs final 1,303 MB, wall 236 vs 137 s. Read when complete.
 - Box81: 43 GB free, 4 idle `user` sessions, nothing else using CPU. Hydrogen: idle, no lanes, 31 GB free.
 - Peer watch: 192.168.1.116 is among .22's connections at h=2297963, state=normal, live 23 s, up 2,603 blocks in 2 h. This is the second slow interval (3,952 before, about 23,000 earlier), and again the connection is very young. Below the 3,105,401 wedge height. Cause not known from here: I only see .22's side, and I do not touch that node.
+
+## 2026-11-04 15:05 E027 done with one miss; E028 launched
+- Final on box81, base vs final: heavy peak -61.0%, post-idle -76.3%, wall -42.3%; small-tx wall +5.5%, post-idle -27.9%; 13/13 hashes, no swap, differential test 236/236 on natively compiled binaries. Published patches give hydrogen's exact tree.
+- Miss: small-tx peak -18.8%, expected about -33%. Final's figure is where adapt's was (734 vs 729 MB). Base's moved (904 vs 1,091 MB, separate ranges, same binary and harness). I set -33% from one 3-run median of a figure known to vary. Cause of the shift not investigated.
+- E028 launched on hydrogen. The queue was otherwise empty, and the small-tx wall cost is the recommended build's main cost and is still unattributed after E026. The fixed expectations cannot all hold, because +2.7% and +1.4% do not add up to +6.6%. Report only.

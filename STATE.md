@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-04 14:47
+Last updated: 2026-11-04 15:05
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -50,7 +50,8 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
 
 - **E027a DONE 12:09 on box81 (hostname moonpie; e027a.chain there): final built from v1's published patches, tree hash equal to hydrogen's adbe70cf8, sha a9a22c46; differential test at 3,105,401: 135 cases, 0 disagreements with base, DIFF PASS. **
-- **E027b RUNNING on box81 since 13:24 (scripts/run_e027b.sh, marker CHAIN_E027_COMPLETE in ~/work/research-artifacts/e027b.chain there; ETA ~15:00, an estimate): base vs final, heavy and small-tx, 3 rounds each, then the differential test at 3,106,400. Expectations fixed in the script header. Hydrogen is idle.**
+- **E028 RUNNING on hydrogen since 15:05 (scripts/run_e028.sh, marker CHAIN_E028_COMPLETE in ~/work/research-artifacts/e028.chain; 20 runs, ETA ~17:35, an estimate): attributes the small-tx wall cost, arms base, e007, inever, final, 5 rounds. Report only. Expectations in the header.**
+- **E027 DONE 14:48 (experiments/E027-final-on-box81, F43, evidence/E027): final on box81: heavy peak -61.0%, post-idle -76.3%, wall -42.3%; small-tx wall +5.5%, post-idle -27.9%; 13/13 hashes, no swap, differential 236/236. MISS: small-tx peak -18.8% vs about -33% expected; base's figure moved (904 vs 1,091 MB), final's did not (734 vs 729 MB).**
 - **E026 DONE 13:22 (experiments/E026-trim-interval, F42, evidence/E026): 60 s wall -0.8% (overlap), peak +4.4%; no light-call trim wall -1.4% (overlap), peak +4.6%; 15/15 hashes. Rule not met, 10 s stays. Idle tree clean, binary sha d779a522.**
 - **E025 DONE 11:29 (experiments/E025-v2final-and-difftest, F41, evidence/E025): final and v2final 236/236 identical to base on E015's case files; v2final vs final heavy wall +27.5%, small-tx +2.7% (overlap), post-idle after heavy 795 vs 1,129 MB; 12/12 hashes. Peak -7.1% on heavy is outside the expected 5% band on the favourable side, ranges overlap. v1 stays recommended.**
 - (Launch note for E025 and E026, superseded by the two lines above) E025 RUNNING then E026 queued behind it (hydrogen, scripts/run_e025.sh and run_e026.sh, markers ~/work/research-artifacts/e025.chain ends CHAIN_E025_COMPLETE, e026.chain ends CHAIN_E026_COMPLETE; ETA e025 ~11:10, e026 ~13:05; both are estimates): E025 builds v2 with patches 0007 + 0008 for the first time (tree ~/work/monero-fcmp-v2final), reruns the differential test on base, final and v2final, and runs final vs v2final on the heavy and small-tx windows. E026 sweeps the light-call trim interval: 10 s, 60 s, never (bound only), small-tx window, 5 rounds; it edits ~/work/monero-fcmp-idle temporarily and restores it. Expectations and the decision rule are in the script headers. Read wall with scripts/e023_wall.py <dir> 3106405 3107400 <ref> <other>. After E026: the queue is empty except Needs owner; finish SUMMARY's caveat on the trim interval.**

@@ -1,0 +1,1026 @@
+{
+ "H": 3106400,
+ "cases": [
+  {
+   "id": "c08d808ae0a8d8ad/flip@1.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@251.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@500.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@750.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@1000.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@1250.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@1499.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@1749.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@1999.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@2249.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@2498.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@2748.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@2998.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@3248.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@3497.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@3747.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@3997.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@4247.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@4496.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@4746.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@4996.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@5246.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@5495.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@5745.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@5995.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@6245.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@6494.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@6744.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@6994.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@7244.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@7493.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/flip@7743.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@1.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@251.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@500.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@750.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@1000.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@1250.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@1499.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@1749.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@1999.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@2249.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@2498.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@2748.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@2998.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@3248.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@3497.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@3747.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@3997.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@4247.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@4496.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@4746.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@4996.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@5246.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@5495.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@5745.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@5995.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@6245.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@6494.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@6744.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@6994.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@7244.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@7493.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/flip@7743.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@1.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@251.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@500.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@750.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@1000.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@1250.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@1499.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@1749.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@1999.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@2249.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@2498.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@2748.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@2998.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@3248.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@3497.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@3747.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@3997.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@4247.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@4496.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@4746.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@4996.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@5246.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@5495.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@5745.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@5995.0",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@6245.1",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@6494.2",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@6744.3",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@6994.4",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@7244.5",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@7493.6",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/flip@7743.7",
+   "kind": "tampered",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/proof-of-f83e9d5594dbd497",
+   "kind": "swapped",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/proof-of-58bd57025a10a7c1",
+   "kind": "swapped",
+   "inputs": 2,
+   "status": "Failed",
+   "reason": "",
+   "flags": [
+    "invalid_input"
+   ]
+  },
+  {
+   "id": "c08d808ae0a8d8ad/original",
+   "kind": "original",
+   "inputs": 2,
+   "status": "OK",
+   "reason": "Not relayed",
+   "flags": [
+    "not_relayed"
+   ]
+  },
+  {
+   "id": "f83e9d5594dbd497/original",
+   "kind": "original",
+   "inputs": 2,
+   "status": "OK",
+   "reason": "Not relayed",
+   "flags": [
+    "not_relayed"
+   ]
+  },
+  {
+   "id": "58bd57025a10a7c1/original",
+   "kind": "original",
+   "inputs": 2,
+   "status": "OK",
+   "reason": "Not relayed",
+   "flags": [
+    "not_relayed"
+   ]
+  }
+ ],
+ "n": {
+  "tampered": 96,
+  "swapped": 2,
+  "original": 3
+ },
+ "inputs_mix": [
+  2,
+  2,
+  2
+ ],
+ "PASS": true
+}
