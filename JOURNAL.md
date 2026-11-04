@@ -596,3 +596,7 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - e029 vs base, small-tx, 5 rounds, 10/10 hashes, log wall: 147.1 vs 145.5 s (+1.1%, overlap). CPU -0.7% (overlap). Peak anon 870 vs 1,137 MB (-23.5%, separate). Post-idle 729 vs 977 MB (-25.4%, separate).
 - So the E029 option removes most of final's +5.5% wall cost on these blocks. Final stays, per the owner: its peak is lower, and proofs of 3-7 inputs remain unmeasured on the option.
 - Nothing is running. The queue is empty except Needs owner. box81 idle. Hydrogen on schedutil, no lanes.
+
+## 2026-11-04 21:33 E030 README correction; E029 limit made concrete
+- E030 README said peak RSS ranges overlap. They do not (base 4,116-4,313, e029 4,050-4,108 MB). Corrected before anyone relied on it.
+- E029 limit: E022 already recorded only 43 blocks with a largest tx of 3-7 inputs, no usable window. So the unmeasured sizes cannot be measured at the node on this chain.

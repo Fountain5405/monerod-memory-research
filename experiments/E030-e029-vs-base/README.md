@@ -11,7 +11,7 @@
 |---|---|---|---|---|---|---|
 | base | 145.5 (143.9-147.6) | 1,336 (1,324-1,340) | 1,137 (950-1,295) | 1,297 (1,142-1,434) | 4,155 (4,116-4,313) | 977 (950-1,137) |
 | e029 | 147.1 (144.8-148.4) | 1,327 (1,321-1,331) | 870 (854-891) | 1,060 (1,032-1,098) | 4,074 (4,050-4,108) | 729 (713-743) |
-| change | +1.1%, overlap | -0.7%, overlap | **-23.5%, separate** | -18.3%, separate | -1.9%, overlap | **-25.4%, separate** |
+| change | +1.1%, overlap | -0.7%, overlap | **-23.5%, separate** | -18.3%, separate | -1.9%, separate | **-25.4%, separate** |
 
 Peak anon recomputed from the samplers up to the window end gives 1,134 vs 867 MB, also -23.5%. e029 was slower in 3 of 5 rounds by log wall. A small real cost cannot be ruled out in 5 rounds, and the median says +1.1% (+1.6 s).
 
