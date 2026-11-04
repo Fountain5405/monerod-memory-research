@@ -569,3 +569,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 ## 2026-11-04 17:22 E029 first attempt stopped at compile; patch fixed and restarted
 - The chain stopped at its crate-test step, 8 s in, on a compile error: Circuit::verify in circuit.rs is also cfg(test), and my patch only opened verify_stored. No test ran and nothing was measured. The chain stopped as intended and nothing downstream started.
 - Patch now opens that one function too. It was the only other gate on this path, by grep and by the compiler's two errors. Removed the 1-minute-old monero-oxide-e029 tree so the chain could recreate it. Restarted.
+
+## 2026-11-04 18:47 Check-in: E029 on small-tx, run 4 of 10
+- Crate tests passed (14 passed, 0 failed, rc=0; they took 44 min of the chain). Build OK, sha d93a9703. Differential test DIFF PASS at both heights: 135 cases at 3,105,401 (128-input, so streaming) and 101 at 3,106,400 (2-input, so these go through the new routing).
+- Small-tx 3 of 10 runs, all hashes yes. Harness figures, not read as a result: final 158 s, 806 MB; e029 148-151 s, 861-866 MB. The reading uses log wall over all 5 rounds. Heavy window still to come. ETA about 20:30 stands as an estimate.
+- Box: no lanes, 45 GB free. box81: load 0.00, nothing of ours running, 43 GB free.
+- Peer watch: 192.168.1.116 is back among .22 connections at h=2303879, state=normal, live 558 s. Up 5,916 since 14:47 (4 h), after being absent at 16:47. Still below the 3,105,401 wedge height. Cause of the slow rate not known from here.
