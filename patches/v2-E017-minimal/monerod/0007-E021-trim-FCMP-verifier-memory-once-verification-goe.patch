@@ -1,4 +1,4 @@
-From cb4541fab8d5368913cc0d5fe1fa0abb5a9154f1 Mon Sep 17 00:00:00 2001
+From 4232e83184ae558bfac5abe0cae75e6731f95e54 Mon Sep 17 00:00:00 2001
 From: optimizer <optimizer@hydrogen>
 Date: Wed, 4 Nov 2026 00:58:28 +0000
 Subject: [PATCH] E021: trim FCMP++ verifier memory once verification goes idle
@@ -6,8 +6,7 @@ Subject: [PATCH] E021: trim FCMP++ verifier memory once verification goes idle
 E012 trims after heavy batch-verify calls and at most every 10 s on light
 calls, but only inside a verify call. After the last call of a sync burst
 nothing trims, so whatever the last light calls freed stays resident in the
-glibc arenas until the next verification: the adaptive build idled ~0.2 GB
-above the per-call build (E012: 1,333 vs 1,107 MB post-idle).
+glibc arenas until the next verification.
 
 Record the time of the last batch verification and of the last trim in two
 atomics, and have core::on_idle (every 2 s) call rct::idleTrimFcmpPp(5000):
@@ -15,12 +14,15 @@ one malloc_trim(0) once no batch verification has run for 5 s and the last
 one was not already followed by a trim. The verify path stores its timestamp
 before deciding its own trim, so the idle trim never repeats one.
 
-Measured (E021, 3 alternating A/B rounds vs the E012 build, hydrogen):
-heavy window post-idle RssAnon 1,349 -> 1,087 MB (-19%), peak / wall / CPU
-unchanged; small-tx window wall unchanged; exactly one trim per run, 5-6 s
-after the last verification; all window hashes match. glibc only.
+Measured (E021, 3 alternating A/B rounds vs the E012 build, hydrogen): each
+trim releases 231-234 MB on the heavy window (about -17% of that run's anon)
+and 37-43 MB on the small-tx window, while the E012 build moves 0-4 MB over
+the same idle period. No measurable change in peak, wall or CPU; one trim per
+run; all window hashes match. glibc only. Not measured at the chain tip, where
+only the block path reaches this verifier, so it should fire at most once per
+block; the INFO log line should be demoted before upstream use.
 
-Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
  src/cryptonote_core/cryptonote_core.cpp |  2 ++
  src/cryptonote_core/cryptonote_core.h   |  1 +
