@@ -30,4 +30,10 @@ a = "  #[cfg(test)]\n  #[allow(clippy::too_many_arguments)]\n  pub(crate) fn ver
 b = "  #[allow(clippy::too_many_arguments)]\n  pub(crate) fn verify_stored<"
 assert s.count(a) == 1; s = s.replace(a, b)
 p.write_text(s)
+# Circuit::verify was also test-only: the stored path needs it outside tests
+p = pathlib.Path("crypto/fcmps/src/circuit.rs"); s = p.read_text()
+a = "  // Only `Fcmp::verify_stored` stores the verifier's constraints\n  #[cfg(test)]\n  pub(crate) fn verify() -> Self {"
+b = "  // Only `Fcmp::verify_stored` stores the verifier's constraints\n  pub(crate) fn verify() -> Self {"
+assert s.count(a) == 1; s = s.replace(a, b)
+p.write_text(s)
 print("E029 patched")

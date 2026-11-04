@@ -565,3 +565,7 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - E028 left one candidate for the small-tx wall cost: the second circuit build. The stored-circuit path already exists in the E007 tree as verify_stored, under cfg(test). So this is a small change: 8 lines route proofs under 8 inputs to it.
 - It may well raise the small-tx peak, since E028 shows the verifier also gives -15.6% there. The goal is memory, so the rule fixed in the script refuses to trade more than 5% of peak for speed. If it fails the rule it is reported as an option, not adopted.
 - The crate tests compile the routing out, so they keep testing streaming. The routing itself is exercised at the node, by negdiff and the window hashes.
+
+## 2026-11-04 17:22 E029 first attempt stopped at compile; patch fixed and restarted
+- The chain stopped at its crate-test step, 8 s in, on a compile error: Circuit::verify in circuit.rs is also cfg(test), and my patch only opened verify_stored. No test ran and nothing was measured. The chain stopped as intended and nothing downstream started.
+- Patch now opens that one function too. It was the only other gate on this path, by grep and by the compiler's two errors. Removed the 1-minute-old monero-oxide-e029 tree so the chain could recreate it. Restarted.
