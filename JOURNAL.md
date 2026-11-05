@@ -677,3 +677,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Part a, box81, compile and run only: a unit test drives Blockchain's real limit code through the simulation's window shapes, filling each block to the limit it computes. It compares with the owner's Python table at HF 16 and at v17 with F 625 kB (a test-only tree that never joins a network), and reports F 10 MB.
 - Part b, hydrogen, behind E033: wedge control, long resync at default settings against final, logged runs for cap decisions and oversize errors.
 - Not covered by either: a real post-fork batch end to end over a socket, which would need a purpose-built chain with full 1.25 MB blocks. The queued-span case stays as the issue describes it, partly covered.
+
+## 2026-11-05 11:41 E035 part a done: the cap holds against the real limit code
+- All expectations met. Window-aware worst at or under 90.0 MB in every cell: HF 16, v17 F 625 kB, stressnet F 10 MB. Current cap: 116-129 MB at v17, 148 MB at HF 16 with batch 50, and 95 MB at F 10 MB with batch 50. That last one is not in the owner's table.
+- The owner's model is right: real code within 0.1 MB in 24 cells, with the same block counts.
+- Added 20,000 random windows per rule set through the model, not fixed in advance: at most 89.7 MB. Weak at the default batch size.
+- Limits in the README: a search and not a proof, weight and not bytes, F held constant, no real blocks over a socket, queued spans.
+- Tests compile in a few minutes on box81 thanks to ccache; the full grid takes under 2 minutes per tree.

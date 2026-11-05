@@ -1,0 +1,41 @@
+Note: Google Test filter = block_sync_size_cap.*
+[==========] Running 3 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 3 tests from block_sync_size_cap
+[ RUN      ] block_sync_size_cap.values
+[       OK ] block_sync_size_cap.values (0 ms)
+[ RUN      ] block_sync_size_cap.worst_batch_hf16
+hf 16 F 300000 shapes 814
+RESULT hf16 F=300000 batch=10M none worst_MB=89.5 k=0 A=90000 big-first N=100
+RESULT hf16 F=300000 batch=10M patch worst_MB=89.5 k=0 A=90000 big-first N=100
+RESULT hf16 F=300000 batch=10M window worst_MB=89.5 k=0 A=90000 big-first N=100
+RESULT hf16 F=300000 batch=30M none worst_MB=89.7 k=0 A=300000 big-first N=100
+RESULT hf16 F=300000 batch=30M patch worst_MB=89.7 k=0 A=300000 big-first N=100
+RESULT hf16 F=300000 batch=30M window worst_MB=89.7 k=0 A=300000 big-first N=100
+RESULT hf16 F=300000 batch=40M none worst_MB=117.9 k=0 A=405000 big-first N=98
+RESULT hf16 F=300000 batch=40M patch worst_MB=117.9 k=0 A=405000 big-first N=98
+RESULT hf16 F=300000 batch=40M window worst_MB=89.7 k=0 A=300000 big-first N=100
+RESULT hf16 F=300000 batch=50M none worst_MB=148.4 k=0 A=510000 big-first N=98
+RESULT hf16 F=300000 batch=50M patch worst_MB=147.2 k=50 A=510000 small-first N=98
+RESULT hf16 F=300000 batch=50M window worst_MB=89.7 k=0 A=300000 big-first N=100
+[       OK ] block_sync_size_cap.worst_batch_hf16 (601 ms)
+[ RUN      ] block_sync_size_cap.worst_batch_hf17
+hf 17 F 10000000 shapes 814
+RESULT hf17 F=10000000 batch=10M none worst_MB=2980.0 k=100 A=2000000 big-first N=100
+RESULT hf17 F=10000000 batch=10M patch worst_MB=80.0 k=0 A=2000000 big-first N=4
+RESULT hf17 F=10000000 batch=10M window worst_MB=80.0 k=0 A=2000000 big-first N=4
+RESULT hf17 F=10000000 batch=30M none worst_MB=2980.0 k=100 A=2000000 big-first N=100
+RESULT hf17 F=10000000 batch=30M patch worst_MB=80.0 k=0 A=2000000 big-first N=4
+RESULT hf17 F=10000000 batch=30M window worst_MB=80.0 k=0 A=2000000 big-first N=4
+RESULT hf17 F=10000000 batch=40M none worst_MB=2980.0 k=100 A=2000000 big-first N=100
+RESULT hf17 F=10000000 batch=40M patch worst_MB=80.0 k=0 A=2000000 big-first N=4
+RESULT hf17 F=10000000 batch=40M window worst_MB=80.0 k=0 A=2000000 big-first N=4
+RESULT hf17 F=10000000 batch=50M none worst_MB=2980.0 k=100 A=2000000 big-first N=100
+RESULT hf17 F=10000000 batch=50M patch worst_MB=95.0 k=50 A=12500000 small-first N=4
+RESULT hf17 F=10000000 batch=50M window worst_MB=90.0 k=0 A=15000000 big-first N=3
+[       OK ] block_sync_size_cap.worst_batch_hf17 (599 ms)
+[----------] 3 tests from block_sync_size_cap (1201 ms total)
+
+[----------] Global test environment tear-down
+[==========] 3 tests from 1 test suite ran. (1201 ms total)
+[  PASSED  ] 3 tests.

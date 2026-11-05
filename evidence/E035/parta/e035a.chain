@@ -1,0 +1,22 @@
+chain e035a start 2026-11-05T11:26:44+00:00 load 0.00 0.00 0.00
+E035 patched
+8bc3fd2b3 E035: window-aware block sync size cap
+17	4	src/cryptonote_core/cryptonote_core.cpp
+11	0	src/cryptonote_core/cryptonote_core.h
+1	0	tests/unit_tests/CMakeLists.txt
+217	0	tests/unit_tests/block_sync_size_cap.cpp
+tree ced7116caa99fb6321fb48788b83f81370dc44fa
+1
+61:#define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V17   625000 //STRESSNET SPECIFIC siz
+build f10m BUILD_OK 2026-11-05T11:31:28+00:00
+run f10m k=10 a=20 exit 0 2026-11-05T11:31:29+00:00
+[  PASSED  ] 3 tests.
+build f625k BUILD_OK 2026-11-05T11:33:55+00:00
+run f625k k=10 a=20 exit 0 2026-11-05T11:33:56+00:00
+[  PASSED  ] 3 tests.
+run f10m k=1 a=200 exit 0 2026-11-05T11:35:40+00:00
+[  PASSED  ] 3 tests.
+run f625k k=1 a=200 exit 0 2026-11-05T11:37:21+00:00
+[  PASSED  ] 3 tests.
+done 2026-11-05T11:37:21+00:00
+E035A_COMPLETE
