@@ -665,3 +665,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Build OK at 08:38 (hydrogen sha 1ed829f0, tree hash equal to box81's). Round 1 base running. Estimate of about 14:10 stands.
 - Box: no lanes, 29 GB free. box81 idle, nothing of ours.
 - Peer watch: 192.168.1.116:38972 IN h=2371219 state=normal live=1288s. Still below the 3,105,401 wedge height.
+
+## 2026-11-05 10:48 Check-in: E033 in its small-tx part
+- Heavy x3, negative test and cgroup minimum done; small-tx 8 of 10 runs, then long x3, about 14:00 as an estimate. Figures wait for the chain to end. 14/14 hashes so far.
+- Box: no lanes, 34 GB free. box81 idle, nothing of ours.
+- Peer watch: 192.168.1.116:58852 IN h=2394072 state=normal live=2290s. Still below the 3,105,401 wedge height.
