@@ -611,3 +611,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Owner: the maintainers are not keen on merging LLM-generated code, so if anything it would be v2, because fewer lines change, with v1 referenced for its extra compute savings. I had recommended v1 on speed and had not weighed review burden.
 - Patch size including tests: v2 +985/-121, v1 +2,827/-188.
 - This makes v2final's gaps matter: its cgroup minimum, long resync and second-machine figures predate its last two patches. Queued E032 to fill them, after E031 so two boxes do not share .22 during timing. Queued E033, the monerod patches alone, as the smallest thing that could be presented.
+
+## 2026-11-05 00:47 Check-in: E031 on long resync, run 3 of 6
+- Cgroup minimums done on box81, not yet written up: final 1,359 MB (largest failing 1,257), base 3,218 MB (largest failing 3,046), so -57.8%. Within the expected -50 to -65% and final at or below 2,000 MB. Base is below the expected 3,500-5,000 MB, a miss on that line.
+- Long resync: round 1 base 1,371 s, 3,389 MB; final 1,334 s, 1,263 MB; hashes yes. Round 2 running. Not read as a result yet. Faster than I estimated, so ETA is now about 02:25, still an estimate.
+- No foreign load in 24 samples on box81. Hydrogen idle, no lanes, 30 GB free. E032 and E033 wait for E031.
+- Peer watch: 192.168.1.116 is back at h=2306224, state=normal, live about 240 s. Up 2,345 since 18:47 (6 h). Still below the 3,105,401 wedge height. Cause of the slow rate not known from here.
+- Owner has not yet answered on the window-aware E001 cap or the wallet seed. Neither blocks anything.

@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-04 23:38
+Last updated: 2026-11-05 00:47
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -52,7 +52,7 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
 
 - **E027a DONE 12:09 on box81 (hostname moonpie; e027a.chain there): final built from v1's published patches, tree hash equal to hydrogen's adbe70cf8, sha a9a22c46; differential test at 3,105,401: 135 cases, 0 disagreements with base, DIFF PASS. **
-- **E031 RUNNING on box81 (moonpie) since 22:49 (scripts/run_e031.sh, marker CHAIN_E031_COMPLETE in ~/work/research-artifacts/e031.chain THERE; ETA about 04:30, an estimate): cgroup minimum for final and base, long resync base vs final x3. Report only. Hydrogen is idle. Expectations in the script header. box81 cannot reach hydrogen: read it from the control box.**
+- **E031 RUNNING on box81 (moonpie) since 22:49 (scripts/run_e031.sh, marker CHAIN_E031_COMPLETE in ~/work/research-artifacts/e031.chain THERE; ETA about 02:25, revised at 00:47, an estimate; cgroup minimums done, long resync run 4 of 6 at 00:47): cgroup minimum for final and base, long resync base vs final x3. Report only. Hydrogen is idle. Expectations in the script header. box81 cannot reach hydrogen: read it from the control box.**
 - **E030 DONE 21:32 (experiments/E030-e029-vs-base, F46, evidence/E030): e029 vs base, small-tx, 5 rounds, 10/10 hashes: wall +1.1%, CPU -0.7% (overlap), peak -23.5%, post-idle -25.4% (separate). All expectations met. Report only; final stays.**
 - **E029 DONE 20:17 (experiments/E029-small-proofs-stored, F45, evidence/E029): small-tx wall -5.2%, CPU -8.1%, peak +7.0% (separate); heavy wall +1.3%, peak +4.9% (overlap); 16/16 hashes, DIFF PASS x2, crate tests pass. Peak fails the +5% limit. OWNER DECISION 2026-11-04: keep final, report E029 as an option. Patch in patches/options/. Miss: wall expected 2-4% below final. Proofs of 3-7 inputs not measured.**
 - **E028 DONE 17:18 (experiments/E028-small-tx-attribution, F44, evidence/E028): small-tx wall base -> final +5.5%: verifier +3.8% (separate), rest of adapt +0.8%, light-call trims +0.8% (overlap). 20/20 hashes. Miss: total expected about +6.6%.**
