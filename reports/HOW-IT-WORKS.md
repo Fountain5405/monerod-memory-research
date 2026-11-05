@@ -91,7 +91,7 @@ One gap remained: those trims run only inside a verify call, so after the last c
 | all three with the v2 verifier (e017) | 1.6 GB | -29% | same monerod changes, pre-folded constraint instead of streaming (2.1b); three builds |
 | all three with the v2 verifier, two builds (e020) | 1.6 GB | -37% | e017 plus patch 0003 (E020): the second `z` peeked on a skipped transcript clone, one fold rebuild |
 
-Independent cross-check: the smallest cgroup `MemoryMax` (swap off) under which the window still syncs at full speed is 5,750 MB for stock and 1,866 MB for adapt (-67.5%); below that the kernel OOM-kills the process rather than it slowing down.
+Independent cross-check: the smallest cgroup `MemoryMax` (swap off) under which the window still syncs at full speed is 5,750 MB for stock and 1,866 MB for adapt (-67.5%; E032 later re-measured stock at 5,562 MB, which makes it -66.5%); below that the kernel OOM-kills the process rather than it slowing down.
 
 So the ~70% is the three changes together, not the verifier alone. Each piece on its own: the streaming verifier -59% (2.3 GB), the cap plus trim -45% (2.9 GB), and even the stock binary with `--max-concurrency 12` -40% (3.3 GB). They overlap, because each attacks the same product, number of concurrent verifications x memory per verification: the cap halves the first factor, the verifier shrinks the second by ~50x, and the trim stops the per-thread high-water marks from accumulating. That is why the three add up to -68% rather than the sum of their separate percentages. The idle-node figure (-74 to -88%) comes almost entirely from the trim. SUMMARY.md's "Build history" table gives the same progression with the small-tx wall per build.
 

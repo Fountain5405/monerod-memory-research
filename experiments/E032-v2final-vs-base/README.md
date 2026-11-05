@@ -109,4 +109,4 @@ So on memory v2 is at least as good as v1, and the peak differences are inside t
 - v2's verifier code has had no independent review. E007's crypto review covered v1.
 
 ## Guardrails
-One change between arms apart from the series itself, sha256 of both binaries in the chain. No lanes. Governor restored. Evidence: evidence/E032 (chain, results.csv, summary.txt, per-run mem.csv, min_mem csv and summaries, negative test summaries; no raw logs).
+The arms differ by the v2 series only, sha256 of both binaries in the chain. No lanes. Governor restored. Evidence: evidence/E032 (chain, results.csv, summary.txt, per-run mem.csv, min_mem csv and summaries, negative test summaries; no raw logs).
