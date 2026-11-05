@@ -1,0 +1,28 @@
+chain e031 start 2026-11-04T22:48:40+00:00
+bac70623e27810ff969d95218393302c70ee2852ef4ebf3e473ab4718b776e92  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+a9a22c468668859769c48192b5e3ba9c5356cd9cd9d4bef948827877368f25c4  /home/optimizer/work/monero-fcmp-final/build/beta31-final/bin/monerod
+idle check 2026-11-04T22:48:40+00:00: load 0.00 0.00 0.00; users:       4 user 
+no lanes
+governor powersave -> performance
+DB restored 2026-11-04T22:55:04+00:00
+reference walls final 137 s, base 236 s
+(a1) final done 2026-11-04T23:07:32+00:00: RESULT: minimum passing MemoryMax for final = 1359 MB (largest failing = 1257 MB, tol 125 MB)
+(a2) base done 2026-11-04T23:26:59+00:00: RESULT: minimum passing MemoryMax for base = 3218 MB (largest failing = 3046 MB, tol 250 MB)
+(b) long resync done 2026-11-05T02:23:57+00:00
+governor restored powersave
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| base | 3 | 3,573 (3,389-3,576) | 3,573 (3,389-3,577) | 7,051 (6,827-7,072) | 1,376 (1,371-1,376) | 2,949 (2,799-2,967) | 79 (78-86) | 9,405 (9,394-9,411) | 9,337 (9,335-9,342) | all yes |
+| final | 3 | 1,263 (1,128-1,274) | 1,383 (1,327-1,426) | 5,228 (5,218-5,245) | 1,334 (1,334-1,340) | 963 (922-993) | 67 (67-68) | 9,406 (9,398-9,416) | 8,154 (8,151-8,158) | all yes |
+
+final vs base (medians): peak RssAnon MB -64.7%; peak Private_Dirty MB -61.3%; peak RSS MB -25.9%; wall s -3.1%; post-idle RssAnon MB -67.3%; read MB -15.2%; write MB +0.0%; CPU s -12.7%
+  peak anon ranges overlap: no (base 3,389-3,576, final 1,128-1,274)
+run,wall_s
+Traceback (most recent call last):
+  File "/home/optimizer/work/research/scripts/e023_wall.py", line 15, in <module>
+    w = (ev[b] - ev[a]).total_seconds()
+         ~~^^^
+KeyError: 3123396
+foreign load samples: 0 of 44
+done 2026-11-05T02:23:57+00:00
+CHAIN_E031_COMPLETE

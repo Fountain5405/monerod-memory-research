@@ -618,3 +618,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - No foreign load in 24 samples on box81. Hydrogen idle, no lanes, 30 GB free. E032 and E033 wait for E031.
 - Peer watch: 192.168.1.116 is back at h=2306224, state=normal, live about 240 s. Up 2,345 since 18:47 (6 h). Still below the 3,105,401 wedge height. Cause of the slow rate not known from here.
 - Owner has not yet answered on the window-aware E001 cap or the wallet seed. Neither blocks anything.
+
+## 2026-11-05 02:28 E031 done with a correction to the report; E034 and E032 launched
+- Box81, final vs base: cgroup minimum 1,359 vs 3,218 MB (-57.8%, bracket -55.4 to -60.9%). Long resync, 3 rounds, 6/6 hashes: peak -64.7%, post-idle -67.3%, wall -2.9% (heavy -41.9%, dense small-tx +5.5%), no upward trend, no swap. 0 of 44 load samples showed other users. Miss: base minimum below the expected 3,500-5,000 MB; my band ignored E027.
+- Correction, found reading this data: the report called the cgroup minimum the real RAM a node needs, counting page cache, and called it independent of peak anon. The cgroup peak at a generous limit tracks anon, not RSS, on both boxes (box81 final 1,332 vs anon 1,311, RSS 2,509; hydrogen final 1,647 vs anon 1,613-1,797, RSS about 3,000). The DB is read outside the scope, by cp and pop_to, so its pages are likely charged elsewhere. That cause is inferred. SUMMARY and FINDINGS are corrected. All earlier minimums share this.
+- E034 tests it: COLD=1 in min_mem.sh evicts only data.mdb from the page cache (posix_fadvise, not system-wide) after each rewind. Tested on the idle working DB: 6.5 GB resident before, 0 after. Default behaviour of min_mem.sh is unchanged.
+- E032 chained behind it. v2final against base: windows, negative test, warm minimum, long resync.
+- The chain's e023_wall call in E031 failed on a height not every run logs. Walls computed after the run; E032 uses a common height.

@@ -1,0 +1,11 @@
+min_mem base start 2026-11-04T23:07:32+00:00 bin=/home/optimizer/work/monero-fcmp/build/beta31/bin/monerod ref=236 factor=1.10 lo=1500 hi=7000 tol=250 extra='--block-sync-size 5'
+bac70623e27810ff969d95218393302c70ee2852ef4ebf3e473ab4718b776e92  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+[7000 MB] PASS wall=234s h=3105441 hash=yes cgroup_peak=3495MB oom_kills=0
+[1500 MB] FAIL wall=4s h=3105421 hash=yes cgroup_peak=381MB oom_kills=1
+[4250 MB] PASS wall=237s h=3105441 hash=yes cgroup_peak=3352MB oom_kills=0
+[2875 MB] FAIL wall=69s h=3105426 hash=yes cgroup_peak=2875MB oom_kills=1
+[3562 MB] PASS wall=234s h=3105441 hash=yes cgroup_peak=3434MB oom_kills=0
+[3218 MB] PASS wall=234s h=3105441 hash=yes cgroup_peak=3144MB oom_kills=0
+[3046 MB] FAIL wall=98s h=3105431 hash=yes cgroup_peak=2969MB oom_kills=1
+RESULT: minimum passing MemoryMax for base = 3218 MB (largest failing = 3046 MB, tol 250 MB)
+MINMEM_COMPLETE

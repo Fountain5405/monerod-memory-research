@@ -43,6 +43,10 @@ trial() {  # trial <limit_MB> -> prints PASS|FAIL, appends to CSV
   local lim=$1 tag=${L}_${1}MB
   ~/work/research/scripts/pop_to.sh $POPBIN $DD 3105401 $OUT/$tag.rewind.log
   if ! tail -1 $OUT/$tag.rewind.log | grep -q "RESULT OK"; then echo "$lim,REWIND_FAIL,,,,," >> $CSV; echo FAIL; return; fi
+  if [ -n "${COLD:-}" ]; then  # E034: evict the DB from the page cache so its pages are charged to the scope when read
+    python3 -I -c "import os,sys; f=os.open(sys.argv[1],os.O_RDWR); os.fsync(f); os.posix_fadvise(f,0,0,os.POSIX_FADV_DONTNEED); os.close(f)" $DD/testnet/lmdb/data.mdb
+    echo "[$tag] cold: $(python3 -I ~/work/research/scripts/page_resident.py $DD/testnet/lmdb/data.mdb) bytes of the DB resident before start" >> $S
+  fi
   local unit=minmem-$L-$lim-$$
   local LOG=$OUT/$tag.log
   sudo systemd-run --quiet --scope --unit=$unit -p MemoryMax=${lim}M -p MemorySwapMax=0 --uid=$(id -u) --gid=$(id -g) \
