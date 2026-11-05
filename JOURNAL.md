@@ -695,3 +695,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Reading only, not tested. Weights in NOTIFY_RESPONSE_CHAIN_ENTRY are checked only by size, and against the embedded hash-of-hashes data in prevalidate_block_hashes where that applies (blockchain.cpp:5436). Above that region nothing checks them before download. I found no comparison with the delivered block's weight in the patch.
 - Under-reporting: at worst today's count-only behaviour for spans from that peer's list. get_next_span_if_scheduled (handler .inl:2456, 2515) can re-request such a span from another peer, so an honest peer could be asked for an oversize response. Over-reporting: 1-block spans, slow but no wedge; the arithmetic in reserve_span looks overflow-safe.
 - The window-aware cap takes nothing from peers, so it does not have this exposure. Backoff on failure (the issue's option 1) would cover both. To test, not assume.
+
+## 2026-11-05 12:25 W006 mining started; E036 unit tests pass
+- Node catch-up began at 12:21:15 in the gap after E033's r2_e033 run ended (hydrogen had no syncing node), and finished in 11 s: 3,124,904, synchronized. Wallet at the tip. Mining 6 threads, nice 19: about 2,590 H/s. Difficulty about 796,000, so about 5 minutes per block for this rig at that difficulty, an estimate. Coinbase unlock is 60 blocks of chain time.
+- From 12:21 on, what hydrogen's runs share with box81 is .22 relaying our mined blocks. The other hydrogen E033 runs and all of E035 part b include that; compare E033's base long wall with E032's as a check.
+- E036: patch compiled on box81, 10/10 block_queue and node_server tests pass. That says the unit is sound, nothing about false weights or real sync.
