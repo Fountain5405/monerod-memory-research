@@ -1,0 +1,6 @@
+negtest start 2026-11-05T04:02:47+00:00 pop=3105424
+RESULT OK height 3105424
+[v2final] a9969e61fbd07b77 height="height": 3105424
+tx 4c07f9e1ea2a4162 inputs=128 ref=3103427 fcmp_bytes=133504: tampered rejected 8/8, original OK Not relayed
+PASS
+NEGTEST_COMPLETE

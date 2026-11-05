@@ -1,9 +1,9 @@
-# monerod memory research: summary (draft, updated 2026-11-04 after E029)
+# monerod memory research: summary (draft, updated 2026-11-05 after E032)
 
 **Bottom line:** on the FCMP++ stressnet sync workload, three separable changes cut the memory monerod needs by about **two thirds to 70%**, and sync is about as fast or faster:
 - -68% peak in a 40-block worst-case window (3 A/B rounds);
 - -69% over an 18,000-block resync;
-- -67.5% in the minimum cgroup memory a sync can run under.
+- -66.5% in the minimum cgroup memory a sync can run under.
 
 Over the 18,000-block resync the recommended build is 5.4% faster overall: 2x faster on heavy blocks, 4.1% slower on dense small-tx blocks. On a 1,000-block window of small txs it is 6.6% slower, which is above the +6% I expected before E023 (see E023; the last two patches are not the cause). E028 later measured +5.5% in 5 rounds and box81 +5.5% in E027; about two-thirds of it is the streaming verifier, which is also what makes heavy blocks 2x faster (F44). All guardrails held: the same chain state as the reference node, invalid proofs still rejected (24/24 in E023; 236/236 identical decisions to base in the differential test, E015, rerun on this build in E025), and no cost shifted to disk or swap.
 
@@ -20,7 +20,7 @@ Over the 18,000-block resync the recommended build is 5.4% faster overall: 2x fa
 | peak anonymous memory (RssAnon) | 5,606 MB (5,405-5,634) | 1,764 MB (1,613-1,797) | **-68.5%** |
 | peak private dirty memory | 5,613 MB | 1,786 MB | **-68.2%** |
 | memory held after the window, idle (RssAnon) | 4,977 MB | 1,066 MB | **-78.6%** |
-| minimum cgroup MemoryMax that still syncs within 1.1x the wall time, swap off (base E009, final E023) | 5,750 MB | 1,866 MB | **-67.5%** |
+| minimum cgroup MemoryMax that still syncs within 1.1x the wall time, swap off (base E032, final E023; E009 had base at 5,750 MB, -67.5%) | 5,562 MB | 1,866 MB | **-66.5%** |
 | wall time | 221 s | 112 s | **-49.3%** |
 | CPU time (utime + stime) | 4,229 s | 914 s | -78.4% |
 | bytes written to disk | 466 MB | 466 MB | unchanged |
@@ -180,7 +180,7 @@ Routing proofs under 8 inputs to the stored-circuit verifier gives, against fina
 - E007 is security-critical cryptographic code and **not audited**. Upstream use needs review by the FCMP++ authors.
 
 ## Upstreamability (if the owner wants it)
-**Owner's decision, 2026-11-04: if anything is presented to the maintainers, it is v2, because it changes fewer lines, with v1 referenced for its extra compute savings.** The maintainers are not keen on merging LLM-generated code, so review burden outweighs speed here. Patch size including tests: v2 +985/-121, v1 +2,827/-188. v1 is still the faster build and the one the headline tables measure; v2final's cgroup minimum, long resync and second-machine figures have not yet been measured with its last two patches. Nothing has been posted.
+**Owner's decision, 2026-11-04: if anything is presented to the maintainers, it is v2, because it changes fewer lines, with v1 referenced for its extra compute savings.** The maintainers are not keen on merging LLM-generated code, so review burden outweighs speed here. Patch size including tests: v2 +985/-121, v1 +2,827/-188. v1 is still the faster build and the one the headline tables measure. **v2final against base (E032, hydrogen): heavy peak -70.4%, wall -37.1%; small-tx peak -30.5%, wall +7.9%; long resync peak -70.2%, wall -1.4%; cgroup minimum 1,765 vs 5,562 MB (-68.3%); negative test passed, 22/22 hashes.** So v2 keeps v1's memory result and gives up speed. Second-machine figures with its last two patches are not yet measured, and v2's verifier has had no independent review. Nothing has been posted.
 
 | change | size | notes |
 |---|---|---|
@@ -206,5 +206,6 @@ Routing proofs under 8 inputs to the stored-circuit verifier gives, against fina
 - E030 (hydrogen): done (experiments/E030-e029-vs-base, F46). e029 against base on small-tx blocks: wall +1.1% and CPU -0.7% (overlapping), peak -23.5%. Report only.
 - E031 (box81): done (experiments/E031-box81-minmem-long, F47). Cgroup minimum 1,359 vs 3,218 MB (-57.8%, warm cache). Long resync, 3 rounds: peak -64.7%, post-idle -67.3%, wall -2.9%. It also corrected this report's description of the cgroup metric.
 - E034 (hydrogen): done (experiments/E034-cold-minmem, F48). The cgroup minimum holds on a cold cache: final 1,866 MB, base 5,562 MB, -66.5%.
-- E032 (hydrogen): running, validating v2final against base. Then E033 (the monerod patches alone).
+- E032 (hydrogen): done (experiments/E032-v2final-vs-base, F49). See Upstreamability.
+- E033 (hydrogen): running, the monerod patches alone against base, no verifier change: +71/-1 lines (patches/options/E033-monerod-only/). Then v2final on box81.
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth). W002 done (experiments/W002-wallet-refresh, F34): a fresh, empty wallet peaks at 1.17 GB RSS refreshing 18,270 stressnet blocks in 15 s on 24 threads, against a 349 MB live heap: the same glibc arena-retention gap the node had (F13). The largest live consumer is the FCMP++ tree extension (`outputs_to_leaves`, 115 MB). W003 (`--max-concurrency` 24/12/4/1: peak 1,100 / 909 / 510 / 357 MB, wall 16 / 23 / 55 / 105 s; F35) shows the peak is ~325 MB + ~32 MB per worker thread. **W004: `MALLOC_ARENA_MAX=2` in the wallet's environment cuts the peak 67% (1,132 -> 370 MB) at +7% wall with all threads kept (F36)**; the excess was glibc arena retention entirely, the live heap is ~350 MB. Zero code, available today. Not yet measured: a wallet that owns many outputs (needs a stressnet seed).

@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-05 06:48
+Last updated: 2026-11-05 08:50
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -31,9 +31,9 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 - **E019 DONE 17:56 (experiments/E019-box81-reproduction, F30): heavy adapt -61.5% peak / -71% idle / -43% wall, e017 -64% / -72.5% / -10.5%; small-tx -33% peak, wall +5.4% / +16.8%; 18/18 hashes, VmSwap 0; evidence/E019.** Was: E019 RUNNING on box81 (started 15:44 after the idle check, load 0.38; heavy 5/9 at 16:47: base 3,379 MB / 238 s, adapt 1,296-1,357 MB / 136 s, e017 1,207-1,270 MB / 213 s, hashes yes; system swap use 51 MB, unchanged from before our runs). Was: E019 ARMED on box81 (owner 15:0x: box81 is the second machine the review asked for; they freed disk to 80 GB). scripts/run_e019.sh there (copy in the repo): waits for e019.builds (base/adapt/e017 built natively on box81 from the hydrogen trees relayed 15:09; base BUILD_OK 15:15) and e019.db (the unpruned wedge snapshot streamed hydrogen -> control box -> box81 during E018's build phase by the control-box relay_snapshot.sh, then a working copy). Then idle check, governor pinned, heavy window base/adapt/e017 x3 (snapshot restore) -> e019_heavy/, prep sync to 3,106,400, small-tx window x3 (pop_to rewinds) -> e019_small/, ab_stats + max VmSwap per run (box81 keeps its 4 GB swap file). Marker e019.chain ends CHAIN_E019_COMPLETE. box81 numbers are compared only with box81 numbers. A pruned-copy plan (run_e019_prune.sh, hydrogen) was written and cancelled 15:17 when the disk was freed; the beta tree's monero-blockchain-prune does know the FCMP++ tables, so it remains an option for small disks.
 
 ## Queue (do the first item that is unblocked)
-0a. E032: see running above; it validates v2final the way E023 validated final.
-0b. E033: chained, see running above. The whole series is +71/-1 lines, not the about 25 I wrote earlier, which counted only the adaptive cap and trim.
-0c. After E033 ends and only then (two boxes must not share .22 during timing): repeat v2final vs base on box81 if E032 holds. box81 already has ~/work/monero-fcmp-e033 built if E033 is wanted there too.
+0a. (DONE: E032.)
+0b. E033: running, see above. The whole series is +71/-1 lines, not the about 25 I wrote earlier, which counted only the adaptive cap and trim.
+0c. After E033 ends and only then (two boxes must not share .22 during timing): repeat v2final vs base on box81 (E032 held). box81 already has ~/work/monero-fcmp-e033 built if E033 is wanted there too.
 A. (DONE 02:56: the 50% verify hotspot is gone from the combo profile; recorded in E007.)
 B. (DONE 03:30: E009 written up; owner informed.)
 C. (DONE 05:02: E010 written up; owner pinged.)
@@ -53,8 +53,8 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
 
 - **E027a DONE 12:09 on box81 (hostname moonpie; e027a.chain there): final built from v1's published patches, tree hash equal to hydrogen's adbe70cf8, sha a9a22c46; differential test at 3,105,401: 135 cases, 0 disagreements with base, DIFF PASS. **
-- **E032 RUNNING on hydrogen since 03:17 (scripts/run_e032.sh, marker CHAIN_E032_COMPLETE in ~/work/research-artifacts/e032.chain; ETA about 08:45, an estimate): v2final vs base. Heavy, negative test, warm cgroup minimum and small-tx x5 done; long resync round 1 of 3 done at 06:47. Expectations in the header. Report only.**
-- **E033 CHAINED on hydrogen (scripts/run_e033.sh, pid waits for CHAIN_E032_COMPLETE, then builds and runs; marker CHAIN_E033_COMPLETE in ~/work/research-artifacts/e033.chain). Monerod patches alone vs base: heavy x3, negative test, warm cgroup minimum, small-tx x5, long x3. Expectations in the header. Report only. Series in patches/options/E033-monerod-only/, +71/-1 lines, compiled on box81 (04:51, sha 55982d37; not to be compared across boxes), tree hash e8d76fb5. Not started yet; do not start anything else timing on hydrogen.**
+- **E032 DONE 08:35 (experiments/E032-v2final-vs-base, F49, evidence/E032): v2final vs base: heavy peak -70.4%, wall -37.1%; small-tx peak -30.5%, wall +7.9%; long peak -70.2%, wall -1.4%; cgroup minimum 1,765 vs 5,562 MB (-68.3%); negative test passed; 22/22 hashes. One narrow miss on small-tx peak. Re-measured base warm at 5,562 MB, so final headline is now -66.5%. Report only.**
+- **E033 RUNNING on hydrogen since 08:35 (scripts/run_e033.sh, marker CHAIN_E033_COMPLETE in ~/work/research-artifacts/e033.chain; ETA about 14:10, an estimate). Monerod patches alone vs base: heavy x3, negative test, warm cgroup minimum, small-tx x5, long x3. Expectations in the header. Report only. Series in patches/options/E033-monerod-only/, +71/-1 lines, tree hash e8d76fb5. Do not start anything else timing on hydrogen or syncing from .22 on box81.**
 - **E034 DONE 03:18 (experiments/E034-cold-minmem, F48, evidence/E034): cold cgroup minimum final 1,866 MB (same as warm), base 5,562 MB, -66.5%. DB pages are charged, then reclaimed near the limit; all failures are OOM kills. Two narrow misses. Anon sets the limit, so it is not independent of peak anon.**
 - **E031 DONE 02:24 (experiments/E031-box81-minmem-long, F47, evidence/E031): box81 cgroup minimum 1,359 vs 3,218 MB (-57.8%); long resync peak -64.7%, post-idle -67.3%, wall -2.9%, 6/6 hashes. Miss: base's minimum below the expected band. CORRECTED the report: the cgroup metric tracks anon on a warm cache and is not independent evidence.**
 - **E030 DONE 21:32 (experiments/E030-e029-vs-base, F46, evidence/E030): e029 vs base, small-tx, 5 rounds, 10/10 hashes: wall +1.1%, CPU -0.7% (overlap), peak -23.5%, post-idle -25.4% (separate). All expectations met. Report only; final stays.**

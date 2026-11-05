@@ -1,6 +1,6 @@
 # The code: patch series
 
-**If anything is presented upstream it is v2, with v1 referenced for its extra compute savings (owner, 2026-11-04).**
+**If anything is presented upstream it is v2, with v1 referenced for its extra compute savings (owner, 2026-11-04).** v2 with all its patches against base (E032): heavy peak -70.4%, wall -37.1%; small-tx wall +7.9%; long resync peak -70.2%, wall -1.4%; cgroup minimum -68.3%.
 
 Two versions of the verifier change are kept on purpose (owner, 2026-11-03):
 - **`v1-E007-full-streaming/`**: the measured, validated series (E007 streaming verifier, ~1,000 code lines in monero-oxide restructuring `ArithmeticCircuitStatement::verify`, + ~1,200 lines of tests; independent review in reports/E007-crypto-review.md). Largest saving; largest review burden.
