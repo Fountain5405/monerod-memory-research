@@ -747,3 +747,12 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - W006: balance 93.6, unlocked 65.4 (109 coinbases), height 3,125,103, 2,948 H/s, difficulty about 481,000.
 - Boxes: hydrogen no lanes, 27 GB free. box81 39 GB free, only our monerod using CPU.
 - Peer watch: 192.168.1.116:47132 IN h=2489220 state=normal live=2444s. Still below the 3,105,401 wedge height.
+
+## 2026-11-05 22:50 Check-in: E036 part b done; lying-peer cases nearly done; E037 queued
+- E036 part b finished at 21:12. fw vs final at default settings, 3 rounds, 6/6 hashes: peak anon 1,100 vs 1,607 MB, -31.5%; post-idle 753 vs 1,179, -36.1%; wall 1,241 vs 1,328 s, -6.6%; writes -16.8%; CPU +0.6%. Requests 1,225 vs 4,648. Write-up follows the last lying-peer case.
+- The gain is bigger than I expected and its cause is not established. Final jumps from 373 to about 1,170 MB during its one 4-block span of 10 MB blocks, and the gap of about 430 MB lasts to the end. That is a hypothesis. E037 tests it, with expectations fixed in scripts/run_e037.sh before any run. It also gives the first base-family figure at default settings, because base cannot pass the wedge at default and every base number so far uses --block-sync-size 5.
+- Lying-peer cases, 600 s each from 3,105,401, not timing runs. ref 3,107,836, 0 oversize. under1 (under liar alone, e036) stuck at 3,105,401 with 595 oversize errors. under2 (alone, final) 3,108,123, 0 oversize. under3 (liar + .22, e036) 3,107,916, 1 oversize error, on the liar's connection only. under4 (liar + .22, final) 3,108,569, 0. over1 (over liar alone, e036) 3,107,554, 0, 2,155 requests. over2 running.
+- All as expected. The `drops=1` figures are not liar effects: each is the "Failure in prepare_handle_incoming_blocks" line within 2 s of the stop at the end of the run, on either peer. In under3 the .22 connection stayed up.
+- A gap in that test: c4's liar answers immediately, so its oversized span dies with its connection in 0.12 s. A liar that lies and then holds the span keeps it scheduled, and after 30 s the code can ask another peer for it. That might take the honest connection down repeatedly. This is from reading the code, not from a run. Part c5 tests it after E037 with a silent liar build, against a silent honest-weight control.
+- Boxes: hydrogen no lanes, 27 GB free. box81 39 GB free, only our test liar using CPU. W006 mining paused for the cases.
+- Peer watch: 192.168.1.116 IN h=2508819 state=normal live=2130s. Still below the 3,105,401 wedge height.
