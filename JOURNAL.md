@@ -625,3 +625,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - E034 tests it: COLD=1 in min_mem.sh evicts only data.mdb from the page cache (posix_fadvise, not system-wide) after each rewind. Tested on the idle working DB: 6.5 GB resident before, 0 after. Default behaviour of min_mem.sh is unchanged.
 - E032 chained behind it. v2final against base: windows, negative test, warm minimum, long resync.
 - The chain's e023_wall call in E031 failed on a height not every run logs. Walls computed after the run; E032 uses a common height.
+
+## 2026-11-05 02:47 Check-in: E034 bisecting final
+- Reference trials done, DB confirmed 0 bytes resident before each start. Cgroup peak at the 8,000 MB limit: final 2,388-2,443 MB (warm figure 1,647), base 6,269-6,355 MB. So the DB pages are now charged to the node, which supports the inference in E031. Not read as a result yet. Final at 2,4xx is just under the 2,500 MB I expected.
+- Cold reference walls: final 116 s, base 227 s. Final bisection on its second trial. ETA about 04:30 stands as an estimate; E032 follows.
+- Box: no lanes, 30 GB free. box81 idle, nothing of ours.
+- Peer watch: 192.168.1.116 not among .22 connections on two looks. Last seen at h=2306224 at 00:47. Cause not known from here.

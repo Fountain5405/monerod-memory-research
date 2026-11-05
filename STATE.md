@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-05 02:28
+Last updated: 2026-11-05 02:47
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
