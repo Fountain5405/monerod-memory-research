@@ -741,3 +741,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - W006: balance 66.6, unlocked 39.0 (65 coinbases), height 3,125,050, 2,847 H/s, difficulty about 499,000.
 - Boxes: hydrogen no lanes, 27 GB free. box81 39 GB free, only our monerod using CPU.
 - Peer watch: 192.168.1.116:47984 IN h=2467355 state=normal live=1579s. Still below the 3,105,401 wedge height.
+
+## 2026-11-05 20:47 Check-in: E036 part b, last long run; early figures unexpected
+- Long resync, 5 of 6 runs done, all hashes matched. So far fw 1,235 and 1,241 s at 1,100 and 1,131 MB peak; final 1,325, 1,336 and 1,328 s at 1,609, 1,569 and 1,607 MB. That is about -30% peak and -7% wall against final, more than I would have guessed from the patch. Inside the expected ranges (-50 to +10% peak, -10 to +20% wall), which were wide because I had no model. Not concluding before the chain ends, and I want to know the mechanism before believing it. First thing to look at: span sizes in the heavy window's first requests, in the logged run.
+- W006: balance 93.6, unlocked 65.4 (109 coinbases), height 3,125,103, 2,948 H/s, difficulty about 481,000.
+- Boxes: hydrogen no lanes, 27 GB free. box81 39 GB free, only our monerod using CPU.
+- Peer watch: 192.168.1.116:47132 IN h=2489220 state=normal live=2444s. Still below the 3,105,401 wedge height.
