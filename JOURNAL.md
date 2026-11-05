@@ -700,3 +700,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Node catch-up began at 12:21:15 in the gap after E033's r2_e033 run ended (hydrogen had no syncing node), and finished in 11 s: 3,124,904, synchronized. Wallet at the tip. Mining 6 threads, nice 19: about 2,590 H/s. Difficulty about 796,000, so about 5 minutes per block for this rig at that difficulty, an estimate. Coinbase unlock is 60 blocks of chain time.
 - From 12:21 on, what hydrogen's runs share with box81 is .22 relaying our mined blocks. The other hydrogen E033 runs and all of E035 part b include that; compare E033's base long wall with E032's as a check.
 - E036: patch compiled on box81, 10/10 block_queue and node_server tests pass. That says the unit is sound, nothing about false weights or real sync.
+
+## 2026-11-05 12:47 Check-in: E033 long round 2 of 3; W006 has found blocks
+- E033: long resync, 3 of 6 runs done, all hashes so far; about 14:00 stands as an estimate. Figures wait for the chain. E035 part b waiting behind it.
+- W006: 4 blocks found in 26 minutes, chain height 3,124,909, balance 2.4, all locked (59 blocks to unlock on the first). 2,925 H/s, difficulty about 764,000. 4 of the last 5 chain blocks are ours. Too short a time to extrapolate.
+- Boxes: hydrogen no lanes, 29 GB free. box81 40 GB free, others not active, mining at nice 19.
+- Peer watch: 192.168.1.116:57152 IN h=2415395 state=normal live=2684s. Still below the 3,105,401 wedge height.
