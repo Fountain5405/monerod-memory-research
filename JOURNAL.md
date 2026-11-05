@@ -660,3 +660,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Headline figure changed: base re-measured warm is 5,562 MB, the same as E034's cold figure, against E009's 5,750. The bisection grid differed. Final's cgroup reduction is now -66.5%, not -67.5%. SUMMARY updated.
 - This time the chain's wall script worked on 3123400, so no post-hoc wall was needed; segments computed separately.
 - E033 started at 08:35 as E032 ended. Tree hash matched box81's.
+
+## 2026-11-05 08:48 Check-in: E033 on its first heavy run
+- Build OK at 08:38 (hydrogen sha 1ed829f0, tree hash equal to box81's). Round 1 base running. Estimate of about 14:10 stands.
+- Box: no lanes, 29 GB free. box81 idle, nothing of ours.
+- Peer watch: 192.168.1.116:38972 IN h=2371219 state=normal live=1288s. Still below the 3,105,401 wedge height.
