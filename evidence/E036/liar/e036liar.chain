@@ -1,0 +1,8 @@
+[ref] secs=600 peers=192.168.1.22:28080 height=3107836 hash=yes oversize_errors=0 requests=467 drops=1 2026-11-05T21:28:31+00:00
+[under1] secs=600 peers=192.168.1.81:28180 height=3105401 hash=yes oversize_errors=595 requests=595 drops=0 2026-11-05T21:42:43+00:00
+[under2] secs=600 peers=192.168.1.81:28180 height=3108123 hash=yes oversize_errors=0 requests=791 drops=0 2026-11-05T21:56:53+00:00
+[under3] secs=600 peers=192.168.1.81:28180 192.168.1.22:28080 height=3107916 hash=yes oversize_errors=1 requests=645 drops=1 2026-11-05T22:10:47+00:00
+[under4] secs=600 peers=192.168.1.81:28180 192.168.1.22:28080 height=3108569 hash=yes oversize_errors=0 requests=1211 drops=0 2026-11-05T22:25:09+00:00
+[over1] secs=600 peers=192.168.1.81:28180 height=3107554 hash=yes oversize_errors=0 requests=2155 drops=1 2026-11-05T22:39:13+00:00
+[over2] secs=600 peers=192.168.1.81:28180 192.168.1.22:28080 height=3107879 hash=yes oversize_errors=0 requests=876 drops=0 2026-11-05T22:53:30+00:00
+CHAIN_E036LIAR_COMPLETE

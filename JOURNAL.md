@@ -756,3 +756,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - A gap in that test: c4's liar answers immediately, so its oversized span dies with its connection in 0.12 s. A liar that lies and then holds the span keeps it scheduled, and after 30 s the code can ask another peer for it. That might take the honest connection down repeatedly. This is from reading the code, not from a run. Part c5 tests it after E037 with a silent liar build, against a silent honest-weight control.
 - Boxes: hydrogen no lanes, 27 GB free. box81 39 GB free, only our test liar using CPU. W006 mining paused for the cases.
 - Peer watch: 192.168.1.116 IN h=2508819 state=normal live=2130s. Still below the 3,105,401 wedge height.
+
+## 2026-11-05 23:05 E036 parts a, b, c4 written up; E037 running; c5 queued
+- Last lying-peer case: over2 (over liar + .22, e036) 3,107,879, 0 oversize, 876 requests. Expected between ref and over1; 43 blocks above ref in one run. Narrow miss, recorded. W006 mining restored at 22:53, 3,046 H/s.
+- Reading: a sole under-reporting peer wedges the patch and not final's cap. One honest peer alongside fixes that in this test, one run. Over-reporting costs requests: over1 gained about 12% fewer blocks than ref on the LAN. F52.
+- My harness had two faults, neither changes the table. drops=1 counted a shutdown race as a drop. The connection check used /get_connections, which is JSON-RPC, so "only hydrogen connected to the liar" was never observed in c4; it rests on the flags. Both fixed for c5 and stated in the write-up.
+- The silent-liar code path is read, not run. A kicked non-responder keeps its span until its score runs out, and another peer can be asked for that span after 5-30 s. Built the silent option into the test liar on box81. c5 runs after E037 with a true-weight silent control.

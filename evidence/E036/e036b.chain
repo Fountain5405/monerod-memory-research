@@ -1,0 +1,36 @@
+chain e036b waiting for E035 part b 2026-11-05T13:50:46+00:00
+chain e036b start 2026-11-05T17:40:46+00:00 load 3.18 7.70 8.21
+trees e949bcaf1e74045b15462998db422f046c3bfe48 b6dd69ea06b4bb35e7e30a506e6fc7dbae71bdb1
+build beta31-e036 BUILD_OK 2026-11-05T17:43:35+00:00
+build beta31-e036fw BUILD_OK 2026-11-05T17:46:16+00:00
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+153faa2d277049b95b8f6256ee587348ffa37c7779cd15c254e0d57eb0ac378a  /home/optimizer/work/monero-fcmp-e036/build/beta31-e036/bin/monerod
+c6751999b32f5a08956a7d69523382e419e09e6e35fa1776238825a292cfba4e  /home/optimizer/work/monero-fcmp-e036fw/build/beta31-e036fw/bin/monerod
+/dev/mapper/ubuntu--vg-ubuntu--lv  217G  181G   27G  88% /
+no lanes
+governor schedutil -> performance
+[e036_default] secs=120 log_height=3105433 tip=3105434 hash=yes oversize_errors=0 requests=11
+[fw_default] secs=121 log_height=3105450 tip=3105451 hash=yes oversize_errors=0 requests=28
+[e036_bss100] secs=120 log_height=3105433 tip=3105434 hash=yes oversize_errors=0 requests=11
+[final_bss100] secs=120 log_height=0 tip=3105401 hash=yes oversize_errors=120 requests=120
+(c1) wedge control done 2026-11-05T18:11:35+00:00
+(c2) long done 2026-11-05T20:48:10+00:00
+[fw] secs=1213 log_height=3124060 tip=3124133 hash=yes oversize_errors=0 requests=1225
+(c3) logged done 2026-11-05T21:12:28+00:00
+governor restored schedutil
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| final | 3 | 1,607 (1,569-1,609) | 1,672 (1,668-1,679) | 5,604 (5,546-5,624) | 1,328 (1,325-1,336) | 1,179 (1,127-1,190) | 64 (63-77) | 9,942 (9,939-9,994) | 10,984 (10,979-10,999) | all yes |
+| fw | 3 | 1,100 (1,018-1,131) | 1,142 (1,136-1,177) | 5,178 (5,156-5,214) | 1,241 (1,235-1,243) | 753 (729-769) | 62 (62-62) | 8,267 (8,264-8,276) | 11,048 (11,033-11,061) | all yes |
+
+fw vs final (medians): peak RssAnon MB -31.5%; peak Private_Dirty MB -31.7%; peak RSS MB -7.6%; wall s -6.6%; post-idle RssAnon MB -36.1%; read MB -3.1%; write MB -16.8%; CPU s +0.6%
+  peak anon ranges overlap: no (base 1,569-1,609, fw 1,018-1,131)
+run,wall_s
+Traceback (most recent call last):
+  File "/home/optimizer/work/research/scripts/e023_wall.py", line 15, in <module>
+    w = (ev[b] - ev[a]).total_seconds()
+                 ~~^^^
+KeyError: 3105406
+done 2026-11-05T21:12:28+00:00
+CHAIN_E036B_COMPLETE

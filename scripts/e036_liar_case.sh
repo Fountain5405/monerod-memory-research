@@ -28,11 +28,11 @@ curl -s -m 10 http://127.0.0.1:$PORT/set_log_categories -d '{"categories":"*:WAR
 t0=$(date +%s); : > $O/$L.height.csv
 while [ $(( $(date +%s) - t0 )) -lt "$SECS" ] && kill -0 $MP 2>/dev/null; do
   sleep 30
-  echo "$(( $(date +%s) - t0 )),$(curl -s -m 5 http://127.0.0.1:$PORT/get_height | grep -oE '"height": [0-9]+' | grep -oE '[0-9]+$'),$(curl -s -m 5 http://127.0.0.1:$PORT/get_connections | grep -c '"address"')" >> $O/$L.height.csv
+  echo "$(( $(date +%s) - t0 )),$(curl -s -m 5 http://127.0.0.1:$PORT/get_height | grep -oE '"height": [0-9]+' | grep -oE '[0-9]+$'),$(curl -s -m 5 http://127.0.0.1:$PORT/json_rpc -d '{"jsonrpc":"2.0","id":0,"method":"get_connections"}' | grep -c '"address"')" >> $O/$L.height.csv
 done
 H=$(curl -s -m 5 http://127.0.0.1:$PORT/get_height | grep -oE '"height": [0-9]+' | grep -oE '[0-9]+$')
 HX=$(curl -s -m 30 http://127.0.0.1:$PORT/json_rpc -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"get_block_header_by_height\",\"params\":{\"height\":$(( ${H:-1} - 1 ))}}" | grep -oE '"hash": "[0-9a-f]+"' | head -1 | cut -d'"' -f4)
 TX=$(curl -s -m 30 http://192.168.1.22:28081/json_rpc -d "{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"get_block_header_by_height\",\"params\":{\"height\":$(( ${H:-1} - 1 ))}}" | grep -oE '"hash": "[0-9a-f]+"' | head -1 | cut -d'"' -f4)
 stop_node $MP
-echo "[$L] secs=$SECS peers=$* height=$H hash=$([ -n "$HX" ] && [ "$HX" = "$TX" ] && echo yes || echo NO) oversize_errors=$(grep -c 'Maximum packet size exceed' $LOG) requests=$(grep -c 'state: requesting objects' $LOG) drops=$(grep -c -i 'dropping connection\|connection dropped' $LOG) $(date -Is)" | tee -a $C
+echo "[$L] secs=$SECS peers=$* height=$H hash=$([ -n "$HX" ] && [ "$HX" = "$TX" ] && echo yes || echo NO) oversize_errors=$(grep -c 'Maximum packet size exceed' $LOG) requests=$(grep -c 'state: requesting objects' $LOG) drops=$(grep -c -i 'dropping connection\|connection dropped' $LOG) oversize_22=$(grep 'Maximum packet size exceed' $LOG | grep -c '192.168.1.22:') $(date -Is)" | tee -a $C
 gzip -f $LOG

@@ -1,4 +1,4 @@
-# monerod memory research: summary (draft, updated 2026-11-05 after E035)
+# monerod memory research: summary (draft, updated 2026-11-05 after E036 parts a, b, c4)
 
 **Bottom line:** on the FCMP++ stressnet sync workload, three separable changes cut the memory monerod needs by about **two thirds to 70%**, and sync is about as fast or faster:
 - -68% peak in a 40-block worst-case window (3 A/B rounds);
@@ -168,6 +168,7 @@ Routing proofs under 8 inputs to the stored-circuit verifier gives, against fina
     - The agreed post-FCMP++ rules would permit it at the default.
     - The proposed cap is too loose there, because the limit can double after 51 blocks. A window-aware cap is simulated in that write-up, and now built and tested (E035, F51).
     - On stressnet both caps give 4 blocks.
+    - Another developer's patch (E036, F52) bounds each span by the block weights the peer advertises, instead of capping the count. Replacing final's cap with it gave peak -31.5%, post-idle -36.1%, wall -6.6% on the real chain with an honest peer. A sole peer under-reporting weights wedges it where final's cap passes. The cause of the memory gain is not established yet (E037), and every base figure above is at `--block-sync-size 5`, so the headline may need a default-settings figure once E037 is in.
 - **O(c·q) verify fold:** ~52% of sync CPU on large-input proofs. It is fixable on its own, without the memory change, e.g. by bucketing constraints by commitment.
 - **SMT and proof size:** SMT siblings slow 128-input proof verification (the cap is 9% faster, E004c) but speed up 2-input proofs (the cap is 7% slower, E011). A size-aware thread policy is the right default.
 - **`pop_blocks` defaults to keep_txs = true.** Popping heavy blocks then re-pools every tx (85k), and the pool prune is super-linear, so the pop stalls for a long time.
@@ -209,5 +210,6 @@ Routing proofs under 8 inputs to the stored-circuit verifier gives, against fina
 - E032 (hydrogen): done (experiments/E032-v2final-vs-base, F49). See Upstreamability.
 - E033 (hydrogen): done (experiments/E033-monerod-only, F50). See Upstreamability.
 - E035 (box81, hydrogen): done (experiments/E035-window-cap, F51).
-- E036 (hydrogen): running, another developer's sync-wedge patch on the real chain, then with a lying peer. W006 (our own transaction wave) follows, then v2final on box81.
+- E036 (hydrogen, box81): parts a, b, c4 done (experiments/E036-wedge-patch, F52). Part c5, a peer that lies and then does not answer, runs after E037.
+- E037 (hydrogen): running. Tests the cause of E036's memory gain and what the patch is worth on base, e033 and v2final. W006 (our own transaction wave) follows c5, then v2final on box81.
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth). W002 done (experiments/W002-wallet-refresh, F34): a fresh, empty wallet peaks at 1.17 GB RSS refreshing 18,270 stressnet blocks in 15 s on 24 threads, against a 349 MB live heap: the same glibc arena-retention gap the node had (F13). The largest live consumer is the FCMP++ tree extension (`outputs_to_leaves`, 115 MB). W003 (`--max-concurrency` 24/12/4/1: peak 1,100 / 909 / 510 / 357 MB, wall 16 / 23 / 55 / 105 s; F35) shows the peak is ~325 MB + ~32 MB per worker thread. **W004: `MALLOC_ARENA_MAX=2` in the wallet's environment cuts the peak 67% (1,132 -> 370 MB) at +7% wall with all threads kept (F36)**; the excess was glibc arena retention entirely, the live heap is ~350 MB. Zero code, available today. Not yet measured: a wallet that owns many outputs (needs a stressnet seed).

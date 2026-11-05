@@ -1,0 +1,9 @@
+chain e036a start 2026-11-05T12:01:40+00:00
+8b038b2657f0ad53ca0908ef361f70e29751c8d38fbdade29d8fd31080b2eb8e
+GIT_AM_OK
+f82375e23 protocol: bound sync spans by the advertised block weights
+tree e949bcaf1e74045b15462998db422f046c3bfe48
+build BUILD_OK 2026-11-05T12:05:04+00:00
+tests exit 0 2026-11-05T12:05:05+00:00
+[  PASSED  ] 10 tests.
+E036A_COMPLETE
