@@ -1,0 +1,76 @@
+chain e033 waiting for E032 2026-11-05T04:52:48+00:00
+chain e033 start 2026-11-05T08:35:48+00:00 load 1.03 5.96 7.59
+tree e8d76fb5404d57ff7c09dce8acf7c5ec0adbb827 expected e8d76fb5404d57ff7c09dce8acf7c5ec0adbb827
+build BUILD_OK 2026-11-05T08:38:59+00:00
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+1ed829f0ded3277111100103acba0971384c57120e7815b2866228204d6210eb  /home/optimizer/work/monero-fcmp-e033/build/beta31-e033/bin/monerod
+/dev/mapper/ubuntu--vg-ubuntu--lv  217G  178G   29G  87% /
+no lanes
+governor schedutil -> performance
+(a) heavy done 2026-11-05T09:29:41+00:00
+(c) negtest done 2026-11-05T09:30:06+00:00: PASS / PASS
+min_mem ref wall e033 207 s
+(d) e033 done 2026-11-05T09:45:33+00:00: RESULT: minimum passing MemoryMax for e033 = 3000 MB (largest failing = 2875 MB, tol 125 MB)
+(b) small done 2026-11-05T10:59:38+00:00
+(e) long resync done 2026-11-05T13:44:02+00:00
+governor restored schedutil
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| base | 3 | 5,582 (5,280-5,622) | 5,582 (5,302-5,622) | 6,855 (6,531-6,882) | 221 (221-224) | 4,717 (4,613-4,769) | 10 (10-23) | 466 (466-466) | 4,256 (4,239-4,280) | all yes |
+| e033 | 3 | 2,919 (2,911-2,937) | 2,939 (2,936-2,962) | 4,130 (4,113-4,153) | 207 (207-210) | 540 (517-547) | 9 (9-9) | 466 (466-466) | 2,028 (2,017-2,045) | all yes |
+
+e033 vs base (medians): peak RssAnon MB -47.7%; peak Private_Dirty MB -47.3%; peak RSS MB -39.8%; wall s -6.3%; post-idle RssAnon MB -88.6%; read MB -10.0%; write MB +0.0%; CPU s -52.3%
+  peak anon ranges overlap: no (base 5,280-5,622, e033 2,911-2,937)
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| base | 5 | 1,139 (1,037-1,183) | 1,317 (1,184-1,325) | 4,071 (4,065-4,237) | 150 (148-153) | 969 (957-1,139) | 53 (53-54) | 1,123 (1,117-1,128) | 1,334 (1,324-1,339) | all yes |
+| e033 | 5 | 861 (849-871) | 1,036 (1,024-1,073) | 3,962 (3,928-3,980) | 151 (149-153) | 712 (709-728) | 53 (53-53) | 1,123 (1,117-1,128) | 1,328 (1,327-1,336) | all yes |
+
+e033 vs base (medians): peak RssAnon MB -24.4%; peak Private_Dirty MB -21.3%; peak RSS MB -2.7%; wall s +0.7%; post-idle RssAnon MB -26.5%; read MB +0.0%; write MB +0.0%; CPU s -0.4%
+  peak anon ranges overlap: no (base 1,037-1,183, e033 849-871)
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| base | 3 | 5,610 (5,271-5,625) | 5,610 (5,271-5,625) | 8,412 (8,163-8,547) | 1,362 (1,354-1,367) | 4,418 (4,112-4,594) | 90 (84-103) | 9,398 (9,390-9,402) | 13,635 (13,605-13,646) | all yes |
+| e033 | 3 | 2,935 (2,843-2,988) | 2,935 (2,868-2,988) | 5,119 (5,116-5,146) | 1,342 (1,338-1,346) | 757 (757-814) | 70 (69-70) | 9,408 (9,396-9,409) | 11,329 (11,310-11,351) | all yes |
+
+e033 vs base (medians): peak RssAnon MB -47.7%; peak Private_Dirty MB -47.7%; peak RSS MB -39.1%; wall s -1.5%; post-idle RssAnon MB -82.9%; read MB -22.2%; write MB +0.1%; CPU s -16.9%
+  peak anon ranges overlap: no (base 5,271-5,625, e033 2,843-2,988)
+run,wall_s
+r1_base,218.6
+r1_e033,203.6
+r2_base,220.3
+r2_e033,203.6
+r3_base,219.6
+r3_e033,205.3
+# base: median 219.6 min 218.6 max 220.3
+# e033: median 203.6 min 203.6 max 205.3
+# e033 vs base: -7.3%
+# ranges overlap: no
+run,wall_s
+r1_base,144.1
+r1_e033,146.9
+r2_base,145.2
+r2_e033,145.0
+r3_base,147.5
+r3_e033,146.3
+r4_base,146.1
+r4_e033,146.0
+r5_base,148.5
+r5_e033,148.7
+# base: median 146.1 min 144.1 max 148.5
+# e033: median 146.3 min 145.0 max 148.7
+# e033 vs base: +0.2%
+# ranges overlap: yes
+run,wall_s
+r1_base,1351.3
+r1_e033,1335.7
+r2_base,1358.6
+r2_e033,1338.4
+r3_base,1364.2
+r3_e033,1342.2
+# base: median 1358.6 min 1351.3 max 1364.2
+# e033: median 1338.4 min 1335.7 max 1342.2
+# e033 vs base: -1.5%
+# ranges overlap: no
+done 2026-11-05T13:44:03+00:00
+CHAIN_E033_COMPLETE

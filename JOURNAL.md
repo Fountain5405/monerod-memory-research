@@ -706,3 +706,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - W006: 4 blocks found in 26 minutes, chain height 3,124,909, balance 2.4, all locked (59 blocks to unlock on the first). 2,925 H/s, difficulty about 764,000. 4 of the last 5 chain blocks are ours. Too short a time to extrapolate.
 - Boxes: hydrogen no lanes, 29 GB free. box81 40 GB free, others not active, mining at nice 19.
 - Peer watch: 192.168.1.116:57152 IN h=2415395 state=normal live=2684s. Still below the 3,105,401 wedge height.
+
+## 2026-11-05 13:46 E033 done, every expectation met
+- Monerod patches alone, +71/-1, no verifier change, against base: heavy peak -47.7%, post-idle -88.6%, wall -7.3%; small-tx peak -24.4%, wall +0.2% with overlapping ranges; long peak -47.7%, post-idle -82.9%, wall -1.5%, no upward trend; cgroup minimum 3,000 vs 5,562 MB, -46.1%. Negative test 24/24 and 3/3, 22/22 hashes. Experiments/E033-monerod-only, F50.
+- Two results sit at the edge of their expected range: cgroup minimum (3,000-3,800, got 3,000) and small-tx peak (-5 to -25, got -24.4). Met, both on the good side.
+- Observation I did not chase: e033 idles lower than v2final in absolute terms (540 vs 800 MB heavy, 757 vs 1,056 MB long), across separate experiments.
+- Mining overlap check: base's long wall is 1,358.6 s against E032's 1,357.5 s without mining. Paired by round the change is -1.2%, -1.5%, -1.6%. Three of the six long runs overlapped mining, unevenly by arm; it does not change the reading.
+- E035 part b started on its own at 13:44:55.

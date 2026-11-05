@@ -4,4 +4,4 @@ Five patches against v0.19.0.0-beta.3.1 (`d80596ad1`), +71/-1 lines in `src/ring
 
 One difference from the published 0006: its context held an include that 0003 adds, so that context line is removed here. What 0006 adds is the same.
 
-Applied with `git am`, the tree hash is `e8d76fb5404d57ff7c09dce8acf7c5ec0adbb827`. It compiled on box81 (2026-11-05). Measurements: `experiments/E033-*/`, when done.
+Applied with `git am`, the tree hash is `e8d76fb5404d57ff7c09dce8acf7c5ec0adbb827`. It compiled on box81 (2026-11-05). Measurements: `experiments/E033-monerod-only/` (F50): heavy and long peak -47.7%, cgroup minimum -46.1%, small-tx wall +0.2%, long wall -1.5%, hydrogen. It does not fix the E001 wedge.
