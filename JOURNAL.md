@@ -643,3 +643,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Box: no lanes, 32 GB free. box81 idle before the compile.
 - E033 preparation on box81: patch 0006 does not apply without 0003, only because its context holds the include 0003 adds. Removed that one context line for this tree (no change to what 0006 adds). Worth stating if this is ever presented: the series as published assumes 0003. Compile running, nice, -j6; not a measurement and no .22 reads.
 - Peer watch: 192.168.1.116:55632 IN h=2325578 state=normal live=2127s. Back, about 19,000 blocks above 00:47's 2,306,224. Still below the 3,105,401 wedge height.
+
+## 2026-11-05 04:55 E033 prepared and chained behind E032
+- box81 compile check passed (BUILD_OK 04:51). The series is +71/-1 lines in four files. I had called it about 25 lines; that counted only the adaptive cap and trim. Corrected in the queue.
+- Left out 0003 as well as 0004: the E001 sync cap is not a memory change, and it is inert at --block-sync-size 5.
+- scripts/run_e033.sh waits for E032, builds on hydrogen, checks the tree hash, then runs. Expectations fixed in its header before any run. The base cgroup minimum is taken from E032, same box and method, not re-run.

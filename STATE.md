@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-05 04:50
+Last updated: 2026-11-05 04:55
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -32,7 +32,8 @@ A real, verified reduction in monerod memory (owner's target: 40%), measured as 
 
 ## Queue (do the first item that is unblocked)
 0a. E032: see running above; it validates v2final the way E023 validated final.
-0b. E033 (after E032): the monerod patches alone, with no verifier change, against base. This would be the smallest thing to present: about 25 lines of adaptive cap + trim, plus the idle trim. E004e measured the non-adaptive pair at -44.6% peak; the adaptive form has never been measured without a verifier change. Report only.
+0b. E033: chained, see running above. The whole series is +71/-1 lines, not the about 25 I wrote earlier, which counted only the adaptive cap and trim.
+0c. After E033 ends and only then (two boxes must not share .22 during timing): repeat v2final vs base on box81 if E032 holds. box81 already has ~/work/monero-fcmp-e033 built if E033 is wanted there too.
 A. (DONE 02:56: the 50% verify hotspot is gone from the combo profile; recorded in E007.)
 B. (DONE 03:30: E009 written up; owner informed.)
 C. (DONE 05:02: E010 written up; owner pinged.)
@@ -53,7 +54,7 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 
 - **E027a DONE 12:09 on box81 (hostname moonpie; e027a.chain there): final built from v1's published patches, tree hash equal to hydrogen's adbe70cf8, sha a9a22c46; differential test at 3,105,401: 135 cases, 0 disagreements with base, DIFF PASS. **
 - **E032 RUNNING on hydrogen since 03:17 (scripts/run_e032.sh, marker CHAIN_E032_COMPLETE in ~/work/research-artifacts/e032.chain; ETA about 08:45, an estimate): v2final vs base. Heavy, negative test and warm cgroup minimum done at 04:36; small-tx x5 running, then long resync x3. Expectations in the header. Report only.**
-- **E033 preparation on box81 (no timing, no .22): ~/work/e033_box81_build.sh, chain ~/work/research-artifacts/e033_box81_build.chain, marker E033_BUILD_DONE. Tree ~/work/monero-fcmp-e033 = d80596ad1 + v1 monerod patches 0001, 0002, 0005, 0006, 0007 (no 0003 E001 fix, no 0004 verifier glue). Patch 0006 needed one context line removed, because it was cut on top of 0003.**
+- **E033 CHAINED on hydrogen (scripts/run_e033.sh, pid waits for CHAIN_E032_COMPLETE, then builds and runs; marker CHAIN_E033_COMPLETE in ~/work/research-artifacts/e033.chain). Monerod patches alone vs base: heavy x3, negative test, warm cgroup minimum, small-tx x5, long x3. Expectations in the header. Report only. Series in patches/options/E033-monerod-only/, +71/-1 lines, compiled on box81 (04:51, sha 55982d37; not to be compared across boxes), tree hash e8d76fb5. Not started yet; do not start anything else timing on hydrogen.**
 - **E034 DONE 03:18 (experiments/E034-cold-minmem, F48, evidence/E034): cold cgroup minimum final 1,866 MB (same as warm), base 5,562 MB, -66.5%. DB pages are charged, then reclaimed near the limit; all failures are OOM kills. Two narrow misses. Anon sets the limit, so it is not independent of peak anon.**
 - **E031 DONE 02:24 (experiments/E031-box81-minmem-long, F47, evidence/E031): box81 cgroup minimum 1,359 vs 3,218 MB (-57.8%); long resync peak -64.7%, post-idle -67.3%, wall -2.9%, 6/6 hashes. Miss: base's minimum below the expected band. CORRECTED the report: the cgroup metric tracks anon on a warm cache and is not independent evidence.**
 - **E030 DONE 21:32 (experiments/E030-e029-vs-base, F46, evidence/E030): e029 vs base, small-tx, 5 rounds, 10/10 hashes: wall +1.1%, CPU -0.7% (overlap), peak -23.5%, post-idle -25.4% (separate). All expectations met. Report only; final stays.**
