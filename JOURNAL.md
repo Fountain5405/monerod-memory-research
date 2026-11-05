@@ -713,3 +713,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Observation I did not chase: e033 idles lower than v2final in absolute terms (540 vs 800 MB heavy, 757 vs 1,056 MB long), across separate experiments.
 - Mining overlap check: base's long wall is 1,358.6 s against E032's 1,357.5 s without mining. Paired by round the change is -1.2%, -1.5%, -1.6%. Three of the six long runs overlapped mining, unevenly by arm; it does not change the reading.
 - E035 part b started on its own at 13:44:55.
+
+## 2026-11-05 14:47 Check-in: E035 part b progressing, E036 chained, W006 mining
+- E035 part b: wedge control done at 14:06: base no progress, 120 oversize errors in 120 s; final 3,105,449 and window 3,105,447 in the same time, 0 oversize errors, matching hashes, both capped to 4 blocks. Long resync round 1: final 1,333 s, 1,603 MB, hash matched; window running. No conclusions until the chain ends. ETA about 18:30 stands as an estimate.
+- E036: part b script and lying-peer case script committed with expectations before anything ran. Liar build OK on box81 at 13:52, sha abb62442. It is base plus 7 lines that misreport weights when E036_LIE is set.
+- W006: balance 17.4, none unlocked yet, 29 of the 43 blocks since mining began are ours, height 3,124,947, 2,955 H/s, difficulty about 633,000 and falling as the network's retarget follows the rise in hash rate from about 764,000 at 12:47.
+- Boxes: hydrogen no lanes, 28 GB free. box81 39 GB free, only our monerod using CPU.
+- Peer watch: 192.168.1.116:34402 IN h=2430754 state=normal live=1430s. Still below the 3,105,401 wedge height.
