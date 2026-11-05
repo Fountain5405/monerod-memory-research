@@ -1,0 +1,8 @@
+min_mem ref_final start 2026-11-05T02:32:46+00:00 bin=/home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod ref=1800 factor=1.10 lo=7999 hi=8000 tol=1000 extra='--block-sync-size 5'
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+[ref_final_8000MB] cold: 0 bytes of the DB resident before start
+[8000 MB] PASS wall=115s h=3105441 hash=yes cgroup_peak=2388MB oom_kills=0
+[ref_final_7999MB] cold: 0 bytes of the DB resident before start
+[7999 MB] PASS wall=118s h=3105441 hash=yes cgroup_peak=2443MB oom_kills=0
+lo=7999 passed; minimum is <= 7999
+MINMEM_COMPLETE

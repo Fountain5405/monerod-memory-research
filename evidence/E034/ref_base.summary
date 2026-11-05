@@ -1,0 +1,8 @@
+min_mem ref_base start 2026-11-05T02:37:02+00:00 bin=/home/optimizer/work/monero-fcmp/build/beta31/bin/monerod ref=1800 factor=1.10 lo=7999 hi=8000 tol=1000 extra='--block-sync-size 5'
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+[ref_base_8000MB] cold: 0 bytes of the DB resident before start
+[8000 MB] PASS wall=226s h=3105441 hash=yes cgroup_peak=6355MB oom_kills=0
+[ref_base_7999MB] cold: 0 bytes of the DB resident before start
+[7999 MB] PASS wall=229s h=3105441 hash=yes cgroup_peak=6269MB oom_kills=0
+lo=7999 passed; minimum is <= 7999
+MINMEM_COMPLETE

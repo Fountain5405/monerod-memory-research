@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-05 02:47
+Last updated: 2026-11-05 03:20
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -52,7 +52,8 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
 
 - **E027a DONE 12:09 on box81 (hostname moonpie; e027a.chain there): final built from v1's published patches, tree hash equal to hydrogen's adbe70cf8, sha a9a22c46; differential test at 3,105,401: 135 cases, 0 disagreements with base, DIFF PASS. **
-- **E034 then E032 RUNNING on hydrogen, one chain (scripts/run_e034.sh, then scripts/run_e032.sh; markers CHAIN_E034_COMPLETE, CHAIN_E032_COMPLETE in ~/work/research-artifacts/e034.chain, e032.chain; ETA E034 about 04:30, E032 about 10:00, both estimates). Expectations in the script headers. Report only.**
+- **E032 RUNNING on hydrogen since 03:17 (scripts/run_e032.sh, marker CHAIN_E032_COMPLETE in ~/work/research-artifacts/e032.chain; ETA about 09:30, an estimate): v2final vs base: heavy, negative test, warm cgroup minimum for both, small-tx x5, long resync x3. Expectations in the header. Report only. Then E033.**
+- **E034 DONE 03:18 (experiments/E034-cold-minmem, F48, evidence/E034): cold cgroup minimum final 1,866 MB (same as warm), base 5,562 MB, -66.5%. DB pages are charged, then reclaimed near the limit; all failures are OOM kills. Two narrow misses. Anon sets the limit, so it is not independent of peak anon.**
 - **E031 DONE 02:24 (experiments/E031-box81-minmem-long, F47, evidence/E031): box81 cgroup minimum 1,359 vs 3,218 MB (-57.8%); long resync peak -64.7%, post-idle -67.3%, wall -2.9%, 6/6 hashes. Miss: base's minimum below the expected band. CORRECTED the report: the cgroup metric tracks anon on a warm cache and is not independent evidence.**
 - **E030 DONE 21:32 (experiments/E030-e029-vs-base, F46, evidence/E030): e029 vs base, small-tx, 5 rounds, 10/10 hashes: wall +1.1%, CPU -0.7% (overlap), peak -23.5%, post-idle -25.4% (separate). All expectations met. Report only; final stays.**
 - **E029 DONE 20:17 (experiments/E029-small-proofs-stored, F45, evidence/E029): small-tx wall -5.2%, CPU -8.1%, peak +7.0% (separate); heavy wall +1.3%, peak +4.9% (overlap); 16/16 hashes, DIFF PASS x2, crate tests pass. Peak fails the +5% limit. OWNER DECISION 2026-11-04: keep final, report E029 as an option. Patch in patches/options/. Miss: wall expected 2-4% below final. Proofs of 3-7 inputs not measured.**

@@ -1,0 +1,18 @@
+min_mem base start 2026-11-05T02:56:32+00:00 bin=/home/optimizer/work/monero-fcmp/build/beta31/bin/monerod ref=227 factor=1.10 lo=2000 hi=8000 tol=250 extra='--block-sync-size 5'
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+[base_8000MB] cold: 0 bytes of the DB resident before start
+[8000 MB] PASS wall=226s h=3105441 hash=yes cgroup_peak=6348MB oom_kills=0
+[base_2000MB] cold: 0 bytes of the DB resident before start
+[2000 MB] FAIL wall=11s h=3105421 hash=yes cgroup_peak=1886MB oom_kills=1
+[base_5000MB] cold: 0 bytes of the DB resident before start
+[5000 MB] FAIL wall=100s h=3105431 hash=yes cgroup_peak=5000MB oom_kills=1
+[base_6500MB] cold: 0 bytes of the DB resident before start
+[6500 MB] PASS wall=229s h=3105441 hash=yes cgroup_peak=5929MB oom_kills=0
+[base_5750MB] cold: 0 bytes of the DB resident before start
+[5750 MB] PASS wall=230s h=3105441 hash=yes cgroup_peak=5751MB oom_kills=0
+[base_5375MB] cold: 0 bytes of the DB resident before start
+[5375 MB] FAIL wall=173s h=3105436 hash=yes cgroup_peak=5375MB oom_kills=1
+[base_5562MB] cold: 0 bytes of the DB resident before start
+[5562 MB] PASS wall=229s h=3105441 hash=yes cgroup_peak=5563MB oom_kills=0
+RESULT: minimum passing MemoryMax for base = 5562 MB (largest failing = 5375 MB, tol 250 MB)
+MINMEM_COMPLETE

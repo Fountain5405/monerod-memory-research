@@ -1,0 +1,15 @@
+chain e034 start 2026-11-05T02:28:49+00:00 load 0.06 0.01 0.00
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+3886935d4c3b2af1ffaf15ba65a72d69365fbb41d00858e645faee6ba1307aec  /home/optimizer/work/research/scripts/min_mem.sh
+no lanes
+governor schedutil -> performance
+DB restored 2026-11-05T02:32:46+00:00
+(a) ref_final done 2026-11-05T02:37:02+00:00: 8000,PASS,115,3105441,yes,2388,0 7999,PASS,118,3105441,yes,2443,0 
+(a) ref_base done 2026-11-05T02:44:59+00:00: 8000,PASS,226,3105441,yes,6355,0 7999,PASS,229,3105441,yes,6269,0 
+cold reference walls final 116 s, base 227 s
+(b) final done 2026-11-05T02:56:32+00:00: RESULT: minimum passing MemoryMax for final = 1866 MB (largest failing = 1765 MB, tol 125 MB)
+(b) base done 2026-11-05T03:17:54+00:00: RESULT: minimum passing MemoryMax for base = 5562 MB (largest failing = 5375 MB, tol 250 MB)
+governor restored schedutil
+done 2026-11-05T03:17:54+00:00
+CHAIN_E034_COMPLETE

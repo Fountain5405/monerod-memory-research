@@ -631,3 +631,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Cold reference walls: final 116 s, base 227 s. Final bisection on its second trial. ETA about 04:30 stands as an estimate; E032 follows.
 - Box: no lanes, 30 GB free. box81 idle, nothing of ours.
 - Peer watch: 192.168.1.116 not among .22 connections on two looks. Last seen at h=2306224 at 00:47. Cause not known from here.
+
+## 2026-11-05 03:20 E034 done: the minimum holds cold
+- Hydrogen, DB evicted before each of 18 starts. Final 1,866 MB, largest failing 1,765 MB, the same bracket as warm. Base 5,562 MB, largest failing 5,375 MB. -66.5%, bracket -65.3 to -68.3%.
+- DB pages are charged to the node (final peak about 2,400 MB at a generous limit, 1,647 warm), which supports the inference from E031, but they are reclaimed near the limit. All 7 failures are OOM kills. So what I raised in E031 as a possible understatement did not hold up on this SSD. The correction to the wording stays: anon sets this limit, so it is not independent evidence.
+- Two narrow misses: final's peak under the expected 2,500 MB, base's minimum one step under the expected 5,750 MB. A slower disk is not measured.
+- E032 started 03:17 as E034 ended.
