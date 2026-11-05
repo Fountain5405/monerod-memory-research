@@ -670,3 +670,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Heavy x3, negative test and cgroup minimum done; small-tx 8 of 10 runs, then long x3, about 14:00 as an estimate. Figures wait for the chain to end. 14/14 hashes so far.
 - Box: no lanes, 34 GB free. box81 idle, nothing of ours.
 - Peer watch: 192.168.1.116:58852 IN h=2394072 state=normal live=2290s. Still below the 3,105,401 wedge height.
+
+## 2026-11-05 11:28 Owner approved the window-aware cap: E035
+- Owner: "yes build and test the window-aware cap". Started E035, ahead of v2final on box81.
+- On stressnet the limit is 20 MB, so this cap is 4 blocks, the same as the current one, unless the largest recent block reaches 11.25 MB. A live sync here cannot exercise the step above 50 blocks. A passing long resync would prove nothing about it, so the test has two parts.
+- Part a, box81, compile and run only: a unit test drives Blockchain's real limit code through the simulation's window shapes, filling each block to the limit it computes. It compares with the owner's Python table at HF 16 and at v17 with F 625 kB (a test-only tree that never joins a network), and reports F 10 MB.
+- Part b, hydrogen, behind E033: wedge control, long resync at default settings against final, logged runs for cap decisions and oversize errors.
+- Not covered by either: a real post-fork batch end to end over a socket, which would need a purpose-built chain with full 1.25 MB blocks. The queued-span case stays as the issue describes it, partly covered.

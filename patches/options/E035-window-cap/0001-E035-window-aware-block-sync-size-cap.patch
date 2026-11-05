@@ -1,0 +1,320 @@
+From 8bc3fd2b3bc7bf74844bf957d38f24ff4ae429a2 Mon Sep 17 00:00:00 2001
+From: optimizer <optimizer@localhost>
+Date: Thu, 5 Nov 2026 11:26:45 +0000
+Subject: [PATCH] E035: window-aware block sync size cap
+
+The E001 cap bounded a batch by the current block weight limit alone. The limit can rise inside a batch, and the window can already hold blocks above the floor. Budget for max(limit, 2 * largest recent block) over the next 50 blocks and twice that after them (owner's analysis, 72a62f5). Adds a unit test driving Blockchain's real limit code.
+---
+ src/cryptonote_core/cryptonote_core.cpp  |  21 ++-
+ src/cryptonote_core/cryptonote_core.h    |  11 ++
+ tests/unit_tests/CMakeLists.txt          |   1 +
+ tests/unit_tests/block_sync_size_cap.cpp | 217 +++++++++++++++++++++++
+ 4 files changed, 246 insertions(+), 4 deletions(-)
+ create mode 100644 tests/unit_tests/block_sync_size_cap.cpp
+
+diff --git a/src/cryptonote_core/cryptonote_core.cpp b/src/cryptonote_core/cryptonote_core.cpp
+index 7adfbf250..39d09ec20 100644
+--- a/src/cryptonote_core/cryptonote_core.cpp
++++ b/src/cryptonote_core/cryptonote_core.cpp
+@@ -929,6 +929,19 @@ namespace cryptonote
+     return true;
+   }
+   //-----------------------------------------------------------------------------------------------
++  size_t get_block_sync_size_cap(uint64_t budget, uint64_t weight_limit, uint64_t window_max_weight)
++  {
++    // The limit can only rise once the short-term median does, and until 50 more blocks have
++    // arrived the median is at most W, the largest block in the window. So budget for
++    // L = max(current limit, 2 * W) for the next 50 blocks and 2 * L after that.
++    const uint64_t budget_limit = std::max<uint64_t>(weight_limit, 2 * window_max_weight);
++    size_t cap = std::max<uint64_t>(1, budget / budget_limit);
++    const size_t step = CRYPTONOTE_REWARD_BLOCKS_WINDOW / 2;
++    if (cap > step)
++      cap = (cap + step) / 2;
++    return cap;
++  }
++  //-----------------------------------------------------------------------------------------------
+   size_t core::get_block_sync_size(uint64_t height, const uint64_t max_average_of_blocksize_in_queue) const
+   {
+     size_t res = 0;
+@@ -965,17 +978,17 @@ namespace cryptonote
+       // near-empty blocks it asks for BLOCKS_MAX_WINDOW blocks even if the next blocks are
+       // large, and the peer's NOTIFY_RESPONSE_GET_OBJECTS can then exceed the levin packet
+       // limit: the connection is dropped and the same request is retried forever.
+-      // Bound the request by the consensus block weight limit instead: a block's serialized
+-      // size does not exceed its weight, so N blocks at the limit fit in N * limit bytes
++      // Bound the request by what the consensus rules allow the next blocks to weigh: a block's
++      // serialized size does not exceed its weight, so the batch fits in its total weight
+       // (plus small per-block/per-tx overhead, covered by the 10% margin).
+       const uint64_t weight_limit = m_blockchain_storage.get_current_cumulative_block_weight_limit();
+       if (weight_limit > 0)
+       {
+         const uint64_t budget = LEVIN_DEFAULT_MAX_PACKET_SIZE / 10 * 9;
+-        const size_t cap = std::max<uint64_t>(1, budget / weight_limit);
++        const size_t cap = get_block_sync_size_cap(budget, weight_limit, max_weight);
+         if (res > cap)
+         {
+-          MINFO("capping block sync size from " << res << " to " << cap << " blocks (block weight limit " << weight_limit << " bytes)");
++          MINFO("capping block sync size from " << res << " to " << cap << " blocks (block weight limit " << weight_limit << " bytes, largest recent block " << max_weight << " bytes)");
+           res = cap;
+         }
+       }
+diff --git a/src/cryptonote_core/cryptonote_core.h b/src/cryptonote_core/cryptonote_core.h
+index 0ce527bba..45f78ab83 100644
+--- a/src/cryptonote_core/cryptonote_core.h
++++ b/src/cryptonote_core/cryptonote_core.h
+@@ -57,6 +57,17 @@ enum { HAVE_BLOCK_MAIN_CHAIN, HAVE_BLOCK_ALT_CHAIN, HAVE_BLOCK_INVALID };
+ 
+ namespace cryptonote
+ {
++   /**
++    * @brief the most blocks to request in one batch, so that the blocks cannot weigh more than budget
++    *
++    * @param budget the batch's budget in bytes of block weight
++    * @param weight_limit the current block weight limit, must be > 0
++    * @param window_max_weight the largest block weight among the last CRYPTONOTE_REWARD_BLOCKS_WINDOW blocks
++    *
++    * @return the cap, at least 1
++    */
++   size_t get_block_sync_size_cap(uint64_t budget, uint64_t weight_limit, uint64_t window_max_weight);
++
+    struct test_options {
+      const std::pair<uint8_t, uint64_t> *hard_forks;
+      const size_t long_term_block_weight_window;
+diff --git a/tests/unit_tests/CMakeLists.txt b/tests/unit_tests/CMakeLists.txt
+index 821e7214c..2110641a2 100644
+--- a/tests/unit_tests/CMakeLists.txt
++++ b/tests/unit_tests/CMakeLists.txt
+@@ -73,6 +73,7 @@ set(unit_tests_sources
+   levin.cpp
+   logging.cpp
+   long_term_block_weight.cpp
++  block_sync_size_cap.cpp
+   lmdb.cpp
+   main.cpp
+   memwipe.cpp
+diff --git a/tests/unit_tests/block_sync_size_cap.cpp b/tests/unit_tests/block_sync_size_cap.cpp
+new file mode 100644
+index 000000000..2be3ecc8e
+--- /dev/null
++++ b/tests/unit_tests/block_sync_size_cap.cpp
+@@ -0,0 +1,217 @@
++// Tests the window-aware block sync size cap against Blockchain's real block weight limit code.
++// BSD 3-clause, same terms as the rest of this directory.
++
++#define IN_UNIT_TESTS
++
++#include <cstdlib>
++#include <iomanip>
++#include <iostream>
++#include <algorithm>
++#include "gtest/gtest.h"
++#include "cryptonote_core/blockchain.h"
++#include "cryptonote_core/tx_pool.h"
++#include "cryptonote_core/cryptonote_core.h"
++#include "cryptonote_basic/cryptonote_basic_impl.h"
++#include "blockchain_db/testdb.h"
++#include "net/levin_base.h"
++
++namespace
++{
++
++class TestDB: public cryptonote::BaseTestDB
++{
++private:
++  struct block_t { size_t weight; uint64_t long_term_weight; };
++public:
++  TestDB() { m_open = true; }
++  using cryptonote::BaseTestDB::add_block;
++  virtual void add_block(const cryptonote::block& blk, size_t block_weight, uint64_t long_term_block_weight,
++    const cryptonote::difficulty_type& cumulative_difficulty, const uint64_t& coins_generated,
++    uint64_t num_rct_outs, const crypto::hash& blk_hash) override
++  {
++    blocks.push_back({block_weight, long_term_block_weight});
++  }
++  virtual uint64_t height() const override { return blocks.size(); }
++  virtual size_t get_block_weight(const uint64_t &h) const override { return blocks[h].weight; }
++  virtual uint64_t get_block_long_term_weight(const uint64_t &h) const override { return blocks[h].long_term_weight; }
++  virtual std::vector<uint64_t> get_block_weights(uint64_t start_height, size_t count) const override
++  {
++    std::vector<uint64_t> ret;
++    while (count-- && start_height < blocks.size()) ret.push_back(blocks[start_height++].weight);
++    return ret;
++  }
++  virtual std::vector<uint64_t> get_long_term_block_weights(uint64_t start_height, size_t count) const override
++  {
++    std::vector<uint64_t> ret;
++    while (count-- && start_height < blocks.size()) ret.push_back(blocks[start_height++].long_term_weight);
++    return ret;
++  }
++  virtual crypto::hash get_block_hash_from_height(const uint64_t &height) const override
++  {
++    crypto::hash hash = crypto::null_hash;
++    *(uint64_t*)&hash = height;
++    return hash;
++  }
++  virtual crypto::hash top_block_hash(uint64_t *block_height = NULL) const override
++  {
++    uint64_t h = height();
++    crypto::hash top = crypto::null_hash;
++    if (h)
++      *(uint64_t*)&top = h - 1;
++    if (block_height)
++      *block_height = h - 1;
++    return top;
++  }
++  virtual void pop_block(cryptonote::block &blk, std::vector<cryptonote::transaction> *txs) override { blocks.pop_back(); }
++private:
++  std::vector<block_t> blocks;
++};
++
++constexpr uint64_t BUDGET = LEVIN_DEFAULT_MAX_PACKET_SIZE / 10 * 9;
++constexpr uint64_t SMALL = 1000;
++constexpr uint64_t LT_WINDOW = 1000;
++constexpr uint64_t BATCHES[] = {10000000, 30000000, 40000000, 50000000};
++enum { NONE, PATCH, WINDOW, N_CAPS };
++const char *const CAP_NAMES[] = {"none", "patch", "window"};
++
++uint64_t estimator(uint64_t W, uint64_t B)
++{
++  if (W * 100 < B)
++    return 100;
++  if (W >= B / 2)
++    return 1;
++  return B / W;
++}
++
++void add(cryptonote::Blockchain *bc, uint64_t w)
++{
++  const uint64_t ltw = bc->get_next_long_term_block_weight(w);
++  bc->get_db().add_block(std::make_pair(cryptonote::block(), ""), w, ltw, 0, 0, {}, {});
++  ASSERT_TRUE(bc->update_next_cumulative_weight_limit());
++}
++
++struct worst_t { uint64_t total = 0; uint64_t k = 0, A = 0, N = 0; const char *order = ""; };
++
++// Same shapes as scripts/e001_batch_weight_sim.py: k small blocks then 100-k of weight A, and the reverse,
++// keeping windows each block of which fit under the limit in force when it was mined. Then every requested
++// block is filled to the limit the real code computes, and the limit is recomputed after each.
++void search(uint8_t hf, uint64_t k_step, uint64_t a_div)
++{
++  cryptonote::BlockchainAndPool bap;
++  cryptonote::Blockchain *bc = &bap.blockchain;
++  struct get_test_options {
++    const std::pair<uint8_t, uint64_t> hard_forks[3];
++    const cryptonote::test_options test_options = { hard_forks, LT_WINDOW };
++    get_test_options(uint8_t v): hard_forks{std::make_pair(1, (uint64_t)0), std::make_pair(v, (uint64_t)1), std::make_pair((uint8_t)0, (uint64_t)0)} {}
++  } opts(hf);
++  ASSERT_TRUE(bc->init(new TestDB(), cryptonote::FAKECHAIN, true, &opts.test_options, 0, NULL));
++
++  // Long enough that the long-term median stays at the floor while the window fills: the simulation's "F is constant".
++  for (uint64_t h = 0; h < LT_WINDOW + 200; ++h)
++    add(bc, SMALL);
++  const uint64_t F = cryptonote::get_min_block_weight(hf);
++  ASSERT_EQ(bc->get_current_cumulative_block_weight_limit(), 2 * F);
++  const uint64_t base_height = bc->get_db().height();
++
++  worst_t worst[4][N_CAPS];
++  uint64_t shapes = 0;
++  const uint64_t stride = std::max<uint64_t>(1, F / a_div);
++  for (uint64_t k = 0; k <= 100; k += k_step)
++  {
++    for (uint64_t A = F / 5; A <= 2 * F; A += stride)
++    {
++      for (int small_first = 0; small_first < 2; ++small_first)
++      {
++        bool reachable = true;
++        for (uint64_t i = 0; i < 100 && reachable; ++i)
++        {
++          const bool is_small = small_first ? i < k : i >= 100 - k;
++          const uint64_t w = is_small ? SMALL : A;
++          if (w > bc->get_current_cumulative_block_weight_limit())
++            reachable = false;
++          else
++            add(bc, w);
++        }
++        if (reachable)
++        {
++          ++shapes;
++          std::vector<uint64_t> window;
++          bc->get_last_n_blocks_weights(window, CRYPTONOTE_REWARD_BLOCKS_WINDOW);
++          const uint64_t W = *std::max_element(window.begin(), window.end());
++          const uint64_t L0 = bc->get_current_cumulative_block_weight_limit();
++          uint64_t totals[101];
++          totals[0] = 0;
++          for (uint64_t n = 1; n <= 100; ++n)
++          {
++            const uint64_t L = bc->get_current_cumulative_block_weight_limit();
++            totals[n] = totals[n - 1] + L;
++            add(bc, L);
++          }
++          for (size_t b = 0; b < 4; ++b)
++          {
++            const uint64_t N = estimator(W, BATCHES[b]);
++            const uint64_t caps[N_CAPS] = {
++              100,
++              std::max<uint64_t>(1, BUDGET / L0),
++              cryptonote::get_block_sync_size_cap(BUDGET, L0, W),
++            };
++            for (size_t c = 0; c < N_CAPS; ++c)
++            {
++              const uint64_t n = std::min(N, caps[c]);
++              if (totals[n] > worst[b][c].total)
++                worst[b][c] = {totals[n], k, A, n, small_first ? "small-first" : "big-first"};
++            }
++          }
++        }
++        cryptonote::block blk;
++        while (bc->get_db().height() > base_height)
++          bc->get_db().pop_block(blk, nullptr);
++        ASSERT_TRUE(bc->update_next_cumulative_weight_limit());
++      }
++    }
++  }
++  std::cout << "hf " << (int)hf << " F " << F << " shapes " << shapes << std::endl;
++  for (size_t b = 0; b < 4; ++b)
++    for (size_t c = 0; c < N_CAPS; ++c)
++      std::cout << "RESULT hf" << (int)hf << " F=" << F << " batch=" << BATCHES[b] / 1000000 << "M " << CAP_NAMES[c]
++        << " worst_MB=" << std::fixed << std::setprecision(1) << worst[b][c].total / 1e6
++        << " k=" << worst[b][c].k << " A=" << worst[b][c].A << " " << worst[b][c].order << " N=" << worst[b][c].N << std::endl;
++  for (size_t b = 0; b < 4; ++b)
++    ASSERT_LE(worst[b][WINDOW].total, 91000000u) << "batch " << BATCHES[b];
++}
++
++uint64_t env_or(const char *name, uint64_t def)
++{
++  const char *v = getenv(name);
++  return v ? strtoull(v, NULL, 10) : def;
++}
++
++}
++
++TEST(block_sync_size_cap, values)
++{
++  // From cap_window in scripts/e001_batch_weight_sim.py. budget 90 MB; arguments are limit, largest recent block.
++  using cryptonote::get_block_sync_size_cap;
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 600000, 1000), 100u);
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 1250000, 1000), 61u);
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 20000000, 1000), 4u);
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 20000000, 10030357), 4u);
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 20000000, 12000000), 3u);
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 1800000, 0), 50u);
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 1700000, 0), 51u);
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 1250000, 900000), 50u);
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 600000, 500000), 70u);
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 90000001, 0), 1u);
++  EXPECT_EQ(get_block_sync_size_cap(BUDGET, 200000000, 0), 1u);
++}
++
++// A coarse grid by default. E035_K_STEP=1 E035_A_DIV=200 is the simulation's full grid.
++TEST(block_sync_size_cap, worst_batch_hf16)
++{
++  search(16, env_or("E035_K_STEP", 10), env_or("E035_A_DIV", 20));
++}
++
++TEST(block_sync_size_cap, worst_batch_hf17)
++{
++  search(17, env_or("E035_K_STEP", 10), env_or("E035_A_DIV", 20));
++}
+-- 
+2.43.0
+
