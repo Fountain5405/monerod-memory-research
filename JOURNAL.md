@@ -648,3 +648,8 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - box81 compile check passed (BUILD_OK 04:51). The series is +71/-1 lines in four files. I had called it about 25 lines; that counted only the adaptive cap and trim. Corrected in the queue.
 - Left out 0003 as well as 0004: the E001 sync cap is not a memory change, and it is inert at --block-sync-size 5.
 - scripts/run_e033.sh waits for E032, builds on hydrogen, checks the tree hash, then runs. Expectations fixed in its header before any run. The base cgroup minimum is taken from E032, same box and method, not re-run.
+
+## 2026-11-05 06:48 Check-in: E032 long resync, round 1 of 3 done
+- Small-tx x5 finished 05:51, 10/10 hashes. Long resync: 2 of 6 runs done at about 28 minutes per run, so about 08:40 stands as an estimate. Figures wait for the chain to end. E033 chained, waiting.
+- Box: no lanes, 36 GB free. box81 idle, nothing of ours.
+- Peer watch: 192.168.1.116:46606 IN h=2349475 state=normal live=524s. About 24,000 blocks in 2 hours; still below the 3,105,401 wedge height.

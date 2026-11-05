@@ -1,6 +1,6 @@
 # STATE: read this first on every check-in
 
-Last updated: 2026-11-05 04:55
+Last updated: 2026-11-05 06:48
 
 ## Goal (one line)
 A real, verified reduction in monerod memory (owner's target: 40%), measured as peak and steady anon/private-dirty memory, plus the minimum cgroup memory.max for a fixed sync window, against the FCMP++ v0.19.0.0-beta.3.1 baseline on stressnet. See README.md for metrics and guardrails.
@@ -53,7 +53,7 @@ G. Wallet track: W001 code map DONE (experiments/W001-wallet-tree-cache: the tre
 - 192.168.1.116 (owner LAN node) was syncing at 2,097,439 at 20:10 on 2026-11-02. On each check-in, look up its height in .22 `get_connections` (scripts/peer_check.py). Does it pass 3,105,401 with multiple peers, or wedge there? Record in E001 notes.
 
 - **E027a DONE 12:09 on box81 (hostname moonpie; e027a.chain there): final built from v1's published patches, tree hash equal to hydrogen's adbe70cf8, sha a9a22c46; differential test at 3,105,401: 135 cases, 0 disagreements with base, DIFF PASS. **
-- **E032 RUNNING on hydrogen since 03:17 (scripts/run_e032.sh, marker CHAIN_E032_COMPLETE in ~/work/research-artifacts/e032.chain; ETA about 08:45, an estimate): v2final vs base. Heavy, negative test and warm cgroup minimum done at 04:36; small-tx x5 running, then long resync x3. Expectations in the header. Report only.**
+- **E032 RUNNING on hydrogen since 03:17 (scripts/run_e032.sh, marker CHAIN_E032_COMPLETE in ~/work/research-artifacts/e032.chain; ETA about 08:45, an estimate): v2final vs base. Heavy, negative test, warm cgroup minimum and small-tx x5 done; long resync round 1 of 3 done at 06:47. Expectations in the header. Report only.**
 - **E033 CHAINED on hydrogen (scripts/run_e033.sh, pid waits for CHAIN_E032_COMPLETE, then builds and runs; marker CHAIN_E033_COMPLETE in ~/work/research-artifacts/e033.chain). Monerod patches alone vs base: heavy x3, negative test, warm cgroup minimum, small-tx x5, long x3. Expectations in the header. Report only. Series in patches/options/E033-monerod-only/, +71/-1 lines, compiled on box81 (04:51, sha 55982d37; not to be compared across boxes), tree hash e8d76fb5. Not started yet; do not start anything else timing on hydrogen.**
 - **E034 DONE 03:18 (experiments/E034-cold-minmem, F48, evidence/E034): cold cgroup minimum final 1,866 MB (same as warm), base 5,562 MB, -66.5%. DB pages are charged, then reclaimed near the limit; all failures are OOM kills. Two narrow misses. Anon sets the limit, so it is not independent of peak anon.**
 - **E031 DONE 02:24 (experiments/E031-box81-minmem-long, F47, evidence/E031): box81 cgroup minimum 1,359 vs 3,218 MB (-57.8%); long resync peak -64.7%, post-idle -67.3%, wall -2.9%, 6/6 hashes. Miss: base's minimum below the expected band. CORRECTED the report: the cgroup metric tracks anon on a warm cache and is not independent evidence.**
