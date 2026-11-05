@@ -1,6 +1,6 @@
 # E035: the window-aware E001 sync cap, built and tested
 
-**Status: part a done, part b waiting for E033. Against Blockchain's real weight-limit code, the window-aware cap keeps every batch at or under 90.0 MB of weight at HF 16, at v17 with F 625 kB and at stressnet's F 10 MB. The current cap reaches 116-129 MB at v17, and 148 MB at HF 16 with `--batch-max-weight 50`. The real code reproduces the owner's simulation to within 0.1 MB in all 24 cells. Report only.**
+**Status: done. Part b: on the real chain the cap passes the wedge and behaves as the current cap does, 4 blocks at every decision, no cost in wall, CPU or memory, 11/11 hashes; two expectations missed, one narrowly and one because I wrote it wrongly. Part a: against Blockchain's real weight-limit code, the window-aware cap keeps every batch at or under 90.0 MB of weight at HF 16, at v17 with F 625 kB and at stressnet's F 10 MB. The current cap reaches 116-129 MB at v17, and 148 MB at HF 16 with `--batch-max-weight 50`. The real code reproduces the owner's simulation to within 0.1 MB in all 24 cells. Report only.**
 
 **Why:** the owner's analysis (72a62f5, `reports/E001-sync-wedge-ISSUE.md`) found patch 0003's cap too loose for post-FCMP++ mainnet rules and proposed this one, simulated but not built. Owner approved building and testing it on 2026-11-05.
 
@@ -48,8 +48,65 @@ The model and the real code differ by at most 0.1 MB, in one cell. Worst-case bl
 - **The v17 constants are from the issue** (`fcmp++-stage` f25388d, 625 kB). I did not recheck them against that branch today.
 - Only this test's filter was run, not the whole unit test suite.
 
-## Part b: the real chain (hydrogen, `scripts/run_e035b.sh`, chained behind E033)
-Wedge control at default settings, long resync against `final` x3, logged runs for cap decisions and oversize errors. Expectations are in the script's header. Not yet run.
+## Part b: the real chain (hydrogen, 2026-11-05 13:44 to 17:40, `scripts/run_e035b.sh`, chain log evidence/E035/partb/e035b.chain)
+Tree `~/work/monero-fcmp-e035` = final + this patch, tree hash ced7116c as expected. Arms: base (sha 2d1e3e9c), final (sha d779a522), window (sha 91ca4cfa). Default sync settings, no `--block-sync-size`. Single peer 192.168.1.22, DB restored before each run, governor pinned and restored, no lanes. W006 was mining on box81 and .22 relayed its blocks throughout; E033 found no visible effect from that.
+
+**This is a regression test.** On stressnet the limit is 20 MB, and the largest block in the whole range is 10,030,448 bytes, under the 11.25 MB that would move this cap off 4 blocks. So both caps should decide the same thing every time, and they did.
+
+### Wedge control from 3,105,401, 120 s, default settings
+| arm | height after 120 s | oversize errors | requests | hash |
+|---|---|---|---|---|
+| base | 3,105,401, no progress | 120 | 120 | yes |
+| final | 3,105,450 | 0 | 29 | yes |
+| window | 3,105,448 | 0 | 27 | yes |
+
+### Long resync 3,105,401 -> 3,123,400, 3 alternating rounds
+Medians (min-max). 6/6 hashes, no swap. Walls from log timestamps, from the first height all runs logged, 3,105,409, since at default settings 3,105,406 is not logged.
+
+| arm | wall s | CPU s | peak anon MB | peak private dirty MB | peak RSS MB | post-idle anon MB |
+|---|---|---|---|---|---|---|
+| final | 1,330.1 (1,327.9-1,332.3) | 10,977 (10,970-10,984) | 1,634 (1,603-1,639) | 1,690 (1,612-1,700) | 5,524 (5,496-5,560) | 1,142 (1,114-1,179) |
+| window | 1,324.7 (1,320.0-1,325.6) | 10,967 (10,961-10,976) | 1,589 (1,587-1,608) | 1,683 (1,645-1,697) | 5,574 (5,517-5,586) | 1,194 (1,142-1,210) |
+| change | -0.4%, **separate by 2.3 s** | -0.1%, overlap | -2.8%, overlap | -0.4%, overlap | +0.9%, overlap | +4.6%, overlap |
+
+| segment | final s | window s | change |
+|---|---|---|---|
+| heavy, 3,105,409-3,105,441 | 113.7 | 111.8 | -1.6%, overlap |
+| dense small-tx, to 3,113,403 | 1,134.5 | 1,126.3 | -0.7%, overlap |
+| near-empty tail, to 3,123,400 | 82.3 | 82.5 | +0.2%, overlap |
+
+### Logged runs, once per arm, untimed, cn at INFO
+| arm | seconds | tip | hash | oversize errors | requests | cap lines | cap lines not saying 4 blocks |
+|---|---|---|---|---|---|---|---|
+| final | 1,287 | 3,123,552 | yes | 0 | 4,648 | 4,420 | 0 |
+| window | 1,291 | 3,123,578 | yes | 0 | 4,654 | 4,426 | 0 |
+
+The largest W in any window cap line is 1,873,395 bytes.
+
+### Expectations for part b, fixed before the run
+| expectation | result | |
+|---|---|---|
+| base no progress, oversize errors | 3,105,401, 120 errors | met |
+| final and window progress, 0 oversize errors, matching hash | yes | met |
+| long 6/6 hashes | 6/6 | met |
+| window vs final wall within 2% | -0.4% | met |
+| ...with overlapping ranges | **separate by 2.3 s** | **narrow miss** |
+| peak anon ranges overlap | yes | met |
+| logged: 0 oversize errors | 0, 0 | met |
+| every cap line says 4 blocks unless W is at or above 11.25 MB | all 4 blocks, W never that high | met |
+| at least one cap line with W above 10 MB | **largest 1.87 MB** | **miss, my expectation was wrong** |
+
+**The wall miss.** Every whole-run window figure sits 2 to 12 s under every final one, while all three segments overlap. The two binaries made the same cap decision in every cap line of the logged runs, and differ by 6 requests in about 4,650, so I have no mechanism for the patch making sync faster. It is 0.4%, three rounds, in the arm's favour. I would call it no cost and not claim a gain.
+
+**The W miss.** Cap lines are written only when the estimate exceeds the cap, and the estimate is `batch_max_weight / W`, 10 MB over W by default. So once W passes 2.5 MB the estimate is at most 4, nothing is capped and no line is written. The line I asked for cannot exist at default settings. It was a bad expectation, not a fault in the cap: real weights show the chain does carry two blocks over 10 MB (10,030,448 and 10,030,357, at 3,105,437 and 3,105,434). This does leave one thing unobserved in logs: the cap being computed with W that large. Part a's unit test exercises it directly.
+
+### What part b shows
+- The window-aware cap passes the wedge and behaves as the current cap does on the one real chain we have. No cost in wall, CPU or memory.
+- On this chain it cannot show its reason for existing. That evidence is part a, with its limits above.
+
+I also found while reading these logs that the heavy part of the window is single-block sync at default settings regardless of either cap: from 3,105,429 on, W is over 5 MB, so the estimate is 1 block. The cap's work here is entirely in the first requests into the window, where W is still small.
+
+`scripts/e023_wall.py` stopped with `KeyError: 3105406` at the end of the chain for the logging reason above, after everything else had finished. The segment table is from the scratchpad script that picks the nearest common height.
 
 ## Evidence
-evidence/E035/parta (chain, test output for both trees and both grids, random windows).
+evidence/E035/parta (chain, test output for both trees and both grids, random windows). evidence/E035/partb (chain, long results.csv, summary.txt, per-run mem.csv, cap line counts and largest block weights; no raw logs).

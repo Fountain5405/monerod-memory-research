@@ -726,3 +726,11 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - W006: balance 42.0, unlocked 14.4 (24 coinbases), height 3,124,998, 3,013 H/s, difficulty about 513,000. Wave still held until hydrogen's timing runs and the lying-peer cases are done.
 - Boxes: hydrogen no lanes, 28 GB free. box81 39 GB free, only our monerod using CPU.
 - Peer watch: 192.168.1.116:36050 IN h=2451923 state=normal live=1802s. Still below the 3,105,401 wedge height.
+
+## 2026-11-05 17:43 E035 part b done; E036 part b started
+- Real chain, default settings. Wedge control: base stuck with 120 oversize errors, final and window past it with 0. Long resync x3: window vs final wall -0.4%, peak -2.8% with overlapping ranges, CPU -0.1%, 6/6 hashes. Logged: 0 oversize errors, every cap line 4 blocks in both arms. F51.
+- Miss 1, narrow: expected wall ranges to overlap, and they are separate by 2.3 s. Identical cap decisions, so no mechanism for a gain. Not claiming one.
+- Miss 2, my error: I expected a cap line with W above 10 MB. Lines are only written when the estimate exceeds the cap, and above W of 2.5 MB it no longer does at default settings, so that line cannot exist. Real largest block is 10,030,448 bytes, checked on our own node.
+- Worth knowing for E036: from 3,105,429 on the node requests single blocks at default settings regardless of the cap, because W is over 5 MB.
+- e023_wall.py failed at the end of the chain with KeyError 3105406; at default settings that height is not logged. E036 part b's script calls it the same way and will fail the same way at its end. Harmless; use the nearest-height script.
+- E036 part b started by itself at 17:40.

@@ -1,0 +1,61 @@
+chain e035b waiting for E033 2026-11-05T11:28:55+00:00
+chain e035b start 2026-11-05T13:44:55+00:00 load 0.90 5.30 7.03
+tree ced7116caa99fb6321fb48788b83f81370dc44fa expected ced7116caa99fb6321fb48788b83f81370dc44fa
+build BUILD_OK 2026-11-05T13:47:40+00:00
+2d1e3e9c17518b127362225e643bc9c2c9624c8e1891d4f29af08270052c520b  /home/optimizer/work/monero-fcmp/build/beta31/bin/monerod
+d779a522faf0673fb4202ecf65d021596c6d5e60b717186ae2d01a661946738f  /home/optimizer/work/monero-fcmp-idle/build/beta31-idle/bin/monerod
+91ca4cfae937bebb078e8b98e990465dc8a189dd4debb8e1e0209764b74a119c  /home/optimizer/work/monero-fcmp-e035/build/beta31-e035/bin/monerod
+/dev/mapper/ubuntu--vg-ubuntu--lv  217G  179G   28G  87% /
+no lanes
+governor schedutil -> performance
+[base] secs=120 log_height=0 tip=3105401 hash=yes oversize_errors=120 cap_lines=0 requests=120
+window cap lines: largest W 0 above 10 MB: 0 at or above 11.25 MB: 0
+[final] secs=120 log_height=3105449 tip=3105450 hash=yes oversize_errors=0 cap_lines=7 requests=29
+      4 capping block sync size from 100 to 4 blocks
+      2 capping block sync size from 43 to 4 blocks
+      1 capping block sync size from 7 to 4 blocks
+window cap lines: largest W 0 above 10 MB: 0 at or above 11.25 MB: 0
+[window] secs=120 log_height=3105447 tip=3105448 hash=yes oversize_errors=0 cap_lines=7 requests=27
+      4 capping block sync size from 100 to 4 blocks
+      2 capping block sync size from 43 to 4 blocks
+      1 capping block sync size from 7 to 4 blocks
+window cap lines: largest W 1420551 above 10 MB: 0 at or above 11.25 MB: 0
+(b1) wedge control done 2026-11-05T14:06:46+00:00
+(b2) long done 2026-11-05T16:48:54+00:00
+[final] secs=1287 log_height=3123552 tip=3123552 hash=yes oversize_errors=0 cap_lines=4420 requests=4648
+   2488 capping block sync size from 100 to 4 blocks
+    334 capping block sync size from 10 to 4 blocks
+    292 capping block sync size from 7 to 4 blocks
+    242 capping block sync size from 8 to 4 blocks
+    236 capping block sync size from 9 to 4 blocks
+    186 capping block sync size from 6 to 4 blocks
+    134 capping block sync size from 11 to 4 blocks
+    124 capping block sync size from 12 to 4 blocks
+window cap lines: largest W 0 above 10 MB: 0 at or above 11.25 MB: 0
+[window] secs=1291 log_height=3123576 tip=3123578 hash=yes oversize_errors=0 cap_lines=4426 requests=4654
+   2494 capping block sync size from 100 to 4 blocks
+    334 capping block sync size from 10 to 4 blocks
+    292 capping block sync size from 7 to 4 blocks
+    242 capping block sync size from 8 to 4 blocks
+    236 capping block sync size from 9 to 4 blocks
+    186 capping block sync size from 6 to 4 blocks
+    134 capping block sync size from 11 to 4 blocks
+    124 capping block sync size from 12 to 4 blocks
+window cap lines: largest W 1873395 above 10 MB: 0 at or above 11.25 MB: 0
+(b3) logged done 2026-11-05T17:40:14+00:00
+governor restored schedutil
+| arm | n | peak RssAnon MB median (min-max) | peak Private_Dirty MB median (min-max) | peak RSS MB median (min-max) | wall s median (min-max) | post-idle RssAnon MB median (min-max) | read MB median (min-max) | write MB median (min-max) | CPU s median (min-max) | hashes match |
+|---|---|---|---|---|---|---|---|---|---|---|
+| final | 3 | 1,634 (1,603-1,639) | 1,690 (1,612-1,700) | 5,524 (5,496-5,560) | 1,333 (1,332-1,336) | 1,142 (1,114-1,179) | 66 (65-66) | 9,988 (9,935-10,008) | 10,977 (10,970-10,984) | all yes |
+| window | 3 | 1,589 (1,587-1,608) | 1,683 (1,645-1,697) | 5,574 (5,517-5,586) | 1,327 (1,324-1,330) | 1,194 (1,142-1,210) | 66 (66-66) | 10,022 (10,016-10,027) | 10,967 (10,961-10,976) | all yes |
+
+window vs final (medians): peak RssAnon MB -2.8%; peak Private_Dirty MB -0.4%; peak RSS MB +0.9%; wall s -0.5%; post-idle RssAnon MB +4.6%; read MB +0.0%; write MB +0.3%; CPU s -0.1%
+  peak anon ranges overlap: yes (base 1,603-1,639, window 1,587-1,608)
+run,wall_s
+Traceback (most recent call last):
+  File "/home/optimizer/work/research/scripts/e023_wall.py", line 15, in <module>
+    w = (ev[b] - ev[a]).total_seconds()
+                 ~~^^^
+KeyError: 3105406
+done 2026-11-05T17:40:14+00:00
+CHAIN_E035B_COMPLETE

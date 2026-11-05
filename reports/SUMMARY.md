@@ -1,4 +1,4 @@
-# monerod memory research: summary (draft, updated 2026-11-05 after E033)
+# monerod memory research: summary (draft, updated 2026-11-05 after E035)
 
 **Bottom line:** on the FCMP++ stressnet sync workload, three separable changes cut the memory monerod needs by about **two thirds to 70%**, and sync is about as fast or faster:
 - -68% peak in a 40-block worst-case window (3 A/B rounds);
@@ -166,7 +166,7 @@ Routing proofs under 8 inputs to the stored-circuit verifier gives, against fina
   - The owner's analysis (72a62f5) shows:
     - Today's mainnet rules permit the wedge only at `--batch-max-weight` above ~33.
     - The agreed post-FCMP++ rules would permit it at the default.
-    - The proposed cap is too loose there, because the limit can double after 51 blocks. A window-aware cap is simulated in that write-up.
+    - The proposed cap is too loose there, because the limit can double after 51 blocks. A window-aware cap is simulated in that write-up, and now built and tested (E035, F51).
     - On stressnet both caps give 4 blocks.
 - **O(c·q) verify fold:** ~52% of sync CPU on large-input proofs. It is fixable on its own, without the memory change, e.g. by bucketing constraints by commitment.
 - **SMT and proof size:** SMT siblings slow 128-input proof verification (the cap is 9% faster, E004c) but speed up 2-input proofs (the cap is 7% slower, E011). A size-aware thread policy is the right default.
@@ -184,7 +184,7 @@ Routing proofs under 8 inputs to the stored-circuit verifier gives, against fina
 
 | change | size | notes |
 |---|---|---|
-| E001 sync-size cap | ~10 lines | stressnet-tested. For post-FCMP++ mainnet use the owner's window-aware cap (simulated, not built) |
+| E001 sync-size cap | ~10 lines | stressnet-tested. For post-FCMP++ mainnet use the owner's window-aware cap: built and tested in E035 (+17/-4, patches/options/E035-window-cap/). Worst batch at most 90.0 MB of weight against real limit code; same behaviour as the current cap on stressnet |
 | adaptive batch cap + `malloc_trim` (E012) | ~25 lines in rctSigs.cpp | glibc-guarded trim; independent of E007 |
 | idle trim (E021) | ~40 lines (rctSigs.cpp + a 2 s check in `core::on_idle`) | one `malloc_trim(0)` 5 s after the last verification; glibc-guarded; about -17% idle on top of E012 on the heavy window, no measurable speed cost on sync windows; demote its log line first |
 | E007 streaming verifier | ~1,000 lines + tests (monero-oxide) | biggest win; independent static review found no defect (reports/E007-crypto-review.md); base-equivalence test added (E016, F1 closed); apply the two low hardening items first; still needs review by the FCMP++ authors; alternatively, propose only the O(c·q) fold fix for CPU |
@@ -208,5 +208,6 @@ Routing proofs under 8 inputs to the stored-circuit verifier gives, against fina
 - E034 (hydrogen): done (experiments/E034-cold-minmem, F48). The cgroup minimum holds on a cold cache: final 1,866 MB, base 5,562 MB, -66.5%.
 - E032 (hydrogen): done (experiments/E032-v2final-vs-base, F49). See Upstreamability.
 - E033 (hydrogen): done (experiments/E033-monerod-only, F50). See Upstreamability.
-- E035 part b (hydrogen): running, the window-aware cap on the real chain. E036 (another developer's sync-wedge patch) and W006 (our own transaction wave) follow, then v2final on box81.
+- E035 (box81, hydrogen): done (experiments/E035-window-cap, F51).
+- E036 (hydrogen): running, another developer's sync-wedge patch on the real chain, then with a lying peer. W006 (our own transaction wave) follows, then v2final on box81.
 - Wallet: W001 code map done (the tree cache is bounded by reorg depth). W002 done (experiments/W002-wallet-refresh, F34): a fresh, empty wallet peaks at 1.17 GB RSS refreshing 18,270 stressnet blocks in 15 s on 24 threads, against a 349 MB live heap: the same glibc arena-retention gap the node had (F13). The largest live consumer is the FCMP++ tree extension (`outputs_to_leaves`, 115 MB). W003 (`--max-concurrency` 24/12/4/1: peak 1,100 / 909 / 510 / 357 MB, wall 16 / 23 / 55 / 105 s; F35) shows the peak is ~325 MB + ~32 MB per worker thread. **W004: `MALLOC_ARENA_MAX=2` in the wallet's environment cuts the peak 67% (1,132 -> 370 MB) at +7% wall with all threads kept (F36)**; the excess was glibc arena retention entirely, the live heap is ~350 MB. Zero code, available today. Not yet measured: a wallet that owns many outputs (needs a stressnet seed).
