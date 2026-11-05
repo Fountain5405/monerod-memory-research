@@ -734,3 +734,10 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Worth knowing for E036: from 3,105,429 on the node requests single blocks at default settings regardless of the cap, because W is over 5 MB.
 - e023_wall.py failed at the end of the chain with KeyError 3105406; at default settings that height is not logged. E036 part b's script calls it the same way and will fail the same way at its end. Harmless; use the nearest-height script.
 - E036 part b started by itself at 17:40.
+
+## 2026-11-05 18:47 Check-in: E036 part b, wedge control as expected, long resync running
+- Wedge control at 120 s, all four as fixed beforehand: e036 default reached 3,105,434, fw default 3,105,451, e036 with --block-sync-size 100 reached 3,105,434, all 0 oversize errors and matching hashes. final with --block-sync-size 100 stuck at 3,105,401 with 120 oversize errors, since an explicit size bypasses 0003's cap. So the patch holds with an explicit size where the current cap does not, with an honest peer.
+- Long resync: round 1 final 1,325 s, 1,609 MB, hash matched; round 1 fw running. ETA moved to about 21:00, an estimate. No conclusions until the chain ends.
+- W006: balance 66.6, unlocked 39.0 (65 coinbases), height 3,125,050, 2,847 H/s, difficulty about 499,000.
+- Boxes: hydrogen no lanes, 27 GB free. box81 39 GB free, only our monerod using CPU.
+- Peer watch: 192.168.1.116:47984 IN h=2467355 state=normal live=1579s. Still below the 3,105,401 wedge height.
