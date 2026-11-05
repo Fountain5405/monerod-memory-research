@@ -684,3 +684,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Added 20,000 random windows per rule set through the model, not fixed in advance: at most 89.7 MB. Weak at the default batch size.
 - Limits in the README: a search and not a proof, weight and not bytes, F held constant, no real blocks over a socket, queued spans.
 - Tests compile in a few minutes on box81 thanks to ccache; the full grid takes under 2 minutes per tree.
+
+## 2026-11-05 12:02 Owner: mine and send our own txs (W006); owner also supplied another developer's wedge patch (E036)
+- W006 feasibility from reads on .22: height 3,124,900, difficulty about 804,000, reward 0.6, tx pool empty, 32 blocks in 9 hours. So mining is feasible and this rig may be most of the network while it runs. Coinbase unlock 60 blocks, spendable age 10, 16 outputs per tx. Fee estimate 75 per byte of weight.
+- Plan: node on box81 with .22 as its only peer, so no direct outside connections; RPC to .22 stays reads only. Start the catch-up in a hydrogen restore gap. Mining alone adds a block every few minutes to what .22 relays; note that in E033 and E035's write-ups. Hold the wave itself until E035 part b ends, because .22 has to verify it.
+- E036, reading only so far, not tested: the patch stops a span at --batch-max-weight (bytes, 10 MB default) using weights from NOTIFY_RESPONSE_CHAIN_ENTRY, always taking one block. Unlike the cap it looks at real weights, also applies with an explicit --block-sync-size (where the warning at cryptonote_core.cpp:692 becomes untrue), and lets near-empty stretches keep 100-block spans. Peers that send no weights keep count-only behaviour. Advertised weights are peer-supplied. Could change batch sizes and so memory and wall: must be measured.
+- The patch is a third party's and I do not know if it is public, so it stays out of this public repo until the owner says otherwise.
