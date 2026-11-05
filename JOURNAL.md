@@ -637,3 +637,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - DB pages are charged to the node (final peak about 2,400 MB at a generous limit, 1,647 warm), which supports the inference from E031, but they are reclaimed near the limit. All 7 failures are OOM kills. So what I raised in E031 as a possible understatement did not hold up on this SSD. The correction to the wording stays: anon sets this limit, so it is not independent evidence.
 - Two narrow misses: final's peak under the expected 2,500 MB, base's minimum one step under the expected 5,750 MB. A slower disk is not measured.
 - E032 started 03:17 as E034 ended.
+
+## 2026-11-05 04:50 Check-in: E032 in its small-tx part, E033 compile check on box81
+- E032 ahead of the estimate: heavy, negative test and both warm minimums done by 04:36. Small-tx round 1 under way, new ETA about 08:45 (estimate). Not read as a result until the chain ends. Negative test ran in 25 s because it only rewinds; checked the summaries: 8/8 tampered rejected per tx at 3105424 (128 inputs) and 3105414 (8 and 2 inputs), originals accepted.
+- Box: no lanes, 32 GB free. box81 idle before the compile.
+- E033 preparation on box81: patch 0006 does not apply without 0003, only because its context holds the include 0003 adds. Removed that one context line for this tree (no change to what 0006 adds). Worth stating if this is ever presented: the series as published assumes 0003. Compile running, nice, -j6; not a measurement and no .22 reads.
+- Peer watch: 192.168.1.116:55632 IN h=2325578 state=normal live=2127s. Back, about 19,000 blocks above 00:47's 2,306,224. Still below the 3,105,401 wedge height.
