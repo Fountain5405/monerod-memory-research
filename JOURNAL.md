@@ -720,3 +720,9 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - W006: balance 17.4, none unlocked yet, 29 of the 43 blocks since mining began are ours, height 3,124,947, 2,955 H/s, difficulty about 633,000, down from about 764,000 at 12:47. It is still falling with us mining, so blocks are still arriving slower than the 120 s target.
 - Boxes: hydrogen no lanes, 28 GB free. box81 39 GB free, only our monerod using CPU.
 - Peer watch: 192.168.1.116:34402 IN h=2430754 state=normal live=1430s. Still below the 3,105,401 wedge height.
+
+## 2026-11-05 16:47 Check-in: E035 part b last long run; W006 coins unlocking
+- E035 part b: 5 of 6 long runs done, all hashes matched so far, last window run in progress. Then one logged untimed run per arm. E036 part b starts by itself behind it. Figures wait for the chain.
+- W006: balance 42.0, unlocked 14.4 (24 coinbases), height 3,124,998, 3,013 H/s, difficulty about 513,000. Wave still held until hydrogen's timing runs and the lying-peer cases are done.
+- Boxes: hydrogen no lanes, 28 GB free. box81 39 GB free, only our monerod using CPU.
+- Peer watch: 192.168.1.116:36050 IN h=2451923 state=normal live=1802s. Still below the 3,105,401 wedge height.
