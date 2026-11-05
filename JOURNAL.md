@@ -654,7 +654,7 @@ Guardrails: same final chain state (top hash), no verification weakened, no cost
 - Box: no lanes, 36 GB free. box81 idle, nothing of ours.
 - Peer watch: 192.168.1.116:46606 IN h=2349475 state=normal live=524s. About 24,000 blocks in 2 hours; still below the 3,105,401 wedge height.
 
-## 2026-11-05 08:50 E032 done: v2 keeps the memory result
+## 2026-11-05 08:38 E032 done: v2 keeps the memory result
 - v2final vs base, hydrogen. Heavy peak -70.4%, post-idle -83.7%, wall -37.1%. Small-tx peak -30.5%, wall +7.9%. Long resync, 3 rounds, peak -70.2%, post-idle -75.4%, wall -1.4%, no upward trend. Cgroup minimum 1,765 vs 5,562 MB, -68.3%. Negative test 24/24 and 3/3. 22/22 hashes.
 - One narrow miss, on the good side: small-tx peak -30.5% against -20 to -30%. Base's small-tx peak is soft (1,009-1,400 MB).
 - Headline figure changed: base re-measured warm is 5,562 MB, the same as E034's cold figure, against E009's 5,750. The bisection grid differed. Final's cgroup reduction is now -66.5%, not -67.5%. SUMMARY updated.
